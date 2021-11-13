@@ -1,0 +1,11 @@
+g++ main.cpp \
+-g \
+-framework opengl \
+-lGLEW \
+-lglfw3 \
+-lportaudio \
+-framework IOKit \
+-framework CoreVideo \
+-framework Cocoa \
+-framework CoreAudio \
+-o test

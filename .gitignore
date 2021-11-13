@@ -1,0 +1,6 @@
+.vscode
+**/.DS_Store
+test
+test.dSYM
+imgui.ini
+build
