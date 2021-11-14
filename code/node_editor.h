@@ -3,6 +3,12 @@
 #include "math.h"
 #include <vector>
 
+struct NodeInput {
+};
+
+struct NodeOutput {
+};
+
 enum NodeType {
 	NODE_NONE,
 	NODE_CUBE,
@@ -14,24 +20,26 @@ struct NodeVec3 {
 	vec3 v;
 };
 
-struct NodeCube {
-	int id;
+/* struct NodeCube { */
+/* 	int id; */
 
-	// attributes
-	vec3 pos;
+/* 	// attributes */
+/* 	vec3 pos; */
 
-	// inputs
+/* 	// inputs */
 
 
-	// outputs
-};
+/* 	// outputs */
+/* }; */
 
+typedef void(*NodeFunction)(NodeInput in, NodeOutput out);
 
 struct Node {
-	NodeType type;
+	NodeFunction function;
+	/* NodeType type; */
 	Rect rect;
 	bool dragged;
-	int id;
+	/* int id; */
 };
 
 struct NodeState {
@@ -41,8 +49,8 @@ struct NodeState {
 	vec2 dragOffset;
 
 	// node types
-	std::vector<NodeCube> cubes;
-	int cubeAmount;
+	/* std::vector<NodeCube> cubes; */
+	/* int cubeAmount; */
 };
 
 void AddNode(NodeState *nodeState, Node node);
@@ -50,6 +58,6 @@ void AddCube(NodeState *nodeState);
 void AddNoneNode(NodeState *nodeState);
 bool IsMouseOverNode(vec2 mouse, Node node);
 void DrawNode(Node node);
-void UpdateCube(NodeCube *cube);
-NodeCube* GetCube(NodeState *nodeState, int id);
+/* void UpdateCube(NodeCube *cube); */
+/* NodeCube* GetCube(NodeState *nodeState, int id); */
 void UpdateNodeEditor(NodeState *nodeState);
