@@ -50,8 +50,9 @@ void CubeFunction(Node *self)
 	glUseProgram(0);
 }
 
-void NoneFunction(NodeInput in, NodeOutput out)
+void NoneFunction(Node *self)
 {
+	self->out.x = glfwGetTime();
 }
 
 // struct NodeDragState {
@@ -64,116 +65,75 @@ Node* AddNode(NodeState *nodeState)
 	node.rect.height = 0.1f;
 	
 	nodeState->nodes.push_back(node);
-	Node *result = &nodeState->nodes[nodeState->nodes.size() - 1];
+	Node *result = &nodeState->nodes.data()[nodeState->nodes.size() - 1];
+	// TODO(rhoe) be carefull about these pointers from a std vector
 
-	// node.rect.width = 0.1f;
-	// node.rect.height = 0.1f;
-	return &nodeState->nodes[nodeState->nodes.size() - 1];
+	return result;
 }
 
 Node* AddCube(NodeState *nodeState)
 {
 	Node* result = AddNode(nodeState);
 	result->function = &CubeFunction;
+	result->rect.width = 0.2f;
 
 	return result;
 }
 
-void AddNoneNode(NodeState *nodeState)
+Node* AddNoneNode(NodeState *nodeState)
 {
-	AddNode(nodeState);
+	Node *node = AddNode(nodeState);
+	node->function = &NoneFunction;
+	return node;
 }
 
-bool IsMouseOverNode(vec2 mouse, Node node)
+bool IsMouseOverNode(vec2 mouse, Node *node)
 {
-	if(PointInsideRect(mouse, node.rect))
+	if(PointInsideRect(mouse, node->rect))
 		return true;
 
 	return false;
 }
 
-void DrawNode(Node node)
+void DrawNode(Node *node)
 {
-	ImDrawRect(node.rect);
+	ImDrawRect(node->rect);
 }
-
-// void UpdateCube(NodeCube *cube)
-// {
-// 	// render cube
-// 	glUseProgram(shaderProgram);
-// 	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-// 	model = glm::translate(model, glm::vec3(0, 0, 0));
-// 	model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
-// 	GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
-// 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-// 	glBindVertexArray(cubeVAO);
-// 	glDrawArrays(GL_TRIANGLES, 0, 36);
-// 	glBindVertexArray(0);
-// 	glUseProgram(0);
-// }
-
-// NodeCube* GetCube(NodeState *nodeState, int id)
-// {
-// 	for(int i = 0; i < nodeState->cubes.size(); i++) {
-// 		if(nodeState->cubes[i].id == id) {
-// 			return &nodeState->cubes[i];
-// 		}
-// 	}
-
-// 	return NULL;
-// }
 
 void UpdateNodeEditor(NodeState *nodeState)
 {
 	for(int i = 0; i < nodeState->nodes.size(); i++) {
-		if(IsMouseOverNode(mouse, nodeState->nodes[i])) {
+		Node *node = &nodeState->nodes[i];
+		if(IsMouseOverNode(mouse, node)) {
 			ImDrawSetColor(vec3(1, 0, 0));
 			if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !nodeState->isDragging) {
 				nodeState->isDragging = true;
-				nodeState->draggedNode = &nodeState->nodes[i];
-				nodeState->dragOffset = nodeState->nodes[i].rect.pos - mouse;
+				nodeState->draggedNode = node;
+				nodeState->dragOffset = node->rect.pos - mouse;
 				// nodeState->nodes[i].dragging = false;
 			}
 		}
 		else {
 			ImDrawSetColor(vec3(0, 1, 0));
 		}
-		DrawNode(nodeState->nodes[i]);
+		DrawNode(node);
+
+		if(node->in.attached) {
+			// draw the line
+			ImDrawLine(node->rect.pos, node->in.link->rect.pos);
+		}
 	}
 
 	if(nodeState->isDragging) {
 		if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT])
 			nodeState->isDragging = false;
 		else {
-			// vec2 dir = nodeState->dragPos - mouse;
 			nodeState->draggedNode->rect.pos = mouse + nodeState->dragOffset;
-			// nodeState->dragPos = mouse;
 		}
 	}
 
 	for(int i = 0; i < nodeState->nodes.size(); i++) {
 		Node *node = &nodeState->nodes[i];
-		NodeInput in = {};
-		NodeOutput out = {};
 		node->function(node);
-
-		// switch(node->type) {
-		// 	case NODE_CUBE: {
-				
-		// 		// handle cube
-		// 		// NodeCube *cube = GetCube(nodeState, node->id);
-		// 		// UpdateCube(cube);
-		// 		break;
-		// 	}
-		// 	case NODE_NONE: {
-		// 		break;
-		// 	}
-		// }
 	}
-													 
-	// Node node = {};
-	// node.rect.pos = mouse;
-	// node.rect.width = 0.1f;
-	// node.rect.height = 0.1f;
-	// DrawNode(node);
 }

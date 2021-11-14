@@ -69,7 +69,7 @@ void ImDrawPoint(vec2 p, float size)
     ImDrawPushQuad(p1, p2, p3, p4);
 }
 
-void ImDrawLine(vec2 a, vec2 b,float size = 3.0f)
+void ImDrawLine(vec2 a, vec2 b,float size = 0.01f)
 {
 	vec2 dir = a - b;
 	vec2 angle = glm::normalize(vec2(dir.y, -dir.x));

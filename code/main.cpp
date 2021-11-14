@@ -80,12 +80,17 @@ int main(int argc, char *argv[])
 
 	Node *cube = AddCube(&nodeState);
 
-	Node *posNode = AddNode(&nodeState);
+	Node *posNode = AddNoneNode(&nodeState);
 	posNode->rect.pos = vec2(0.5f, 0.0f);
 	posNode->out = vec3(-0.5f, 0.0f, 0.0f);
 
-	cube->in.pos = &posNode->out;
-	cube->in.link = posNode;
+	nodeState.nodes[0].in.pos = &nodeState.nodes[1].out;
+	nodeState.nodes[0].in.link = &nodeState.nodes[1];
+	nodeState.nodes[0].in.attached = true;
+
+	// cube->in.pos = &posNode->out;
+	// cube->in.link = posNode;
+
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
