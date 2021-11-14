@@ -37,13 +37,16 @@
 #include "opengl.cpp"
 #include "audio.cpp"
 #include "util.cpp"
+#include "node_editor.cpp"
+#include "glfw_wrapper.cpp"
+#include "math.cpp"
 
 int main(int argc, char *argv[])
 {
 	GLFWwindow *win = initGlfw();
 
 	// initialize graphics
-    GLuint shaderProgram = createShaderProgram("assets/vertexshader.vs", "assets/fragmentshader.frag");
+    shaderProgram = createShaderProgram("assets/vertexshader.vs", "assets/fragmentshader.frag");
     glUseProgram(shaderProgram);
     glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     glm::mat4 projection;
@@ -55,7 +58,7 @@ int main(int argc, char *argv[])
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	initializeGUI(win);
-    imDrawInitialize(view, projection);
+    ImDrawInitialize(view, projection);
 
     bool success = audioInitialize(&mixer);
     if(!success) {
@@ -63,7 +66,27 @@ int main(int argc, char *argv[])
 		exit(1);
     }
 
-	GLuint cube = createCubeVAO();
+	cubeVAO = createCubeVAO();
+
+	// node2.rect.pos.x = 0.0f;
+	// node2.rect.pos.y = 0.0f;
+	// vec2 mouseNode = vec2(mouse.x, SCREEN_HEIGHT - mouse.y);
+	// mouseNode /= vec2(SCREEN_WIDTH, SCREEN_HEIGHT);
+	// mouseNode *= 2.0f;
+	// mouseNode -= 1.0f;
+
+	// node.rect.pos = mouseNode;
+	NodeState nodeState = {};
+
+	// Node node = {};
+	// node.rect.pos.x = 0.0f;
+	// node.rect.pos.y = 0.0f;
+	// node.rect.width = 0.1f;
+	// node.rect.height = 0.1f;
+	// AddNode(&nodeState, node);
+	// DrawNode(node2);
+
+	// AddCube(&nodeState);
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
@@ -84,32 +107,31 @@ int main(int argc, char *argv[])
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		gui();
+		gui(&nodeState);
 		// bool show = true;
 		// ImGui::ShowDemoWindow(&show);
 
 		///////////////
 		//RENDER
 		///////////////
-		glClearColor(0.5f, 0.05f, 0.5f, 1.0f);
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
-		glUseProgram(shaderProgram);
+		UpdateNodeEditor(&nodeState);
 
 		// render cube
-		glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-		model = glm::translate(model, glm::vec3(0, 0, 0));
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
-		GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		// glUseProgram(shaderProgram);
+		// glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+		// model = glm::translate(model, glm::vec3(0, 0, 0));
+		// model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
+		// GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
+        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		// glBindVertexArray(cube);
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
+        // glBindVertexArray(0);
+		// glUseProgram(0);
 
-		glBindVertexArray(cube);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-
-		glUseProgram(0);
-
-		imDrawRender();
+		ImDrawRender();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

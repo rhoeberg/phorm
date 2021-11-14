@@ -6,7 +6,7 @@ GLuint ImDrawVAO;
 GLuint ImDrawVBO;
 GLuint ImDrawShader;
 
-void imDrawInitialize(glm::mat4 view, glm::mat4 projection)
+void ImDrawInitialize(glm::mat4 view, glm::mat4 projection)
 {
     ImDrawShader = createShaderProgram("assets\\imdraw.vs", "assets\\imdraw.frag");
     
@@ -21,11 +21,17 @@ void imDrawInitialize(glm::mat4 view, glm::mat4 projection)
     GLuint modelLoc = glGetUniformLocation(ImDrawShader, "model");
     // glm::mat4 model;
 	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-    // model = glm::translate(model, glm::vec3(0,0,0));
+    model = glm::translate(model, glm::vec3(0,0,0));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
 
-void imDrawPushQuad(vec2 p1, vec2 p2, vec2 p3, vec2 p4)
+void ImDrawSetColor(vec3 color)
+{
+	GLuint colorLoc = glGetUniformLocation(ImDrawShader, "color");
+	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+}
+
+void ImDrawPushQuad(vec2 p1, vec2 p2, vec2 p3, vec2 p4)
 {
     // triangle 1
     ImDrawVertices.push_back(p1.x);
@@ -43,7 +49,7 @@ void imDrawPushQuad(vec2 p1, vec2 p2, vec2 p3, vec2 p4)
     ImDrawVertices.push_back(p1.y);
 }
 
-void imDrawPushTriangle(vec2 p1, vec2 p2, vec2 p3)
+void ImDrawPushTriangle(vec2 p1, vec2 p2, vec2 p3)
 {
     ImDrawVertices.push_back(p1.x);
     ImDrawVertices.push_back(p1.y);
@@ -53,29 +59,36 @@ void imDrawPushTriangle(vec2 p1, vec2 p2, vec2 p3)
     ImDrawVertices.push_back(p3.y);
 }
 
-void imDrawPoint(vec2 p, float size)
+void ImDrawPoint(vec2 p, float size)
 {
 	float halfSize = size * 0.5f;
     vec2 p1 = vec2(p.x - halfSize, p.y + halfSize);
     vec2 p2 = vec2(p.x + halfSize, p.y + halfSize);
     vec2 p3 = vec2(p.x + halfSize, p.y - halfSize);
     vec2 p4 = vec2(p.x - halfSize, p.y - halfSize);
-    imDrawPushQuad(p1, p2, p3, p4);
+    ImDrawPushQuad(p1, p2, p3, p4);
 }
 
-
-void imDrawLine(vec2 a, vec2 b,float size = 3.0f)
+void ImDrawLine(vec2 a, vec2 b,float size = 3.0f)
 {
 	vec2 dir = a - b;
 	vec2 angle = glm::normalize(vec2(dir.y, -dir.x));
 	vec2 aa = a + (angle * size);
 	vec2 bb = b + (angle * size);
 
-	imDrawPushQuad(a, b, bb, aa);
+	ImDrawPushQuad(a, b, bb, aa);
 }
 
+void ImDrawRect(Rect rect)
+{
+    vec2 p1 = vec2(rect.pos.x, rect.pos.y);
+    vec2 p2 = vec2(rect.pos.x, rect.pos.y + rect.height);
+    vec2 p3 = vec2(rect.pos.x + rect.width, rect.pos.y + rect.height);
+    vec2 p4 = vec2(rect.pos.x + rect.width, rect.pos.y);
+    ImDrawPushQuad(p1, p2, p3, p4);
+}
 
-void imDrawRender()
+void ImDrawRender()
 {
 	glDisable(GL_DEPTH_TEST);
     if(ImDrawVertices.size() > 0) {
