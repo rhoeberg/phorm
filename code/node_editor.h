@@ -31,8 +31,14 @@ struct NodeVec3 {
 
 /* 	// outputs */
 /* }; */
+struct Node;
 
-typedef void(*NodeFunction)(NodeInput in, NodeOutput out);
+typedef void(*NodeFunction)(Node *self);
+
+struct NodeIOBuffer {
+	vec3 *pos;
+	Node *link;
+};
 
 struct Node {
 	NodeFunction function;
@@ -40,6 +46,9 @@ struct Node {
 	Rect rect;
 	bool dragged;
 	/* int id; */
+
+	NodeIOBuffer in;
+	vec3 out;
 };
 
 struct NodeState {
@@ -53,8 +62,8 @@ struct NodeState {
 	/* int cubeAmount; */
 };
 
-void AddNode(NodeState *nodeState, Node node);
-void AddCube(NodeState *nodeState);
+Node* AddNode(NodeState *nodeState);
+Node* AddCube(NodeState *nodeState);
 void AddNoneNode(NodeState *nodeState);
 bool IsMouseOverNode(vec2 mouse, Node node);
 void DrawNode(Node node);

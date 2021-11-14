@@ -78,15 +78,14 @@ int main(int argc, char *argv[])
 	// node.rect.pos = mouseNode;
 	NodeState nodeState = {};
 
-	// Node node = {};
-	// node.rect.pos.x = 0.0f;
-	// node.rect.pos.y = 0.0f;
-	// node.rect.width = 0.1f;
-	// node.rect.height = 0.1f;
-	// AddNode(&nodeState, node);
-	// DrawNode(node2);
+	Node *cube = AddCube(&nodeState);
 
-	// AddCube(&nodeState);
+	Node *posNode = AddNode(&nodeState);
+	posNode->rect.pos = vec2(0.5f, 0.0f);
+	posNode->out = vec3(-0.5f, 0.0f, 0.0f);
+
+	cube->in.pos = &posNode->out;
+	cube->in.link = posNode;
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
