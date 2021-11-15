@@ -10,7 +10,7 @@ void initializeGUI(GLFWwindow *win)
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
-void gui(NodeState *nodeState)
+void gui()
 {
     bool show = true;
 
@@ -20,7 +20,7 @@ void gui(NodeState *nodeState)
 
     ImGui::Begin("Shapes", &show);
 	if(ImGui::Button("add cube")) {
-		AddCube(nodeState);
+		AddCube();
 	}
     ImGui::End();
 }

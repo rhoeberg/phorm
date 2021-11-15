@@ -13,29 +13,35 @@
   when we then need an input which has not been updated we first update it to get the latest
   output.
 
+  
+
+  MODULE IDEAS:
+  - time 
+  - sin/cos
 
  */
 
+
 #include "node_editor.h"
 
-// struct NodeIO {
-// 	vec3 vInputs[12];
-// };
-
-// enum NodeLinkType {
-// 	LINK_VEC3,
-// };
-
-// struct NodeLink {
-// 	NodeLinkType type;
-// 	Node *output;
-// 	int outPar;
-// 	int inPar;
-// };
+void NodeEditorInitialize()
+{
+	_nodeState = (NodeState*)malloc(sizeof(NodeState));
+	_nodeState->nodes = (Node*)malloc(sizeof(Node) * MAX_NODE_AMOUNT);
+	_nodeState->nodeAmount = 0;
+}
 
 void CubeFunction(Node *self)
 {
-	vec3 pos = *self->in.pos;
+	// get input
+	vec3 pos = vec3(0, 0, 0);
+	if(self->inputs[0].attached) {
+		Node *attachedNode = GetNode(self->inputs[0].nodeHandle);
+		if(attachedNode != NULL) {
+			int outputIndex = self->inputs[0].nodeOutputIndex;
+			pos = attachedNode->outputs[outputIndex].data.v3;
+		}
+	}
 
 	// render cube
 	glUseProgram(shaderProgram);
@@ -52,88 +58,415 @@ void CubeFunction(Node *self)
 
 void NoneFunction(Node *self)
 {
-	self->out.x = glfwGetTime();
+	self->outputs[0].data.v3.x = glfwGetTime();
 }
 
-// struct NodeDragState {
-	// bool isDragging;
-// };
-Node* AddNode(NodeState *nodeState)
+// TODO (rhoe) we need some way to avoid problems with dangling handles
+//             if old node slots are reused
+int AddNode()
 {
-	Node node = {};
-	node.rect.width = 0.1f;
-	node.rect.height = 0.1f;
-	
-	nodeState->nodes.push_back(node);
-	Node *result = &nodeState->nodes.data()[nodeState->nodes.size() - 1];
-	// TODO(rhoe) be carefull about these pointers from a std vector
+	int result = -1;
+
+	// first check if there is a free slot
+	bool foundFree = false;
+	for(int i = 0; i < _nodeState->nodeAmount; i++) {
+		if(_nodeState->nodes[i].free) {
+			result = i;
+			foundFree = true;
+		}
+	}
+
+	// try to add one to the end
+	if(!foundFree) {
+		if(_nodeState->nodeAmount < MAX_NODE_AMOUNT) {
+			result = _nodeState->nodeAmount;
+			_nodeState->nodeAmount++;
+		}
+	}
+
+	// we found a slot now initialize it
+	if(result != -1) {
+		Node *node = &_nodeState->nodes[result];
+		node->free = false;
+		node->pos = vec2(0, 0);
+		// node->rect.width = 0.1f;
+		// node->rect.height = 0.1f;
+
+		for(int i = 0; i < ARRAY_SIZE(node->inputs); i++) {
+			node->inputs[i].active = false;
+		}
+		for(int i = 0; i < ARRAY_SIZE(node->outputs); i++) {
+			node->outputs[i].active = false;
+		}
+	}
 
 	return result;
 }
 
-Node* AddCube(NodeState *nodeState)
+Node* GetNode(int handle)
 {
-	Node* result = AddNode(nodeState);
-	result->function = &CubeFunction;
-	result->rect.width = 0.2f;
+	if(handle > MAX_NODE_AMOUNT - 1) {
+		return NULL;
+	}
+
+	return &_nodeState->nodes[handle];
+}
+
+int GetNodeInputSize(int handle)
+{
+	int result = 0;
+
+	Node *node = GetNode(handle);
+	for(int i = 0; i < ARRAY_SIZE(node->inputs); i++) {
+		if(!node->inputs[i].active)
+			break;
+
+		result++;
+	}
 
 	return result;
 }
 
-Node* AddNoneNode(NodeState *nodeState)
+int GetNodeOutputSize(int handle)
 {
-	Node *node = AddNode(nodeState);
-	node->function = &NoneFunction;
-	return node;
+	int result = 0;
+
+	Node *node = GetNode(handle);
+	for(int i = 0; i < ARRAY_SIZE(node->outputs); i++) {
+		if(!node->outputs[i].active)
+			break;
+
+		result++;
+	}
+
+	return result;
 }
 
-bool IsMouseOverNode(vec2 mouse, Node *node)
+void AttachNodeSockets(int inputNodeHandle, int inputIndex,
+					   int outputNodeHandle, int outputIndex)
 {
-	if(PointInsideRect(mouse, node->rect))
+	Node *inputNode = GetNode(inputNodeHandle);
+	Node *outputNode = GetNode(outputNodeHandle);
+	NodeInput *input = &inputNode->inputs[inputIndex];
+	NodeOutput *output = &outputNode->outputs[outputIndex];
+
+	if(input->type == output->type) {
+		input->nodeHandle = outputNodeHandle;
+		input->nodeOutputIndex = outputIndex;
+		input->attached = true;
+	}
+	else {
+		// handle error when not able to attach nodes
+	}
+}
+
+void DeattachNodeSockets(int inputNodeHandle, int inputIndex)
+{
+	Node *inputNode = GetNode(inputNodeHandle);
+	NodeInput *input = &inputNode->inputs[inputIndex];
+	input->attached = false;
+}
+
+Rect GetNodeRect(int handle)
+{
+	Rect result = {};
+
+	Node *node = GetNode(handle);
+	result.pos = node->pos;
+
+	int inputSize = GetNodeInputSize(handle);
+	int outputSize = GetNodeOutputSize(handle);
+
+	int maxSize = (inputSize > outputSize) ? inputSize : outputSize;
+
+	result.height = 0.1f;
+	result.width = 0.1f + (0.1f * maxSize);
+
+	return result;
+}
+
+Rect GetNodeInputRect(int nodeHandle, int inputIndex)
+{
+	Rect result = {};
+
+	// Node *node = GetNode(nodeHandle);
+	Rect nodeRect = GetNodeRect(nodeHandle);
+
+	result.pos = nodeRect.pos + vec2(0.1f * inputIndex, nodeRect.height);
+	result.width = 0.1f;
+	result.height = 0.1f;
+
+	return result;
+}
+
+Rect GetNodeOutputRect(int nodeHandle, int inputIndex)
+{
+	Rect result = {};
+
+	// Node *node = GetNode(nodeHandle);
+	Rect nodeRect = GetNodeRect(nodeHandle);
+
+	result.pos = nodeRect.pos + vec2(0.1f * inputIndex, -nodeRect.height);
+	result.width = 0.1f;
+	result.height = 0.1f;
+
+	return result;
+}
+
+int AddCube()
+{
+	int result = AddNode();
+	_nodeState->nodes[result].function = &CubeFunction;
+
+	_nodeState->nodes[result].inputs[0].active = true;
+	_nodeState->nodes[result].inputs[1].active = true;
+	_nodeState->nodes[result].outputs[0].active = true;
+	// _nodeState->nodes[result].rect.width = 0.2f;
+
+	return result;
+}
+
+int AddNoneNode()
+{
+	int result = AddNode();
+	_nodeState->nodes[result].function = &NoneFunction;
+	_nodeState->nodes[result].outputs[0].active = true;
+	return result;
+}
+
+bool IsMouseOverNode(vec2 mouse, int handle)
+{
+	Rect rect = GetNodeRect(handle);
+	if(PointInsideRect(mouse, rect))
 		return true;
 
 	return false;
 }
 
-void DrawNode(Node *node)
+bool IsMouseOverNodeInput(vec2 mouse, int handle, int ioIndex)
 {
-	ImDrawRect(node->rect);
+	Rect rect = GetNodeInputRect(handle, ioIndex);
+	if(PointInsideRect(mouse, rect))
+		return true;
+
+	return false;
 }
 
-void UpdateNodeEditor(NodeState *nodeState)
+bool IsMouseOverNodeOutput(vec2 mouse, int handle, int ioIndex)
 {
-	for(int i = 0; i < nodeState->nodes.size(); i++) {
-		Node *node = &nodeState->nodes[i];
-		if(IsMouseOverNode(mouse, node)) {
-			ImDrawSetColor(vec3(1, 0, 0));
-			if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !nodeState->isDragging) {
-				nodeState->isDragging = true;
-				nodeState->draggedNode = node;
-				nodeState->dragOffset = node->rect.pos - mouse;
-				// nodeState->nodes[i].dragging = false;
+	Rect rect = GetNodeOutputRect(handle, ioIndex);
+	if(PointInsideRect(mouse, rect))
+		return true;
+
+	return false;
+}
+
+void DrawNode(int handle)
+{
+	Rect rect = GetNodeRect(handle);
+
+	Node *node = GetNode(handle);
+
+	// draw inputs
+	for(int i = 0; i < GetNodeInputSize(handle); i++) {
+		Rect inputRect = GetNodeInputRect(handle, i);
+		ImDrawSetColor(vec3(0, 1, 0));
+		ImDrawRect(inputRect);
+
+		if(node->inputs[i].attached) {
+			Rect outputRect = GetNodeOutputRect(node->inputs[i].nodeHandle, node->inputs[i].nodeOutputIndex);
+			ImDrawLine(inputRect.pos, outputRect.pos);
+		}
+	}
+
+	// draw outputs
+	for(int i = 0; i < GetNodeOutputSize(handle); i++) {
+		Rect outputRect = GetNodeOutputRect(handle, i);
+		ImDrawSetColor(vec3(0, 0, 1));
+		ImDrawRect(outputRect);
+	}
+
+	ImDrawSetColor(vec3(1, 1, 1));
+	ImDrawRect(rect);
+}
+
+// void TryDraggingNodeInput(int handle, int ioIndex)
+// {
+// 	if(IsMouseOverNodeInput(mouse, handle, ioIndex)) {
+// 		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeState->isDragging) {
+// 			_nodeState->isDragging = true;
+// 			_nodeState->draggedNodeHandle = handle;
+// 			_nodeState->draggedNodeIOIndex = ioIndex;
+// 			_nodeState->draggedElementType = EDITOR_ELEMENT_INPUT;
+// 		}
+// 	}
+// }
+
+// void TryDraggingNodeOutput(int handle, int ioIndex)
+// {
+// 	if(IsMouseOverNodeOutput(mouse, handle, ioIndex)) {
+// 		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeState->isDragging) {
+// 			_nodeState->isDragging = true;
+// 			_nodeState->draggedNodeHandle = handle;
+// 			_nodeState->draggedNodeIOIndex = ioIndex;
+// 			_nodeState->draggedElementType = EDITOR_ELEMENT_OUTPUT;
+// 		}
+// 	}
+// }
+
+struct HoverState {
+	int nodeHandle;
+	int ioIndex;
+	NodeEditorElementType elementType;
+	bool hoveringElement;
+};
+
+HoverState GetHoverState()
+{
+	HoverState result = {};
+	for(int i = 0; i < _nodeState->nodeAmount; i++) {
+		Node *node = &_nodeState->nodes[i];
+		if(IsMouseOverNode(mouse, i)) {
+			result.nodeHandle = i;
+			result.elementType = EDITOR_ELEMENT_NODE;
+			result.hoveringElement = true;
+		}
+		else {
+
+			// loop over inputs and check mouseover
+			for(int j = 0; j < GetNodeInputSize(i); j++) {
+				if(IsMouseOverNodeInput(mouse, i, j)) {
+					result.nodeHandle = i;
+					result.ioIndex = j;
+					result.elementType = EDITOR_ELEMENT_INPUT;
+					result.hoveringElement = true;
+					break;
+				}
+			}
+
+			// loop over outputs and check mouseover
+			if(!result.hoveringElement) {
+				for(int j = 0; j < GetNodeOutputSize(i); j++) {
+					if(IsMouseOverNodeOutput(mouse, i, j)) {
+						result.nodeHandle = i;
+						result.ioIndex = j;
+						result.elementType = EDITOR_ELEMENT_OUTPUT;
+						result.hoveringElement = true;
+					}
+				}
 			}
 		}
-		else {
-			ImDrawSetColor(vec3(0, 1, 0));
-		}
-		DrawNode(node);
+	}
 
-		if(node->in.attached) {
+	return result;
+}
+
+void UpdateNodeEditor()
+{
+	HoverState hoverState = GetHoverState();
+	if(hoverState.hoveringElement) {
+		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeState->isDragging) {
+			_nodeState->draggedNodeHandle = hoverState.nodeHandle;
+			_nodeState->draggedNodeIOIndex = hoverState.ioIndex;
+			_nodeState->draggedElementType = hoverState.elementType;
+			_nodeState->isDragging = true;
+			Node *node = GetNode(hoverState.nodeHandle);
+			_nodeState->dragOffset = node->pos - mouse;
+		}
+	}
+
+	// for(int i = 0; i < _nodeState->nodeAmount; i++) {
+	// 	Node *node = &_nodeState->nodes[i];
+	// 	if(IsMouseOverNode(mouse, i)) {
+	// 		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeState->isDragging) {
+	// 			_nodeState->isDragging = true;
+	// 			_nodeState->draggedNodeHandle = i;
+	// 			_nodeState->draggedElementType = EDITOR_ELEMENT_NODE;
+	// 			_nodeState->dragOffset = node->pos - mouse;
+	// 		}
+	// 	}
+	// 	else {
+
+	// 		// loop over inputs and check mouseover
+	// 		for(int j = 0; j < GetNodeInputSize(i); j++) {
+	// 			TryDraggingNodeInput(i, j);
+	// 		}
+
+	// 		// loop over outputs and check mouseover
+	// 		for(int j = 0; j < GetNodeOutputSize(i); j++) {
+	// 			TryDraggingNodeOutput(i, j);
+	// 		}
+	// 	}
+
+		// DrawNode(i);
+
+		// if(node->in.attached) {
 			// draw the line
-			ImDrawLine(node->rect.pos, node->in.link->rect.pos);
+			// Node *attachedNode = GetNode(node->in.attachedNodeHandle);
+			// ImDrawLine(node->rect.pos, attachedNode->rect.pos);
+		// }
+	// }
+
+	for(int i = 0; i < _nodeState->nodeAmount; i++) {
+		Node *node = GetNode(i);
+		if(!node->free)
+			DrawNode(i);
+	}
+
+	if(_nodeState->isDragging) {
+		switch(_nodeState->draggedElementType) {
+			case EDITOR_ELEMENT_NODE: {
+				if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
+					_nodeState->isDragging = false;
+				}
+				else {
+					Node *node = GetNode(_nodeState->draggedNodeHandle);
+					node->pos = mouse + _nodeState->dragOffset;
+				}
+				break;
+			}
+
+			case EDITOR_ELEMENT_INPUT: {
+				if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
+					_nodeState->isDragging = false;
+					if(hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
+						if(hoverState.ioIndex != _nodeState->draggedNodeIOIndex) {
+							AttachNodeSockets(_nodeState->draggedNodeHandle,
+											  _nodeState->draggedNodeIOIndex,
+											  hoverState.nodeHandle,
+											  hoverState.ioIndex);
+						}
+					}
+				}
+				else {
+					Rect rect = GetNodeInputRect(_nodeState->draggedNodeHandle, _nodeState->draggedNodeIOIndex);
+					ImDrawLine(rect.pos, mouse);
+				}
+				break;
+			}
+
+			case EDITOR_ELEMENT_OUTPUT: {
+				if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
+					_nodeState->isDragging = false;
+				}
+				else {
+					Rect rect = GetNodeOutputRect(_nodeState->draggedNodeHandle, _nodeState->draggedNodeIOIndex);
+					ImDrawLine(rect.pos, mouse);
+				}
+					
+				break;
+			}
 		}
 	}
 
-	if(nodeState->isDragging) {
-		if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT])
-			nodeState->isDragging = false;
-		else {
-			nodeState->draggedNode->rect.pos = mouse + nodeState->dragOffset;
-		}
-	}
-
-	for(int i = 0; i < nodeState->nodes.size(); i++) {
-		Node *node = &nodeState->nodes[i];
+	for(int i = 0; i < _nodeState->nodeAmount; i++) {
+		Node *node = &_nodeState->nodes[i];
 		node->function(node);
 	}
+}
+
+void NodeEditorCleanup()
+{
+	free(_nodeState->nodes);
+	free(_nodeState);
 }

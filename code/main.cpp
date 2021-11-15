@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
 
 	initializeGUI(win);
     ImDrawInitialize(view, projection);
+	NodeEditorInitialize();
 
     bool success = audioInitialize(&mixer);
     if(!success) {
@@ -68,29 +69,22 @@ int main(int argc, char *argv[])
 
 	cubeVAO = createCubeVAO();
 
-	// node2.rect.pos.x = 0.0f;
-	// node2.rect.pos.y = 0.0f;
-	// vec2 mouseNode = vec2(mouse.x, SCREEN_HEIGHT - mouse.y);
-	// mouseNode /= vec2(SCREEN_WIDTH, SCREEN_HEIGHT);
-	// mouseNode *= 2.0f;
-	// mouseNode -= 1.0f;
 
-	// node.rect.pos = mouseNode;
-	NodeState nodeState = {};
+	int cubeHandle = AddCube();
 
-	Node *cube = AddCube(&nodeState);
+	// Node *posNode = AddNoneNode(&nodeState);
+	int posNodeHandle = AddNoneNode();
 
-	Node *posNode = AddNoneNode(&nodeState);
-	posNode->rect.pos = vec2(0.5f, 0.0f);
-	posNode->out = vec3(-0.5f, 0.0f, 0.0f);
+	Node *posNode = GetNode(posNodeHandle);
+	posNode->pos = vec2(0.5f, 0.0f);
+	posNode->outputs[0].data.v3 = vec3(-0.5f, 0.0f, 0.0f);
 
-	nodeState.nodes[0].in.pos = &nodeState.nodes[1].out;
-	nodeState.nodes[0].in.link = &nodeState.nodes[1];
-	nodeState.nodes[0].in.attached = true;
+	Node *cubeNode = GetNode(cubeHandle);
 
-	// cube->in.pos = &posNode->out;
-	// cube->in.link = posNode;
-
+	// AttachNodeSockets(cubeHandle, 0, posNodeHandle, 0);
+	// cubeNode->inputs[0].nodeHandle = posNodeHandle;
+	// cubeNode->inputs[0].nodeOutputIndex = 0;
+	// cubeNode->inputs[0].attached = true;
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
@@ -111,7 +105,7 @@ int main(int argc, char *argv[])
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		gui(&nodeState);
+		gui();
 		// bool show = true;
 		// ImGui::ShowDemoWindow(&show);
 
@@ -121,7 +115,7 @@ int main(int argc, char *argv[])
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
-		UpdateNodeEditor(&nodeState);
+		UpdateNodeEditor();
 
 		// render cube
 		// glUseProgram(shaderProgram);
@@ -153,4 +147,5 @@ void cleanup()
     Pa_Terminate();
     imDrawClean();
     glfwTerminate();
+	NodeEditorCleanup();
 }

@@ -2,9 +2,11 @@
 // GLfloat *ImDrawVertices = NULL;
 #include <vector>
 std::vector<GLfloat> ImDrawVertices;
-GLuint ImDrawVAO;
-GLuint ImDrawVBO;
-GLuint ImDrawShader;
+global GLuint ImDrawVAO;
+global GLuint ImDrawVBO;
+global GLuint ImDrawShader;
+
+global vec3 ImDrawColor;
 
 void ImDrawInitialize(glm::mat4 view, glm::mat4 projection)
 {
@@ -27,36 +29,37 @@ void ImDrawInitialize(glm::mat4 view, glm::mat4 projection)
 
 void ImDrawSetColor(vec3 color)
 {
-	GLuint colorLoc = glGetUniformLocation(ImDrawShader, "color");
-	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+	// GLuint colorLoc = glGetUniformLocation(ImDrawShader, "color");
+	// glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+	ImDrawColor = color;
+}
+
+void ImDrawAddVertex(vec2 v)
+{
+	ImDrawVertices.push_back(v.x);
+	ImDrawVertices.push_back(v.y);
+	ImDrawVertices.push_back(ImDrawColor.r);
+	ImDrawVertices.push_back(ImDrawColor.g);
+	ImDrawVertices.push_back(ImDrawColor.b);
 }
 
 void ImDrawPushQuad(vec2 p1, vec2 p2, vec2 p3, vec2 p4)
 {
     // triangle 1
-    ImDrawVertices.push_back(p1.x);
-    ImDrawVertices.push_back(p1.y);
-    ImDrawVertices.push_back(p2.x);
-    ImDrawVertices.push_back(p2.y);
-    ImDrawVertices.push_back(p3.x);
-    ImDrawVertices.push_back(p3.y);
+    ImDrawAddVertex(p1);
+    ImDrawAddVertex(p2);
+    ImDrawAddVertex(p3);
     // triangle 2
-    ImDrawVertices.push_back(p3.x);
-    ImDrawVertices.push_back(p3.y);
-    ImDrawVertices.push_back(p4.x);
-    ImDrawVertices.push_back(p4.y);
-    ImDrawVertices.push_back(p1.x);
-    ImDrawVertices.push_back(p1.y);
+    ImDrawAddVertex(p3);
+    ImDrawAddVertex(p4);
+    ImDrawAddVertex(p1);
 }
 
 void ImDrawPushTriangle(vec2 p1, vec2 p2, vec2 p3)
 {
-    ImDrawVertices.push_back(p1.x);
-    ImDrawVertices.push_back(p1.y);
-    ImDrawVertices.push_back(p2.x);
-    ImDrawVertices.push_back(p2.y);
-    ImDrawVertices.push_back(p3.x);
-    ImDrawVertices.push_back(p3.y);
+    ImDrawAddVertex(p1);
+    ImDrawAddVertex(p2);
+    ImDrawAddVertex(p3);
 }
 
 void ImDrawPoint(vec2 p, float size)
@@ -97,8 +100,11 @@ void ImDrawRender()
 		glBindVertexArray(ImDrawVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, ImDrawVBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * ImDrawVertices.size(), ImDrawVertices.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+		glEnableVertexAttribArray(1);
+
 		glBindVertexArray(0);
 
 		glBindVertexArray(ImDrawVAO);
