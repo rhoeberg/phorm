@@ -51,7 +51,9 @@ void dropCallback(GLFWwindow *window, int count, const char **paths)
 {
 	int i;
 	for(i = 0; i < count; i++) {
-		printf("dropped file:%s\n", paths[i]);
+		// printf("dropped file:%s\n", paths[i]);
+		sprintf(droppedFile, "%s", paths[i]);
+		readyToConsumeDropped = true;
 	}
 }
 

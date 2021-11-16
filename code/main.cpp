@@ -47,18 +47,27 @@ int main(int argc, char *argv[])
 	GLFWwindow *win = initGlfw();
 
 	// initialize graphics
-    shaderProgram = createShaderProgram("assets/vertexshader.vs", "assets/fragmentshader.frag");
-    glUseProgram(shaderProgram);
 
+	// TODO (rhoe) move this stuff to a rendering system
     glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
 
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
-    GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+	// setup shaders
+    baseShader = createShaderProgram("assets/base.vert", "assets/base.frag");
+    glUseProgram(baseShader);
+    GLuint viewLoc = glGetUniformLocation(baseShader, "view");
+    GLuint projectionLoc = glGetUniformLocation(baseShader, "projection");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+    textureShader = createShaderProgram("assets/texture.vert", "assets/texture.frag");
+    glUseProgram(textureShader);
+    viewLoc = glGetUniformLocation(textureShader, "view");
+    projectionLoc = glGetUniformLocation(textureShader, "projection");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
 
 	initializeGUI(win);
     ImDrawInitialize();

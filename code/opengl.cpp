@@ -201,7 +201,7 @@ GLuint createTexture(char *path)
 {
 	GLuint result;
     int width, height, nrChannels;
-    unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load(path, &width, &height, &nrChannels, STBI_rgb_alpha);
     if(data) {
         glGenTextures(1, &result);
         glBindTexture(GL_TEXTURE_2D, result);

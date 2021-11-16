@@ -27,5 +27,6 @@ void cleanup();
 #define global static
 
 // dirty globals
-global GLuint shaderProgram;
+global GLuint baseShader;
+global GLuint textureShader;
 global GLuint cubeVAO;

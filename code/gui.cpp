@@ -1,3 +1,7 @@
+// TODO (rhoe) make some smart drag and drop stuff
+global char droppedFile[128];
+global bool readyToConsumeDropped;
+
 void initializeGUI(GLFWwindow *win)
 {
     // Setup Dear ImGui context
@@ -31,6 +35,20 @@ void NodeInspector()
 					ImGui::InputFloat("scalar", &node->outputs[i].data.scalar);
 					break;
 				}
+				case DATA_TYPE_TEXTURE: {
+					static char strBuffer[128] = "";
+					if(readyToConsumeDropped) {
+						sprintf(strBuffer, "%s", droppedFile);
+						node->outputs[i].data.texture = createTexture(strBuffer);
+						readyToConsumeDropped = false;
+					}
+					ImGui::InputText("filePath", strBuffer, ARRAY_SIZE(strBuffer));
+					if(ImGui::Button("load texture")) {
+						node->outputs[i].data.texture = createTexture(strBuffer);
+					}
+					ImGui::Text("texture id:%d\n", node->outputs[i].data.texture);
+					break;
+				}
 			}
 		}
 
@@ -61,6 +79,9 @@ void gui()
 	}
 	if(ImGui::Button("sin")) {
 		AddSinNode();
+	}
+	if(ImGui::Button("texture")) {
+		AddTextureNode();
 	}
     ImGui::End();
 

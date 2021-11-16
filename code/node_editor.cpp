@@ -58,6 +58,32 @@ void CubeFunction(Node *self)
 			pos = attachedNode->outputs[outputIndex].data.v3;
 		}
 	}
+	GLuint texture = -1;
+	if(self->inputs[1].attached) {
+		Node *attachedNode = GetNode(self->inputs[1].nodeHandle);
+		if(attachedNode != NULL) {
+			int outputIndex = self->inputs[1].nodeOutputIndex;
+			texture = attachedNode->outputs[outputIndex].data.texture;
+		}
+	}
+
+	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+	model = glm::translate(model, pos);
+	model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
+	if(texture != -1) {
+		// render with texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glUseProgram(textureShader);
+		GLuint modelLoc = glGetUniformLocation(textureShader, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	}
+	else {
+		// render without texture
+		glUseProgram(baseShader);
+		GLuint modelLoc = glGetUniformLocation(baseShader, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	}
 
 	// glEnable(GL_BLEND);
 	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -66,12 +92,6 @@ void CubeFunction(Node *self)
 	// glBindTexture(GL_TEXTURE_2D, ftex);
 
 	// render cube
-	glUseProgram(shaderProgram);
-	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-	model = glm::translate(model, pos);
-	model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
-	GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glBindVertexArray(cubeVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
@@ -134,9 +154,9 @@ void Vec3Function(Node *self)
 	self->outputs[0].data.v3 = vec3(x, y, z);
 }
 
-// void TextureFunction(Node *self)
-// {
-// }
+void TextureFunction(Node *self)
+{
+}
 
 // TODO (rhoe) we need some way to avoid problems with dangling handles
 //             if old node slots are reused
@@ -227,6 +247,7 @@ int AddCubeNode()
 	_nodeState->nodes[handle].function = &CubeFunction;
 
 	TryAddNodeInput(handle, DATA_TYPE_VEC3);
+	TryAddNodeInput(handle, DATA_TYPE_TEXTURE);
 
 	return handle;
 }
@@ -273,6 +294,16 @@ int AddTimeNode()
 	_nodeState->nodes[handle].function = &TimeFunction;
 
 	TryAddNodeOutput(handle, DATA_TYPE_SCALAR);
+
+	return handle;
+}
+
+int AddTextureNode()
+{
+	int handle = AddNode("texture");
+	_nodeState->nodes[handle].function = &TextureFunction;
+
+	TryAddNodeOutput(handle, DATA_TYPE_TEXTURE);
 
 	return handle;
 }
