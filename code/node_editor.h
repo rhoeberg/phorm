@@ -11,11 +11,13 @@ typedef void(*NodeFunction)(Node *self);
 enum NodeDataType {
 	DATA_TYPE_VEC3,
 	DATA_TYPE_SCALAR,
+	DATA_TYPE_TEXTURE,
 };
 
 union NodeBufferData {
 	vec3 v3; //vector 3 type
-	GLfloat s; // scalar type
+	GLfloat scalar; // scalar type
+	GLuint texture; // scalar type
 };
 
 struct NodeOutput {

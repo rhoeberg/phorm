@@ -18,7 +18,7 @@ void NodeInspector()
 	if(node != NULL) {
 		bool show = true;
 		ImGui::Begin("Inspector", &show);
-		ImGui::Text("name:%s\n", node->name);
+		ImGui::Text("%s\n", node->name);
 
 		int outputSize = GetNodeOutputSize(nodeHandle);
 		for(int i = 0; i < outputSize; i++) {
@@ -28,7 +28,7 @@ void NodeInspector()
 					break;
 				}
 				case DATA_TYPE_SCALAR: {
-					ImGui::InputFloat("scalar", &node->outputs[i].data.s);
+					ImGui::InputFloat("scalar", &node->outputs[i].data.scalar);
 					break;
 				}
 			}

@@ -19,6 +19,14 @@
   - time (DONE)
   - sin (DONE)
 
+  
+  How could we have an easy way to build new node types?
+  it would be nice if you could just write the function and give it some sort of
+  descriptor which would then generate the fluff (add node code, gui inspector etc..)
+  
+  could be something like:
+  @NodeFunction(in SCALAR s, in VEC3 s, out TEXTURE) : "UV"
+  
  */
 
 
@@ -77,21 +85,21 @@ void DebugFunction(Node *self)
 
 void TimeFunction(Node *self)
 {
-	self->outputs[0].data.s = glfwGetTime();
+	self->outputs[0].data.scalar = glfwGetTime();
 }
 
 void SinFunction(Node *self)
 {
-	GLfloat s = 0.0f;
+	GLfloat scalar = 0.0f;
 	if(self->inputs[0].attached) {
 		Node *attachedNode = GetNode(self->inputs[0].nodeHandle);
 		if(attachedNode != NULL) {
 			int outputIndex = self->inputs[0].nodeOutputIndex;
-			s = attachedNode->outputs[outputIndex].data.s;
+			scalar = attachedNode->outputs[outputIndex].data.scalar;
 		}
 	}
 
-	self->outputs[0].data.s = sin(s);
+	self->outputs[0].data.scalar = sin(scalar);
 }
 
 void Vec3Function(Node *self)
@@ -105,26 +113,30 @@ void Vec3Function(Node *self)
 		Node *attachedNode = GetNode(self->inputs[0].nodeHandle);
 		if(attachedNode != NULL) {
 			int outputIndex = self->inputs[0].nodeOutputIndex;
-			x = attachedNode->outputs[outputIndex].data.s;
+			x = attachedNode->outputs[outputIndex].data.scalar;
 		}
 	}
 	if(self->inputs[1].attached) {
 		Node *attachedNode = GetNode(self->inputs[1].nodeHandle);
 		if(attachedNode != NULL) {
 			int outputIndex = self->inputs[1].nodeOutputIndex;
-			y = attachedNode->outputs[outputIndex].data.s;
+			y = attachedNode->outputs[outputIndex].data.scalar;
 		}
 	}
 	if(self->inputs[2].attached) {
 		Node *attachedNode = GetNode(self->inputs[2].nodeHandle);
 		if(attachedNode != NULL) {
 			int outputIndex = self->inputs[2].nodeOutputIndex;
-			z = attachedNode->outputs[outputIndex].data.s;
+			z = attachedNode->outputs[outputIndex].data.scalar;
 		}
 	}
 
 	self->outputs[0].data.v3 = vec3(x, y, z);
 }
+
+// void TextureFunction(Node *self)
+// {
+// }
 
 // TODO (rhoe) we need some way to avoid problems with dangling handles
 //             if old node slots are reused
@@ -267,11 +279,9 @@ int AddTimeNode()
 
 Node* GetNode(int handle)
 {
-	if(handle > MAX_NODE_AMOUNT - 1) {
-		return NULL;
-	}
-
-	if(handle > _nodeState->nodeAmount) {
+	if(handle > MAX_NODE_AMOUNT - 1 ||
+	   handle > _nodeState->nodeAmount - 1 ||
+	   handle < 0) {
 		return NULL;
 	}
 
@@ -414,37 +424,40 @@ int GetSelectedNodeHandle()
 void DrawNode(int handle)
 {
 	Rect rect = GetNodeRect(handle);
-
 	Node *node = GetNode(handle);
 
-	// draw inputs
+	// DRAW INPUTS
 	for(int i = 0; i < GetNodeInputSize(handle); i++) {
 		Rect inputRect = GetNodeInputRect(handle, i);
 		ImDrawSetColor(vec3(0, 1, 0));
 		ImDrawRect(inputRect);
 
 		if(node->inputs[i].attached) {
-			Rect outputRect = GetNodeOutputRect(node->inputs[i].nodeHandle, node->inputs[i].nodeOutputIndex);
-			ImDrawLine(inputRect.pos, outputRect.pos);
+			Rect outputRect = GetNodeOutputRect(node->inputs[i].nodeHandle,
+												node->inputs[i].nodeOutputIndex);
+			ImDrawLine(GetRectCenter(inputRect), GetRectCenter(outputRect));
 		}
 	}
 
-	// draw outputs
+	// DRAW OUTPUTS
 	for(int i = 0; i < GetNodeOutputSize(handle); i++) {
 		Rect outputRect = GetNodeOutputRect(handle, i);
 		ImDrawSetColor(vec3(0, 0, 1));
 		ImDrawRect(outputRect);
 	}
 
+	// DRAW NODE
 	ImDrawSetColor(vec3(1, 1, 1));
 	ImDrawRect(rect);
 
+	// DRAW OUTLINE
 	ImDrawSetColor(vec3(0, 0, 0));
 	ImDrawLine(rect.pos, rect.pos + vec2(rect.width, 0));
 	ImDrawLine(rect.pos + vec2(rect.width, 0), rect.pos + vec2(rect.width, rect.height));
 	ImDrawLine(rect.pos + vec2(0, rect.height), rect.pos + vec2(rect.width, rect.height));
 	ImDrawLine(rect.pos, rect.pos + vec2(0, rect.height));
 
+	// DRAW NAME
 	ImDrawText(rect.pos + vec2(5, rect.height - 5), node->name);
 }
 
@@ -534,13 +547,15 @@ void UpdateNodeEditor()
 						}
 					}
 					else {
-						DeattachNodeSockets(_nodeState->draggedNodeHandle, _nodeState->draggedNodeIOIndex);
+						DeattachNodeSockets(_nodeState->draggedNodeHandle,
+											_nodeState->draggedNodeIOIndex);
 					}
 				}
 				else {
-					Rect rect = GetNodeInputRect(_nodeState->draggedNodeHandle, _nodeState->draggedNodeIOIndex);
+					Rect rect = GetNodeInputRect(_nodeState->draggedNodeHandle,
+												 _nodeState->draggedNodeIOIndex);
 					ImDrawSetColor(vec3(1, 1, 1));
-					ImDrawLine(rect.pos, mouse);
+					ImDrawLine(GetRectCenter(rect), mouse);
 				}
 				break;
 			}
@@ -548,11 +563,20 @@ void UpdateNodeEditor()
 			case EDITOR_ELEMENT_OUTPUT: {
 				if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
 					_nodeState->isDragging = false;
+					if(hoverState.elementType == EDITOR_ELEMENT_INPUT) {
+						if(hoverState.nodeHandle != _nodeState->draggedNodeHandle) {
+							AttachNodeSockets(hoverState.nodeHandle,
+											  hoverState.ioIndex,
+											  _nodeState->draggedNodeHandle,
+											  _nodeState->draggedNodeIOIndex);
+						}
+					}
 				}
 				else {
-					Rect rect = GetNodeOutputRect(_nodeState->draggedNodeHandle, _nodeState->draggedNodeIOIndex);
+					Rect rect = GetNodeOutputRect(_nodeState->draggedNodeHandle,
+												  _nodeState->draggedNodeIOIndex);
 					ImDrawSetColor(vec3(1, 1, 1));
-					ImDrawLine(rect.pos, mouse);
+					ImDrawLine(GetRectCenter(rect), mouse);
 				}
 					
 				break;

@@ -47,6 +47,14 @@ bool singleKeyPress(int GLFW_KEY)
     }
 }
 
+void dropCallback(GLFWwindow *window, int count, const char **paths)
+{
+	int i;
+	for(i = 0; i < count; i++) {
+		printf("dropped file:%s\n", paths[i]);
+	}
+}
+
 GLFWwindow* initGlfw()
 {
 	GLFWwindow *win;
@@ -72,6 +80,7 @@ GLFWwindow* initGlfw()
     glfwSetCursorPosCallback(win, mouseCallback);
     glfwSetKeyCallback(win, keyCallback);
     glfwSetMouseButtonCallback(win, mouseButtonCallback);
+    glfwSetDropCallback(win, dropCallback);
 
     // Set this to true so glew knows to use modern opengl
     glewExperimental = GL_TRUE;

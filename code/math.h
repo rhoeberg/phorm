@@ -7,3 +7,4 @@ struct Rect {
 };
 
 bool PointInsideRect(vec2 point, Rect rect);
+vec2 GetRectCenter(Rect rect);
