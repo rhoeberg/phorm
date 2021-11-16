@@ -33,12 +33,12 @@
 
 #include "main.h"
 #include "imdraw.cpp"
-#include "gui.cpp"
 #include "opengl.cpp"
 #include "audio.cpp"
 #include "util.cpp"
-#include "text_rendering.cpp"
+// #include "text_rendering.cpp"
 #include "node_editor.cpp"
+#include "gui.cpp"
 #include "glfw_wrapper.cpp"
 #include "math.cpp"
 
@@ -49,19 +49,21 @@ int main(int argc, char *argv[])
 	// initialize graphics
     shaderProgram = createShaderProgram("assets/vertexshader.vs", "assets/fragmentshader.frag");
     glUseProgram(shaderProgram);
+
     glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-    glm::mat4 projection;
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
     GLuint viewLoc = glGetUniformLocation(shaderProgram, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
     GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	initializeGUI(win);
     ImDrawInitialize();
 	NodeEditorInitialize();
-	my_stbtt_initfont();
+	// my_stbtt_initfont();
 
     bool success = audioInitialize(&mixer);
     if(!success) {
@@ -71,22 +73,11 @@ int main(int argc, char *argv[])
 
 	cubeVAO = createCubeVAO();
 
-
-	int cubeHandle = AddCube();
-
-	// Node *posNode = AddNoneNode(&nodeState);
-	int posNodeHandle = AddNoneNode();
-
-	Node *posNode = GetNode(posNodeHandle);
-	posNode->pos = vec2(0.5f, 0.0f);
-	posNode->outputs[0].data.v3 = vec3(-0.5f, 0.0f, 0.0f);
-
-	Node *cubeNode = GetNode(cubeHandle);
-
-	// AttachNodeSockets(cubeHandle, 0, posNodeHandle, 0);
-	// cubeNode->inputs[0].nodeHandle = posNodeHandle;
-	// cubeNode->inputs[0].nodeOutputIndex = 0;
-	// cubeNode->inputs[0].attached = true;
+	// int cubeHandle = AddCube();
+	// int posNodeHandle = AddNoneNode();
+	// Node *posNode = GetNode(posNodeHandle);
+	// posNode->outputs[0].data.v3 = vec3(-0.5f, 0.0f, 0.0f);
+	// Node *cubeNode = GetNode(cubeHandle);
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
@@ -114,23 +105,10 @@ int main(int argc, char *argv[])
 		///////////////
 		//RENDER
 		///////////////
-		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
 		UpdateNodeEditor();
-		my_stbtt_print(0, 0, "is this working?");
-
-		// render cube
-		// glUseProgram(shaderProgram);
-		// glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-		// model = glm::translate(model, glm::vec3(0, 0, 0));
-		// model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
-		// GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
-        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		// glBindVertexArray(cube);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // glBindVertexArray(0);
-		// glUseProgram(0);
 
 		ImDrawRender();
         ImGui::Render();
@@ -152,3 +130,4 @@ void cleanup()
     glfwTerminate();
 	NodeEditorCleanup();
 }
+

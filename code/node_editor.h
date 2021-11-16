@@ -10,10 +10,12 @@ typedef void(*NodeFunction)(Node *self);
 
 enum NodeDataType {
 	DATA_TYPE_VEC3,
+	DATA_TYPE_SCALAR,
 };
 
 union NodeBufferData {
-	vec3 v3;
+	vec3 v3; //vector 3 type
+	GLfloat s; // scalar type
 };
 
 struct NodeOutput {
@@ -60,16 +62,24 @@ struct NodeState {
 	NodeEditorElementType draggedElementType;
 	int draggedNodeHandle;
 	int draggedNodeIOIndex;
-
-	/* Node *draggedNode; // TODO(rhoe) user the new handle system instead */
-
 	vec2 dragOffset;
-	int currentNodeID;
+
+	int selectedNodeHandle;
+};
+
+struct HoverState {
+	int nodeHandle;
+	int ioIndex;
+	NodeEditorElementType elementType;
+	bool hoveringElement;
 };
 
 int AddNode();
-int AddCube();
-int AddNoneNode();
+int AddCubeNode();
+int AddDebugNode();
+int AddVec3Node();
+int AddSinNode();
+int AddTimeNode();
 bool IsMouseOverNode(vec2 mouse, Node node);
 void DrawNode(Node node);
 Node* GetNode(int handle);

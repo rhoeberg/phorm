@@ -10,6 +10,34 @@ void initializeGUI(GLFWwindow *win)
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
+void NodeInspector()
+{
+	int nodeHandle = GetSelectedNodeHandle();
+	Node* node = GetNode(nodeHandle);
+
+	if(node != NULL) {
+		bool show = true;
+		ImGui::Begin("Inspector", &show);
+		ImGui::Text("name:%s\n", node->name);
+
+		int outputSize = GetNodeOutputSize(nodeHandle);
+		for(int i = 0; i < outputSize; i++) {
+			switch(node->outputs[i].type) {
+				case DATA_TYPE_VEC3: {
+					ImGui::InputFloat3("vec3", glm::value_ptr(node->outputs[i].data.v3));
+					break;
+				}
+				case DATA_TYPE_SCALAR: {
+					ImGui::InputFloat("scalar", &node->outputs[i].data.s);
+					break;
+				}
+			}
+		}
+
+		ImGui::End();
+	}
+}
+
 void gui()
 {
     bool show = true;
@@ -19,8 +47,22 @@ void gui()
     ImGui::End();
 
     ImGui::Begin("Shapes", &show);
-	if(ImGui::Button("add cube")) {
-		AddCube();
+	if(ImGui::Button("cube")) {
+		AddCubeNode();
+	}
+	if(ImGui::Button("debug")) {
+		AddDebugNode();
+	}
+	if(ImGui::Button("vec3")) {
+		AddVec3Node();
+	}
+	if(ImGui::Button("time")) {
+		AddTimeNode();
+	}
+	if(ImGui::Button("sin")) {
+		AddSinNode();
 	}
     ImGui::End();
+
+	NodeInspector();
 }

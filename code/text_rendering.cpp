@@ -34,7 +34,6 @@ void my_stbtt_print(float x, float y, char *text)
 	// assume orthographic projection with units = screen pixels, origin at top left
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -47,10 +46,10 @@ void my_stbtt_print(float x, float y, char *text)
 			stbtt_GetBakedQuad(cdata, 512,512, *text-32, &x,&y,&q,1);//1=opengl & d3d10+,0=d3d9
 
 			GLfloat vertices[] = {
-				q.x0 / SCREEN_WIDTH, q.y0 / SCREEN_HEIGHT, q.s0, q.t0,
-				q.x1 / SCREEN_WIDTH, q.y0 / SCREEN_HEIGHT, q.s1, q.t0,
-				q.x1 / SCREEN_WIDTH, q.y1 / SCREEN_HEIGHT, q.s1, q.t1,
-				q.x0 / SCREEN_WIDTH, q.y1 / SCREEN_HEIGHT, q.s0, q.t1
+				q.x0, q.y0, q.s0, q.t0,
+				q.x1, q.y0, q.s1, q.t0,
+				q.x1, q.y1, q.s1, q.t1,
+				q.x0, q.y1, q.s0, q.t1
 			};
 			// GLfloat vertices[] = {
 			// 	q.x0, q.y0, q.s0, q.t0,

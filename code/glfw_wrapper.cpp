@@ -14,11 +14,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	mouse.x = xpos;
-	mouse.y = SCREEN_HEIGHT - ypos;
-	// mouse = vec2(mouse.x, SCREEN_HEIGHT - mouse.y);
-	mouse /= vec2(SCREEN_WIDTH, SCREEN_HEIGHT);
-	mouse *= 2.0f;
-	mouse -= 1.0f;
+	mouse.y = ypos;
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
