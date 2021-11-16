@@ -37,6 +37,7 @@
 #include "opengl.cpp"
 #include "audio.cpp"
 #include "util.cpp"
+#include "text_rendering.cpp"
 #include "node_editor.cpp"
 #include "glfw_wrapper.cpp"
 #include "math.cpp"
@@ -58,8 +59,9 @@ int main(int argc, char *argv[])
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	initializeGUI(win);
-    ImDrawInitialize(view, projection);
+    ImDrawInitialize();
 	NodeEditorInitialize();
+	my_stbtt_initfont();
 
     bool success = audioInitialize(&mixer);
     if(!success) {
@@ -116,6 +118,7 @@ int main(int argc, char *argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
 		UpdateNodeEditor();
+		my_stbtt_print(0, 0, "is this working?");
 
 		// render cube
 		// glUseProgram(shaderProgram);

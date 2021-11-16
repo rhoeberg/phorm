@@ -23,12 +23,14 @@
 
 
 #include "node_editor.h"
+#include <math.h>
 
 void NodeEditorInitialize()
 {
 	_nodeState = (NodeState*)malloc(sizeof(NodeState));
 	_nodeState->nodes = (Node*)malloc(sizeof(Node) * MAX_NODE_AMOUNT);
 	_nodeState->nodeAmount = 0;
+	_nodeState->isDragging = false;
 }
 
 void CubeFunction(Node *self)
@@ -42,6 +44,13 @@ void CubeFunction(Node *self)
 			pos = attachedNode->outputs[outputIndex].data.v3;
 		}
 	}
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_2D);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, ftex);
+	// glUseProgram(textShader);
 
 	// render cube
 	glUseProgram(shaderProgram);
@@ -58,7 +67,7 @@ void CubeFunction(Node *self)
 
 void NoneFunction(Node *self)
 {
-	self->outputs[0].data.v3.x = glfwGetTime();
+	self->outputs[0].data.v3.x = sin(glfwGetTime());
 }
 
 // TODO (rhoe) we need some way to avoid problems with dangling handles
@@ -94,11 +103,16 @@ int AddNode()
 
 		for(int i = 0; i < ARRAY_SIZE(node->inputs); i++) {
 			node->inputs[i].active = false;
+			node->inputs[i].attached = false;
 		}
 		for(int i = 0; i < ARRAY_SIZE(node->outputs); i++) {
 			node->outputs[i].active = false;
 		}
+
+		sprintf(node->name, "empty node");
 	}
+
+	
 
 	return result;
 }
@@ -219,9 +233,10 @@ int AddCube()
 	_nodeState->nodes[result].function = &CubeFunction;
 
 	_nodeState->nodes[result].inputs[0].active = true;
-	_nodeState->nodes[result].inputs[1].active = true;
+	// _nodeState->nodes[result].inputs[1].active = true;
 	_nodeState->nodes[result].outputs[0].active = true;
-	// _nodeState->nodes[result].rect.width = 0.2f;
+
+	sprintf(_nodeState->nodes[result].name, "cube");
 
 	return result;
 }
@@ -288,6 +303,8 @@ void DrawNode(int handle)
 
 	ImDrawSetColor(vec3(1, 1, 1));
 	ImDrawRect(rect);
+
+	my_stbtt_print(rect.pos.x * SCREEN_WIDTH, rect.pos.y * SCREEN_HEIGHT, node->name);
 }
 
 // void TryDraggingNodeInput(int handle, int ioIndex)
@@ -430,12 +447,15 @@ void UpdateNodeEditor()
 				if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
 					_nodeState->isDragging = false;
 					if(hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
-						if(hoverState.ioIndex != _nodeState->draggedNodeIOIndex) {
+						if(hoverState.nodeHandle != _nodeState->draggedNodeHandle) {
 							AttachNodeSockets(_nodeState->draggedNodeHandle,
 											  _nodeState->draggedNodeIOIndex,
 											  hoverState.nodeHandle,
 											  hoverState.ioIndex);
 						}
+					}
+					else {
+						DeattachNodeSockets(_nodeState->draggedNodeHandle, _nodeState->draggedNodeIOIndex);
 					}
 				}
 				else {
@@ -456,6 +476,11 @@ void UpdateNodeEditor()
 					
 				break;
 			}
+
+			default: {
+				break;
+			}
+				
 		}
 	}
 

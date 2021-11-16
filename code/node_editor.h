@@ -41,6 +41,8 @@ struct Node {
 	NodeInput inputs[4];
 	NodeOutput outputs[4];
 
+	char name[32];
+
 	bool free;
 };
 
