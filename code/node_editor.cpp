@@ -67,35 +67,10 @@ void CubeFunction(Node *self)
 		}
 	}
 
-	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-	model = glm::translate(model, pos);
-	model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
-	if(texture != -1) {
-		// render with texture
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glUseProgram(textureShader);
-		GLuint modelLoc = glGetUniformLocation(textureShader, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	}
-	else {
-		// render without texture
-		glUseProgram(baseShader);
-		GLuint modelLoc = glGetUniformLocation(baseShader, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	}
-
-	// glEnable(GL_BLEND);
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	// glEnable(GL_TEXTURE_2D);
-	// glActiveTexture(GL_TEXTURE0);
-	// glBindTexture(GL_TEXTURE_2D, ftex);
-
-	// render cube
-	glBindVertexArray(cubeVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-	glUseProgram(0);
+	if(texture > -1)
+		RenderCubeTexture_TMP(pos, texture);
+	else
+		RenderCubeBase_TMP(pos);
 }
 
 void DebugFunction(Node *self)

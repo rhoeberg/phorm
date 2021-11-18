@@ -3,11 +3,14 @@
 typedef glm::vec3 vec3;
 typedef glm::vec2 vec2;
 
+#define global static
+
 #include "audio.h"
 #include "opengl.h"
 #include "util.h"
 #include "node_editor.h"
 #include "math.h"
+#include "render.h"
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
@@ -24,9 +27,7 @@ GLuint createRectVAO(float w, float h);
 bool singleKeyPress(int GLFW_KEY);
 void cleanup();
 
-#define global static
-
 // dirty globals
-global GLuint baseShader;
-global GLuint textureShader;
-global GLuint cubeVAO;
+/* global GLuint baseShader; */
+/* global GLuint textureShader; */
+/* global GLuint cubeVAO; */

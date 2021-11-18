@@ -36,62 +36,41 @@
 #include "opengl.cpp"
 #include "audio.cpp"
 #include "util.cpp"
-// #include "text_rendering.cpp"
 #include "node_editor.cpp"
 #include "gui.cpp"
 #include "glfw_wrapper.cpp"
 #include "math.cpp"
+#include "render.cpp"
 
 int main(int argc, char *argv[])
 {
 	GLFWwindow *win = initGlfw();
 
 	// initialize graphics
+	InitializeRender();
 
-	// TODO (rhoe) move this stuff to a rendering system
-    glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
-
-	// setup shaders
-    baseShader = createShaderProgram("assets/base.vert", "assets/base.frag");
-    glUseProgram(baseShader);
-    GLuint viewLoc = glGetUniformLocation(baseShader, "view");
-    GLuint projectionLoc = glGetUniformLocation(baseShader, "projection");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-    textureShader = createShaderProgram("assets/texture.vert", "assets/texture.frag");
-    glUseProgram(textureShader);
-    viewLoc = glGetUniformLocation(textureShader, "view");
-    projectionLoc = glGetUniformLocation(textureShader, "projection");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-
+	// initialize GUI
 	initializeGUI(win);
-    ImDrawInitialize();
-	NodeEditorInitialize();
-	// my_stbtt_initfont();
 
+	// initialize ImDraw
+    ImDrawInitialize();
+
+	// Initilize Node editor
+	NodeEditorInitialize();
+
+	// Initialize Audio
     bool success = audioInitialize(&mixer);
     if(!success) {
 		cleanup();
 		exit(1);
     }
 
-	cubeVAO = createCubeVAO();
-
-	// int cubeHandle = AddCube();
-	// int posNodeHandle = AddNoneNode();
-	// Node *posNode = GetNode(posNodeHandle);
-	// posNode->outputs[0].data.v3 = vec3(-0.5f, 0.0f, 0.0f);
-	// Node *cubeNode = GetNode(cubeHandle);
-
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
 
+		///////////////
 		// TIME
+		///////////////
 		double currentFrame = glfwGetTime();
 		double deltaTime = (currentFrame - lastFrame);
 		lastFrame = currentFrame;
@@ -112,17 +91,26 @@ int main(int argc, char *argv[])
 		// ImGui::ShowDemoWindow(&show);
 
 		///////////////
-		//RENDER
+		// RENDER
 		///////////////
-		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+		UpdateRender();
 
+		///////////////
+		// NODE EDITOR
+		///////////////
 		UpdateNodeEditor();
 
+		///////////////
+		// IMDRAW
+		///////////////
 		ImDrawRender();
+
+
+		///////////////
+		// BUFFER SWAP / IMGUI RENDER
+		///////////////
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         glfwSwapBuffers(win);
     }
     
