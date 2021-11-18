@@ -29,8 +29,9 @@ static int paCallback( const void *inBuffer, void *outBuffer,
     return 0;
 }
 
-bool audioInitialize(AudioMixer *mixer)
+bool audioInitialize()
 {
+	_audioState = (AudioState*)malloc(sizeof(AudioState));
 
     //
     // load vorbis file
@@ -40,17 +41,17 @@ bool audioInitialize(AudioMixer *mixer)
     // of channels
     int sampleRate;
     int channelCount;
-    sampleAmount = stb_vorbis_decode_filename("assets\\test.ogg", &channelCount, &sampleRate, &buffer);
+    _audioState->sampleAmount = stb_vorbis_decode_filename("assets\\test.ogg", &channelCount, &sampleRate, &_audioState->buffer);
     printf("decoded vorbis file\n");
     printf("samplerate: %d\n", sampleRate);
     printf("channels: %d\n", channelCount);
-    printf("sampleAmount: %d\n", sampleAmount);
+    printf("sampleAmount: %d\n", _audioState->sampleAmount);
 
     //
     // initialize mixer
     //
     for(int i = 0; i < VOICE_AMOUNT; i++) {
-	mixer->voices[i].status = AUDIO_FREE;
+	_audioState->mixer.voices[i].status = AUDIO_FREE;
     }
 
     //
@@ -63,20 +64,20 @@ bool audioInitialize(AudioMixer *mixer)
 	return false;
     }
     
-    err = Pa_OpenDefaultStream( &stream,
+    err = Pa_OpenDefaultStream( &_audioState->stream,
 				0, // no input channels
 				2, // stereo output
 				paInt16, // 32 bit float output
 				sampleRate, 
 				64, //frames per buffer
 				paCallback,
-				mixer );
+				&_audioState->mixer );
     if(err != paNoError) {
 	printf("port audio error, coudl not open stream\n");
 	return false;
     }
 
-    err = Pa_StartStream(stream);
+    err = Pa_StartStream(_audioState->stream);
     if(err != paNoError) {
     	printf("port audio error, could not start stream\n");
     }
@@ -86,23 +87,26 @@ bool audioInitialize(AudioMixer *mixer)
 
 bool audioClose()
 {
-    PaError err = Pa_StopStream( stream );
+    PaError err = Pa_StopStream( _audioState->stream );
     if(err != paNoError) {
-	printf("port audio error, could not stop stream\n");
-	return false;
+		printf("port audio error, could not stop stream\n");
+		return false;
     }
-    err = Pa_CloseStream(stream);
+    err = Pa_CloseStream(_audioState->stream);
     if(err != paNoError) {
-	printf("portaudio error, could not close stream\n");
-	return false;
+		printf("portaudio error, could not close stream\n");
+		return false;
     }
+
+	free(_audioState);
+
     return true;
 }
 
-void playAudio(AudioMixer *mixer, int n)
+void playAudio(int n)
 {
-    mixer->voices[n].buffer = buffer;
-    mixer->voices[n].pos = 0;
-    mixer->voices[n].length = sampleAmount * 2;
-    mixer->voices[n].status = AUDIO_PLAYING;
+    _audioState->mixer.voices[n].buffer = _audioState->buffer;
+    _audioState->mixer.voices[n].pos = 0;
+    _audioState->mixer.voices[n].length = _audioState->sampleAmount * 2;
+    _audioState->mixer.voices[n].status = AUDIO_PLAYING;
 }

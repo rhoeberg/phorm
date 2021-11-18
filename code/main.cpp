@@ -59,11 +59,10 @@ int main(int argc, char *argv[])
 	NodeEditorInitialize();
 
 	// Initialize Audio
-    bool success = audioInitialize(&mixer);
-    if(!success) {
+    if(!audioInitialize()) {
 		cleanup();
 		exit(1);
-    }
+	}
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {

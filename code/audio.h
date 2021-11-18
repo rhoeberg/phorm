@@ -28,14 +28,28 @@ struct paData
     int channelCount;
 };
 
-PaStream *stream;
-static short *buffer;
-static int sampleAmount;
-// static paData data;
-// static int sampleRate;
-static AudioMixer mixer;
+struct AudioState
+{
+	PaStream *stream;
+	short *buffer;
+	int sampleAmount;
 
-bool audioInitialize(AudioMixer *mixer);
+	// static paData data;
+	// static int sampleRate;
+	AudioMixer mixer;
+};
+
+/* PaStream *stream; */
+/* static short *buffer; */
+/* static int sampleAmount; */
+/* // static paData data; */
+/* // static int sampleRate; */
+/* static AudioMixer mixer; */
+
+bool audioInitialize();
 bool audioClose();
 void shutdownAudio();
 void playAudio(AudioMixer *mixer, int n);
+
+
+global AudioState *_audioState;
