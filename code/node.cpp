@@ -16,7 +16,7 @@ void InitializeNodes()
 	// blurTex = (BlurTextureNode*)malloc(sizeof(BlurTextureNode));
 	blurTex = new BlurTextureNode();
 	blurTex->changed = true;
-	blurTex->amount = 7;
+	blurTex->amount = 10;
 	blurTex->input = loadTex;
 
 	addTex = new AddTextureNode();
@@ -41,8 +41,7 @@ void UpdateNodes()
 {
 
 	// Pixel *pixels = blurTex->GetPixels();
-	// float modSlider = abs(sin(glfwGetTime() * 2));
-	float modSlider = sin(glfwGetTime() * 2);
+	float modSlider = abs(sin(glfwGetTime() * 2));
 
 	addTex->slider = modSlider;
 	addTex->changed = true;
