@@ -130,8 +130,85 @@ class BlurTextureNode : public TextureNode {
 public:
 	TextureNode *input;
 	int amount;
-	Pixel* GetPixels();
-	void Blur();
+	Pixel* GetPixels() {
+		if(changed) {
+			Pixel *inputPixels = input->GetPixels();
+			memcpy(pixels, inputPixels, sizeof(pixels));
+			Blur();
+			changed = false;
+		}
+		return pixels;
+	}
+
+	void Blur() {
+
+		// int kernel[] = { 1, 2, 1 };
+		// int kernel[] = { 1, 2, 4, 2, 1 };
+		// int kernel[] = { 1, 2, 4, 8, 4, 2, 1 };
+		int kernel[] = { 1, 2, 4, 8, 16, 8, 4, 2, 1 };
+		int kernelWidth = (ARRAY_SIZE(kernel) - 1) / 2;
+
+		Pixel *backBuffer = (Pixel*)malloc(sizeof(Pixel) * PIXEL_AMOUNT);
+
+		for(int i = 0; i < amount; i++) {
+
+			// HORIZONTAL PASS
+			for(int x = 0; x < TEXTURE_SIZE; x++) {
+				for(int y = 0; y < TEXTURE_SIZE; y++) {
+
+					int avgR = 0;
+					int avgG = 0;
+					int avgB = 0;
+					int minX = (x - kernelWidth < 0) ? 0 : x - kernelWidth;
+					int maxX = (x + kernelWidth > TEXTURE_SIZE - 1) ? TEXTURE_SIZE - 1 : x + kernelWidth;
+					int divAmount = 0;
+					int kernelIndex = 0;
+					for(int i = minX; i < maxX; i++) {
+						Pixel pixel = pixels[GetPixelIndex(i, y)];
+						avgR += pixel.r * kernel[kernelIndex];
+						avgG += pixel.g * kernel[kernelIndex];
+						avgB += pixel.b * kernel[kernelIndex];
+						divAmount += kernel[kernelIndex];
+						kernelIndex++;
+					}
+					backBuffer[GetPixelIndex(x, y)].r = avgR / divAmount;
+					backBuffer[GetPixelIndex(x, y)].g = avgG / divAmount;
+					backBuffer[GetPixelIndex(x, y)].b = avgB / divAmount;
+
+				}
+			}
+			memcpy(pixels, backBuffer, sizeof(pixels));
+
+			// VERTICAL PASS
+			for(int x = 0; x < TEXTURE_SIZE; x++) {
+				for(int y = 0; y < TEXTURE_SIZE; y++) {
+
+					int avgR = 0;
+					int avgG = 0;
+					int avgB = 0;
+					int minY = (y - kernelWidth < 0) ? 0 : y - kernelWidth;
+					int maxY = (y + kernelWidth > TEXTURE_SIZE - 1) ? TEXTURE_SIZE - 1 : y + kernelWidth;
+					int divAmount = 0;
+					int kernelIndex = 0;
+					for(int i = minY; i < maxY; i++) {
+						Pixel pixel = pixels[GetPixelIndex(x, i)];
+						avgR += pixel.r * kernel[kernelIndex];
+						avgG += pixel.g * kernel[kernelIndex];
+						avgB += pixel.b * kernel[kernelIndex];
+						divAmount += kernel[kernelIndex];
+						kernelIndex++;
+					}
+					backBuffer[GetPixelIndex(x, y)].r = avgR / divAmount;
+					backBuffer[GetPixelIndex(x, y)].g = avgG / divAmount;
+					backBuffer[GetPixelIndex(x, y)].b = avgB / divAmount;
+
+				}
+			}
+			memcpy(pixels, backBuffer, sizeof(pixels));
+		}
+
+		free(backBuffer);
+	}
 
 	BlurTextureNode() {
 		amount = 1;
@@ -148,118 +225,36 @@ public:
 	// 0.5 = equal mix
 	float slider = 0.5f;
 
-	Pixel* GetPixels();
-	void AddInputs();
+	Pixel* GetPixels() {
+		if(changed) {
+			// Pixel *inputPixels = input->GetPixels();
+			// memcpy(pixels, inputPixels, sizeof(pixels));
+			AddInputs();
+			changed = false;
+		}
+		
+		return pixels;
+	}
+
+
+	void AddInputs() {
+		Pixel *pixel1 = input1->GetPixels();
+		Pixel *pixel2 = input2->GetPixels();
+
+		float inputMul1 = 1.0f - slider;
+		float inputMul2 = slider;
+
+		for(int x = 0; x < TEXTURE_SIZE; x++) {
+			for(int y = 0; y < TEXTURE_SIZE; y++) {
+				int index = GetPixelIndex(x, y);
+				Pixel result = {};
+				result.r = ((pixel1[index].r * inputMul1) + (pixel2[index].r * inputMul2));
+				result.g = ((pixel1[index].g * inputMul1) + (pixel2[index].g * inputMul2));
+				result.b = ((pixel1[index].b * inputMul1) + (pixel2[index].b * inputMul2));
+				pixels[index] = result;
+			}
+		}
+
+	}
 };
 
-Pixel* BlurTextureNode::GetPixels() {
-	if(changed) {
-		Pixel *inputPixels = input->GetPixels();
-		memcpy(pixels, inputPixels, sizeof(pixels));
-		Blur();
-		changed = false;
-	}
-	
-	return pixels;
-}
-
-void BlurTextureNode::Blur() {
-
-	// int kernel[] = { 1, 2, 1 };
-	// int kernel[] = { 1, 2, 4, 2, 1 };
-	// int kernel[] = { 1, 2, 4, 8, 4, 2, 1 };
-	int kernel[] = { 1, 2, 4, 8, 16, 8, 4, 2, 1 };
-	int kernelWidth = (ARRAY_SIZE(kernel) - 1) / 2;
-
-	Pixel *backBuffer = (Pixel*)malloc(sizeof(Pixel) * PIXEL_AMOUNT);
-
-	for(int i = 0; i < amount; i++) {
-
-		// HORIZONTAL PASS
-		for(int x = 0; x < TEXTURE_SIZE; x++) {
-			for(int y = 0; y < TEXTURE_SIZE; y++) {
-
-				int avgR = 0;
-				int avgG = 0;
-				int avgB = 0;
-				int minX = (x - kernelWidth < 0) ? 0 : x - kernelWidth;
-				int maxX = (x + kernelWidth > TEXTURE_SIZE - 1) ? TEXTURE_SIZE - 1 : x + kernelWidth;
-				int divAmount = 0;
-				int kernelIndex = 0;
-				for(int i = minX; i < maxX; i++) {
-					Pixel pixel = pixels[GetPixelIndex(i, y)];
-					avgR += pixel.r * kernel[kernelIndex];
-					avgG += pixel.g * kernel[kernelIndex];
-					avgB += pixel.b * kernel[kernelIndex];
-					divAmount += kernel[kernelIndex];
-					kernelIndex++;
-				}
-				backBuffer[GetPixelIndex(x, y)].r = avgR / divAmount;
-				backBuffer[GetPixelIndex(x, y)].g = avgG / divAmount;
-				backBuffer[GetPixelIndex(x, y)].b = avgB / divAmount;
-
-			}
-		}
-		memcpy(pixels, backBuffer, sizeof(pixels));
-
-		// VERTICAL PASS
-		for(int x = 0; x < TEXTURE_SIZE; x++) {
-			for(int y = 0; y < TEXTURE_SIZE; y++) {
-
-				int avgR = 0;
-				int avgG = 0;
-				int avgB = 0;
-				int minY = (y - kernelWidth < 0) ? 0 : y - kernelWidth;
-				int maxY = (y + kernelWidth > TEXTURE_SIZE - 1) ? TEXTURE_SIZE - 1 : y + kernelWidth;
-				int divAmount = 0;
-				int kernelIndex = 0;
-				for(int i = minY; i < maxY; i++) {
-					Pixel pixel = pixels[GetPixelIndex(x, i)];
-					avgR += pixel.r * kernel[kernelIndex];
-					avgG += pixel.g * kernel[kernelIndex];
-					avgB += pixel.b * kernel[kernelIndex];
-					divAmount += kernel[kernelIndex];
-					kernelIndex++;
-				}
-				backBuffer[GetPixelIndex(x, y)].r = avgR / divAmount;
-				backBuffer[GetPixelIndex(x, y)].g = avgG / divAmount;
-				backBuffer[GetPixelIndex(x, y)].b = avgB / divAmount;
-
-			}
-		}
-		memcpy(pixels, backBuffer, sizeof(pixels));
-	}
-
-	free(backBuffer);
-}
-
-Pixel* AddTextureNode::GetPixels() {
-	if(changed) {
-		// Pixel *inputPixels = input->GetPixels();
-		// memcpy(pixels, inputPixels, sizeof(pixels));
-		AddInputs();
-		changed = false;
-	}
-	
-	return pixels;
-}
-
-void AddTextureNode::AddInputs() {
-	Pixel *pixel1 = input1->GetPixels();
-	Pixel *pixel2 = input2->GetPixels();
-
-	float inputMul1 = 1.0f - slider;
-	float inputMul2 = slider;
-
-	for(int x = 0; x < TEXTURE_SIZE; x++) {
-		for(int y = 0; y < TEXTURE_SIZE; y++) {
-			int index = GetPixelIndex(x, y);
-			Pixel result = {};
-			result.r = ((pixel1[index].r * inputMul1) + (pixel2[index].r * inputMul2));
-			result.g = ((pixel1[index].g * inputMul1) + (pixel2[index].g * inputMul2));
-			result.b = ((pixel1[index].b * inputMul1) + (pixel2[index].b * inputMul2));
-			pixels[index] = result;
-		}
-	}
-
-}
