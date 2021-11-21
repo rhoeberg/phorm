@@ -65,6 +65,11 @@ void RenderCubeBase_TMP(vec3 pos)
 	glUseProgram(0);
 }
 
+GLuint GetTextureShader()
+{
+	return _renderState->textureShader;
+}
+
 void UpdateRender()
 {
 	///////////////

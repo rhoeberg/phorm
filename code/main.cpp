@@ -14,6 +14,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include "stb_ds.h"
+
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 
 #include "imgui/imgui.cpp"
@@ -36,11 +38,13 @@
 #include "opengl.cpp"
 #include "audio.cpp"
 #include "util.cpp"
-#include "node_editor.cpp"
+// #include "node_editor.cpp"
 #include "gui.cpp"
 #include "glfw_wrapper.cpp"
 #include "math.cpp"
 #include "render.cpp"
+// #include "texture_graph.cpp"
+#include "node.cpp"
 
 int main(int argc, char *argv[])
 {
@@ -56,13 +60,17 @@ int main(int argc, char *argv[])
     ImDrawInitialize();
 
 	// Initilize Node editor
-	NodeEditorInitialize();
+	// NodeEditorInitialize();
 
 	// Initialize Audio
     if(!audioInitialize()) {
 		cleanup();
 		exit(1);
 	}
+
+	// InitializeTextureGraph();
+
+	InitializeNodes();
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
@@ -97,7 +105,15 @@ int main(int argc, char *argv[])
 		///////////////
 		// NODE EDITOR
 		///////////////
-		UpdateNodeEditor();
+		// UpdateNodeEditor();
+
+		///////////////
+		// TEXTURE GRAPH
+		///////////////
+		// UpdateTextureGraph();
+
+		UpdateNodes();
+		NodeGUI();
 
 		///////////////
 		// IMDRAW
@@ -124,6 +140,7 @@ void cleanup()
     Pa_Terminate();
     imDrawClean();
     glfwTerminate();
-	NodeEditorCleanup();
+	// NodeEditorCleanup();
+	// CleanupTextureGraph();
 }
 

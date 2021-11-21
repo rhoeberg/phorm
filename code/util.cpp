@@ -19,3 +19,4 @@ char* readFile(const char* fileName)
 
     return result;
 }
+

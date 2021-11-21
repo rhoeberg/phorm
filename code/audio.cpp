@@ -1,30 +1,30 @@
 static int paCallback( const void *inBuffer, void *outBuffer,
-		       unsigned long framesPerBuffer,
-		       const PaStreamCallbackTimeInfo *timeInfo,
-		       PaStreamCallbackFlags flags,
-		       void *uData)
+					   unsigned long framesPerBuffer,
+					   const PaStreamCallbackTimeInfo *timeInfo,
+					   PaStreamCallbackFlags flags,
+					   void *uData)
 {
     AudioMixer *mixer = (AudioMixer*)uData;
     short *out = (short*)outBuffer;
     (void) inBuffer;
     
     for (int i = 0; i < framesPerBuffer; i++) {
-	short outLeft = 0;
-	short outRight = 0;
-	for(int v = 0; v < VOICE_AMOUNT; v++) {
-	    AudioVoice *voice = &mixer->voices[v];
-	    if(voice->status == AUDIO_PLAYING) {
-		if(voice->pos >= voice->length) {
-		    voice->status = AUDIO_FREE;
+		short outLeft = 0;
+		short outRight = 0;
+		for(int v = 0; v < VOICE_AMOUNT; v++) {
+			AudioVoice *voice = &mixer->voices[v];
+			if(voice->status == AUDIO_PLAYING) {
+				if(voice->pos >= voice->length) {
+					voice->status = AUDIO_FREE;
+				}
+				else {
+					outLeft += voice->buffer[voice->pos++];
+					outRight += voice->buffer[voice->pos++];
+				}
+			}
 		}
-		else {
-		    outLeft += voice->buffer[voice->pos++];
-		    outRight += voice->buffer[voice->pos++];
-		}
-	    }
-	}
-	*out++ = outLeft;
-	*out++ = outRight;
+		*out++ = outLeft;
+		*out++ = outRight;
     }
     return 0;
 }
@@ -51,7 +51,7 @@ bool audioInitialize()
     // initialize mixer
     //
     for(int i = 0; i < VOICE_AMOUNT; i++) {
-	_audioState->mixer.voices[i].status = AUDIO_FREE;
+		_audioState->mixer.voices[i].status = AUDIO_FREE;
     }
 
     //
@@ -60,21 +60,21 @@ bool audioInitialize()
     PaError err;
     err = Pa_Initialize();
     if(err != paNoError) {
-	printf("port audio error, could not initialize\n");
-	return false;
+		printf("port audio error, could not initialize\n");
+		return false;
     }
     
     err = Pa_OpenDefaultStream( &_audioState->stream,
-				0, // no input channels
-				2, // stereo output
-				paInt16, // 32 bit float output
-				sampleRate, 
-				64, //frames per buffer
-				paCallback,
-				&_audioState->mixer );
+								0, // no input channels
+								2, // stereo output
+								paInt16, // 32 bit float output
+								sampleRate, 
+								64, //frames per buffer
+								paCallback,
+								&_audioState->mixer );
     if(err != paNoError) {
-	printf("port audio error, coudl not open stream\n");
-	return false;
+		printf("port audio error, coudl not open stream\n");
+		return false;
     }
 
     err = Pa_StartStream(_audioState->stream);

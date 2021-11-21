@@ -5,14 +5,16 @@ typedef glm::vec2 vec2;
 
 #define global static
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
+
 #include "audio.h"
 #include "opengl.h"
 #include "util.h"
-#include "node_editor.h"
+/* #include "node_editor.h" */
 #include "math.h"
 #include "render.h"
+#include "node.h"
 
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
 const int SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 720;
 
