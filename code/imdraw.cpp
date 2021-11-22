@@ -83,11 +83,9 @@ void ImDrawInitialize()
 
 	glGenTextures(1, &ftex);
 	glBindTexture(GL_TEXTURE_2D, ftex);
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 512,512, 0, GL_ALPHA, GL_UNSIGNED_BYTE, temp_bitmap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512,512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
 	// can free temp_bitmap at this point
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
 	textShader = createShaderProgram("assets/font_shader.vert", "assets/font_shader.frag");
 
 	glUseProgram(textShader);
@@ -231,6 +229,7 @@ void _ImDrawText(float x, float y, char *text)
 	}
 
 	glUseProgram(0);
+	glDisable(GL_BLEND);
 }
 
 void ImDrawRender()
@@ -253,6 +252,7 @@ void ImDrawRender()
 		glBindVertexArray(0);
 
 		imDrawVertices.clear();
+		glUseProgram(0);
     }
 	glEnable(GL_DEPTH_TEST);
 

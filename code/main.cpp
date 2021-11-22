@@ -44,7 +44,8 @@
 #include "math.cpp"
 #include "render.cpp"
 // #include "texture_graph.cpp"
-#include "node.cpp"
+// #include "node.cpp"
+#include "node2.cpp"
 
 int main(int argc, char *argv[])
 {
@@ -142,5 +143,6 @@ void cleanup()
     glfwTerminate();
 	// NodeEditorCleanup();
 	// CleanupTextureGraph();
+	CleanupNodes();
 }
 
