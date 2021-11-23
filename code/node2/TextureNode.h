@@ -17,7 +17,8 @@ struct TextureNode {
 
 int AddTextureNode()
 {
-	TextureNode *node = _nodeState->textureNodes.InsertNew();
+	int nodeHandle = _nodeState->textureNodes.InsertNew();
+	TextureNode *node = &_nodeState->textureNodes[nodeHandle];
 	node->rect.pos = vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 	node->rect.width = 100;
 	node->rect.height = 40;

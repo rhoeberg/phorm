@@ -124,6 +124,7 @@ int main(int argc, char *argv[])
 		///////////////
 		// IMDRAW
 		///////////////
+		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		ImDrawRender();
 
 
@@ -149,5 +150,6 @@ void cleanup()
 	// NodeEditorCleanup();
 	// CleanupTextureGraph();
 	CleanupNodes();
+	CleanupNodeEditor();
 }
 

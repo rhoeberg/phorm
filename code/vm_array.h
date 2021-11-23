@@ -14,9 +14,10 @@ class VMArray {
  public:
 	VMArray();
 	int Insert(T e);
-	T* InsertNew();
-	void Free();
+	int InsertNew();
 	int Count();
+	void Free();
+	void Clear();
 
 	T& operator[](int index);
 };

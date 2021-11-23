@@ -74,6 +74,10 @@
   we then look in the "bool" array to find a free slot in the node array
   
 
+  handles should be type specific
+  for this just create a thin struct wrapper around the handle so we can differentiate
+  the types
+
  */
 
 #pragma once
@@ -109,28 +113,67 @@ struct NodeInput {
 	int handle;
 };
 
+struct Node;
+
+typedef int(*NodeOperation)(Node *self);
+
+struct Node {
+	NodeOperation op;
+	NodeType type; //defines the return of the node operation
+	int dataHandle;
+	int typeHandle;
+	Rect rect;
+	bool changed;
+	VMArray<NodeInput> inputs;
+
+	void AddInput(NodeType type)
+	{
+		NodeInput input = {};
+		input.type = type;
+		input.handle = -1;
+		inputs.Insert(input);
+	}
+
+	// TODO (rhoe) make sure handle is the correct input type!
+	void ConnectInput(int handle, int index)
+	{
+		if(index > inputs.Count())
+			return;
+
+		inputs[index].handle = handle;
+	}
+};
+
+struct Texture {
+	/* Pixel pixels[PIXEL_AMOUNT]; */
+	Pixel pixels[PIXEL_AMOUNT];
+};
+
 struct RenderObjectNode;
-struct TextureNode;
+/* struct TextureNode; */
 struct BlurNode;
 struct LoadTextureNode;
 
 struct NodeState {
-	VMArray<RenderObjectNode> renderObjectNodes;
-	VMArray<TextureNode> textureNodes;
+	VMArray<Node> nodes;
+
+	VMArray<Texture> textures;
+
+	/* VMArray<RenderObjectNode> renderObjectNodes; */
+	/* VMArray<TextureNode> textureNodes; */
 	VMArray<BlurNode> blurNodes;
 	VMArray<LoadTextureNode> loadTextureNodes;
 
 	// TESTING STUFF
 	int blurNodeHandle;
-	GLuint textureID;
-	GLuint viewerQuad;
 };
 
 global NodeState *_nodeState;
 
 int GetPixelIndex(int x, int y);
+int AddNode();
 
 #include "RenderObjectNode.h"
-#include "TextureNode.h"
+/* #include "TextureNode.h" */
 #include "BlurNode.h"
 #include "LoadTextureNode.h"
