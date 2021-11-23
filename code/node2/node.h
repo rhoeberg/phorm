@@ -36,7 +36,7 @@
 
   
 
-  _ GENERALIZATION IDEA _  (not yet implemented)
+  __ GENERALIZATION IDEA __  (not yet implemented)
   we could further generalize the system by storing the data
   of each type seperately (we kind of do that in sub types)
   then we could get rid of the diffferent node types
@@ -50,6 +50,28 @@
   sometimes to a renderobject
 
 
+  
+  
+
+
+
+
+
+  __ HANDLE SYSTEM __ (not yet implemented)
+  we need unique handles pr node / sub node
+  these handles is going to be indices in their respective arrays.
+  
+  problem:
+  when removing a node its important that we dont move all elements of the node 
+  arrays, this would invalidate all handles above the removed handle.
+  
+  for this reason we need to simply "deactivate" the array slot when removing a node
+  this can be done either by having a bool in the node type which defines if its 
+  free or not.
+
+  another way to fix it could be to have a seperate parallel array with only bools
+  which defines if its active.
+  we then look in the "bool" array to find a free slot in the node array
   
 
  */
