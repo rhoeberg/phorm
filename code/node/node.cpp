@@ -77,16 +77,16 @@ void UpdateNodes()
 	/////////////////////////
 	// UPDATE NODES
 	/////////////////////////
-	for(int i = 0; i < _nodeState.textureNodes.size(); i++) {
-		_nodeState.textureNodes[i]->Update();
+	for(int i = 0; i < _nodeState.textureNodes.Count(); i++) {
+		_nodeState.textureNodes[i].Update();
 	}
 
 
 	/////////////////////////
 	// RENDER NODES
 	/////////////////////////
-	for(int i = 0; i < _nodeState.textureNodes.size(); i++) {
-		_nodeState.textureNodes[i]->RenderNode();
+	for(int i = 0; i < _nodeState.textureNodes.Count(); i++) {
+		_nodeState.textureNodes[i].RenderNode();
 	}
 
 
@@ -99,9 +99,8 @@ void NodeGUI()
     ImGui::Begin("node gui", &show);
 
 	if(ImGui::Button("add blur node")) {
-		BlurTextureNode *node = new BlurTextureNode();
+		BlurTextureNode *node = _nodeState.textureNodes.InsertNew();
 		node->SetName("Blur");
-		_nodeState.textureNodes.push_back(node);
 	}
 
     ImGui::End();

@@ -23,7 +23,8 @@ bool mouse_buttons[32];
 #include "imdraw.h"
 #include "render.h"
 /* #include "node.h" */
-#include "node2.h"
+#include "vm_array.h"
+#include "node2/node.h"
 
 
 GLuint createRectVAO(float w, float h);

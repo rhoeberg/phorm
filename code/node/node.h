@@ -130,7 +130,7 @@ public:
 };
 
 struct NodeState {
-	std::vector<TextureNode*> textureNodes;
+	VMArray<TextureNode> textureNodes;
 	bool isDragging;
 	Node *selectedNode = NULL;
 };

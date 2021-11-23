@@ -45,10 +45,12 @@
 #include "render.cpp"
 // #include "texture_graph.cpp"
 // #include "node.cpp"
-#include "node2.cpp"
+#include "node2/node.cpp"
+#include "vm_array.cpp"
 
 int main(int argc, char *argv[])
 {
+
 	GLFWwindow *win = initGlfw();
 
 	// initialize graphics
