@@ -45,8 +45,9 @@
 #include "render.cpp"
 // #include "texture_graph.cpp"
 // #include "node.cpp"
-#include "node2/node.cpp"
 #include "vm_array.cpp"
+#include "node2/node.cpp"
+#include "node2/node_editor.cpp"
 
 int main(int argc, char *argv[])
 {
@@ -74,6 +75,7 @@ int main(int argc, char *argv[])
 	// InitializeTextureGraph();
 
 	InitializeNodes();
+	InitializeNodeEditor();
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
@@ -116,7 +118,8 @@ int main(int argc, char *argv[])
 		// UpdateTextureGraph();
 
 		UpdateNodes();
-		NodeGUI();
+		UpdateNodeEditor();
+		// NodeGUI();
 
 		///////////////
 		// IMDRAW

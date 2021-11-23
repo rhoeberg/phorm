@@ -109,11 +109,6 @@ struct NodeInput {
 	int handle;
 };
 
-struct NodeHoverState {
-	int nodeHandle;
-	bool hoveringElement;
-};
-
 struct RenderObjectNode;
 struct TextureNode;
 struct BlurNode;
@@ -124,11 +119,6 @@ struct NodeState {
 	VMArray<TextureNode> textureNodes;
 	VMArray<BlurNode> blurNodes;
 	VMArray<LoadTextureNode> loadTextureNodes;
-
-	NodeHoverState hoverState;
-
-	bool isDragging;
-	int draggedNodeHandle;
 
 	// TESTING STUFF
 	int blurNodeHandle;
