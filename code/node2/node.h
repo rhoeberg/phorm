@@ -111,6 +111,12 @@ enum NodeType {
 struct NodeInput {
 	NodeType type;
 	int handle;
+
+	NodeInput(NodeType _type) {
+		type = _type;
+	}
+
+	NodeInput() {}
 };
 
 struct Node;
@@ -133,47 +139,46 @@ struct Node {
 		input.handle = -1;
 		inputs.Insert(input);
 	}
-
-	// TODO (rhoe) make sure handle is the correct input type!
-	void ConnectInput(int handle, int index)
-	{
-		if(index > inputs.Count())
-			return;
-
-		inputs[index].handle = handle;
-	}
 };
 
 struct Texture {
-	/* Pixel pixels[PIXEL_AMOUNT]; */
 	Pixel pixels[PIXEL_AMOUNT];
 };
 
-struct RenderObjectNode;
-/* struct TextureNode; */
-struct BlurNode;
-struct LoadTextureNode;
+struct BlurNode {
+	int amount;
+};
+
+struct LoadTextureNode {
+	char path[128];
+};
+
+struct MixTextureNode {
+	float mix;
+};
 
 struct NodeState {
+	// base node array
 	VMArray<Node> nodes;
 
+	// data arrays
 	VMArray<Texture> textures;
 
-	/* VMArray<RenderObjectNode> renderObjectNodes; */
-	/* VMArray<TextureNode> textureNodes; */
+	// node sub type arrays
 	VMArray<BlurNode> blurNodes;
 	VMArray<LoadTextureNode> loadTextureNodes;
-
-	// TESTING STUFF
-	int blurNodeHandle;
+	VMArray<MixTextureNode> mixTextureNodes;
 };
 
 global NodeState *_nodeState;
 
 int GetPixelIndex(int x, int y);
-int AddNode();
+Node* GetNode(int handle);
+int AddNode(NodeType type, int typeHandle, NodeOperation op);
+Texture* GetTexture(int handle);
+Texture* GetTextureInput(NodeInput input);
 
 #include "RenderObjectNode.h"
-/* #include "TextureNode.h" */
 #include "BlurNode.h"
 #include "LoadTextureNode.h"
+#include "MixTextureNode.h"

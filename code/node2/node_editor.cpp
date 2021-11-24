@@ -77,6 +77,11 @@ void UpdateHoverState()
 
 void ShowNode(Node *node)
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+    glViewport(0, 0, VIEWER_SIZE, VIEWER_SIZE);
+
 	switch(node->type) {
 		case TEXTURE_NODE: {
 			int dataHandle = RunNodeOperation(node);
@@ -108,6 +113,7 @@ void ShowNode(Node *node)
 			break;
 		}
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void UpdateNodeDragging()
@@ -150,14 +156,9 @@ void UpdateNodeEditor()
 
 	//////////////////
 	// VIEWER
-	glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-    glViewport(0, 0, VIEWER_SIZE, VIEWER_SIZE);
 	if(_nodeEditorState->draggedNodeHandle != -1) {
 		ShowNode(&_nodeState->nodes[_nodeEditorState->draggedNodeHandle]);
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);

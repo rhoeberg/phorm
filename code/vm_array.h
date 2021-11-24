@@ -13,6 +13,7 @@ class VMArray {
 	void Grow();
  public:
 	VMArray();
+	~VMArray();
 	int Insert(T e);
 	int InsertNew();
 	int Count();

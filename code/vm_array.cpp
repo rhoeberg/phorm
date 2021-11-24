@@ -9,6 +9,13 @@ VMArray<T>::VMArray()
 }
 
 template <typename T>
+VMArray<T>::~VMArray()
+{
+	// if(data != NULL)
+		// free(data);
+}
+
+template <typename T>
 void VMArray<T>::Grow()
 {
 	max *= 2;

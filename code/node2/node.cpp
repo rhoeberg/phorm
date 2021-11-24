@@ -5,15 +5,52 @@ int GetPixelIndex(int x, int y)
 	return ((y * TEXTURE_SIZE) + x);
 }
 
-void ConnectNodes(int inputHandle, int outputHandle, int inputIndex)
+bool NodeExists(int handle)
 {
-	if(inputHandle > -1 && inputHandle < _nodeState->nodes.Count() - 1) {
-		if(outputHandle > -1 && outputHandle < _nodeState->nodes.Count() - 1) {
-			if(inputHandle != outputHandle) {
-				Node *inputNode = &_nodeState->nodes[inputHandle];
-				inputNode->ConnectInput(outputHandle, inputIndex);
-			}
-		}
+	if(handle > _nodeState->nodes.Count() - 1  ||
+	   handle < 0) {
+		return false;
+	}
+
+	return true;
+}
+
+Node* GetNode(int handle)
+{
+	if(!NodeExists(handle)) {
+		return NULL;
+	}
+
+	return &_nodeState->nodes[handle];
+}
+
+Texture* GetTexture(int handle)
+{
+	return &_nodeState->textures[handle];
+}
+
+Texture* GetTextureInput(NodeInput input)
+{
+	if(input.type != TEXTURE_NODE) {
+		return NULL;
+	}
+
+	Node *inputNode = GetNode(input.handle);
+	Texture *texture = GetTexture(inputNode->op(inputNode));
+	return texture;
+}
+
+void ConnectNodes(int inHandle, int outHandle, int inputIndex)
+{
+	if(inHandle == outHandle ||
+	   !NodeExists(inHandle) ||
+	   !NodeExists(outHandle)) {
+		return;
+	}
+
+	Node *inputNode = GetNode(inHandle);
+	if(inputNode != NULL) {
+		inputNode->inputs[inputIndex].handle = outHandle;
 	}
 }
 
@@ -25,17 +62,31 @@ void InitializeNodes()
 	_nodeState->nodes = VMArray<Node>();
 	_nodeState->blurNodes = VMArray<BlurNode>();
 	_nodeState->loadTextureNodes = VMArray<LoadTextureNode>();
+	_nodeState->mixTextureNodes = VMArray<MixTextureNode>();
+
+	// data containers
 	_nodeState->textures = VMArray<Texture>();
 
 	// TESTING STUFF
 	int loadHandle = AddLoadTextureNode();
-	_nodeState->blurNodeHandle = AddBlurNode();
-	Node *blurNode = &_nodeState->nodes[_nodeState->blurNodeHandle];
+	int blurHandle = AddBlurNode();
+	// Node *blurNode = &_nodeState->nodes[_nodeState->blurNodeHandle];
 
-	blurNode->ConnectInput(loadHandle, 0);
+	int mixNodeHandle = AddMixTextureNode();
+	// Node *mixNode = &_nodeState->nodes[mixNodeHandle];
+
+	ConnectNodes(mixNodeHandle, loadHandle, 0);
+	ConnectNodes(mixNodeHandle, blurHandle, 1);
+
+	ConnectNodes(blurHandle, loadHandle, 0);
 }
 
-int AddNode()
+// int AddNode(NodeType type, int dataHandle, int typeHandle, NodeOperation op)
+// {
+// 	return AddNode(type, dataHandle, typeHandle, op, VMArray<NodeInput>());
+// }
+
+int AddNode(NodeType type, int typeHandle, NodeOperation op)
 {
 	Node node = {};
 	node.rect.pos = vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
@@ -43,6 +94,15 @@ int AddNode()
 	node.rect.height = 40;
 	node.changed = true;
 	node.inputs = VMArray<NodeInput>();
+	node.type = type;
+	node.typeHandle = typeHandle;
+	node.op = op;
+
+	switch(node.type) {
+		case TEXTURE_NODE:
+			node.dataHandle = _nodeState->textures.InsertNew();
+			break;
+	}
 
 	return _nodeState->nodes.Insert(node);
 }
