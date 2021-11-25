@@ -40,18 +40,20 @@ Texture* GetTextureInput(NodeInput input)
 	return texture;
 }
 
-void ConnectNodes(int inHandle, int outHandle, int inputIndex)
+bool ConnectNodes(int inHandle, int outHandle, int inputIndex)
 {
 	if(inHandle == outHandle ||
 	   !NodeExists(inHandle) ||
 	   !NodeExists(outHandle)) {
-		return;
+		return false;
 	}
 
 	Node *inputNode = GetNode(inHandle);
 	if(inputNode != NULL) {
 		inputNode->inputs[inputIndex].handle = outHandle;
 	}
+
+	return true;
 }
 
 void InitializeNodes()
