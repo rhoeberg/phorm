@@ -36,7 +36,7 @@ Texture* GetTextureInput(NodeInput input)
 	}
 
 	Node *inputNode = GetNode(input.handle);
-	Texture *texture = GetTexture(inputNode->op(inputNode));
+	Texture *texture = GetTexture(inputNode->GetData());
 	return texture;
 }
 
@@ -86,11 +86,12 @@ void InitializeNodes()
 // 	return AddNode(type, dataHandle, typeHandle, op, VMArray<NodeInput>());
 // }
 
-int AddNode(NodeType type, int typeHandle, NodeOperation op)
+int AddNode(const char *name, NodeType type, int typeHandle, NodeOperation op)
 {
 	Node node = {};
+	sprintf(node.name, "%s", name);
 	node.rect.pos = vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-	node.rect.width = 100;
+	node.rect.width = 150;
 	node.rect.height = 40;
 	node.changed = true;
 	node.inputs = VMArray<NodeInput>();
@@ -100,21 +101,11 @@ int AddNode(NodeType type, int typeHandle, NodeOperation op)
 
 	switch(node.type) {
 		case TEXTURE_NODE:
-			node.dataHandle = _nodeState->textures.InsertNew();
+			node.SetDataHandle(_nodeState->textures.InsertNew());
 			break;
 	}
 
 	return _nodeState->nodes.Insert(node);
-}
-
-int RunNodeOperation(Node *node)
-{
-	if(node->changed) {
-		node->op(node);
-		node->changed = false;
-	}
-
-	return node->dataHandle;
 }
 
 void UpdateNodes()

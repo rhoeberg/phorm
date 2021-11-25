@@ -126,10 +126,10 @@ typedef int(*NodeOperation)(Node *self);
 struct Node {
 	NodeOperation op;
 	NodeType type; //defines the return of the node operation
-	int dataHandle;
 	int typeHandle;
 	Rect rect;
 	bool changed;
+	char name[128];
 	VMArray<NodeInput> inputs;
 
 	void AddInput(NodeType type)
@@ -139,6 +139,23 @@ struct Node {
 		input.handle = -1;
 		inputs.Insert(input);
 	}
+
+	void SetDataHandle(int handle) { dataHandle = handle; }
+
+	int GetDataLast() { return dataHandle; }
+
+	int GetData()
+	{
+		if(changed) {
+			changed = false;
+			return op(this);
+		}
+
+		return dataHandle;
+	}
+
+private:
+	int dataHandle;
 };
 
 struct Texture {
@@ -174,7 +191,7 @@ global NodeState *_nodeState;
 
 int GetPixelIndex(int x, int y);
 Node* GetNode(int handle);
-int AddNode(NodeType type, int typeHandle, NodeOperation op);
+int AddNode(const char *name, NodeType type, int typeHandle, NodeOperation op);
 Texture* GetTexture(int handle);
 Texture* GetTextureInput(NodeInput input);
 

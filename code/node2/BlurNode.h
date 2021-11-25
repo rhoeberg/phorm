@@ -7,7 +7,7 @@ int AddBlurNode()
 	BlurNode blurNode = {};
 	blurNode.amount = 20;
 	int typeHandle = _nodeState->blurNodes.Insert(blurNode);
-	int nodeHandle = AddNode(TEXTURE_NODE, typeHandle, BlurOperation);
+	int nodeHandle = AddNode("BLUR", TEXTURE_NODE, typeHandle, BlurOperation);
 
 	Node *node = GetNode(nodeHandle);
 	if(node != NULL) {
@@ -26,7 +26,7 @@ int BlurOperation(Node *self)
 
 	// SELF
 	BlurNode *blurNode = &_nodeState->blurNodes[self->typeHandle];
-	Texture *output = GetTexture(self->dataHandle);
+	Texture *output = GetTexture(self->GetDataLast());
 
 
 	// OPERATION
@@ -94,5 +94,5 @@ int BlurOperation(Node *self)
 		}
 	}
 
-	return self->dataHandle;
+	return self->GetDataLast();
 }

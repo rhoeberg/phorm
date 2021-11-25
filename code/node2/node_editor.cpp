@@ -57,6 +57,9 @@ void DrawNode(int handle)
 	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 	ImDrawRect(node->rect);
 
+	vec2 namePos = node->rect.pos + vec2(10.0f, node->rect.height - 10.0f);
+	ImDrawText(namePos, node->name);
+
 	for(int i = 0; i < node->inputs.Count(); i++) {
 		NodeInput input = node->inputs[i];
 		Node *inputNode = &_nodeState->nodes[input.handle];
@@ -84,7 +87,7 @@ void ShowNode(Node *node)
 
 	switch(node->type) {
 		case TEXTURE_NODE: {
-			int dataHandle = RunNodeOperation(node);
+			int dataHandle = node->GetData();
 			Texture *texture = &_nodeState->textures[dataHandle];
 
 			glBindTexture(GL_TEXTURE_2D, _nodeEditorState->textureID);
