@@ -17,6 +17,10 @@ VMArray<T>::VMArray(const VMArray<T>& old)
 	memcpy(data, old.data, sizeof(T) * max);
 }
 
+
+// TODO (rhoe) more space efficient init list
+// we could save memory by setting max to the size of the init list
+// this way the array would possibly create a better contextual size
 template <typename T>
 VMArray<T>::VMArray(std::initializer_list<T> init)
 {

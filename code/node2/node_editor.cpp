@@ -9,9 +9,6 @@ void InitializeNodeEditor()
 	_nodeEditorState->draggedNodeHandle = -1;
 	_nodeEditorState->hoverState.hoveringElement = false;
 
-
-
-
 	// create texture for node
 	glGenTextures(1, &_nodeEditorState->textureID);
 	glBindTexture(GL_TEXTURE_2D, _nodeEditorState->textureID);
@@ -20,7 +17,6 @@ void InitializeNodeEditor()
 
 	// create quad to render texture to
 	_nodeEditorState->viewerQuad = createSpriteVAO();
-
 
 	// create fbo + fbo texture
 	glGenTextures(1, &_nodeEditorState->fboTexture);
@@ -33,8 +29,6 @@ void InitializeNodeEditor()
 	glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _nodeEditorState->fboTexture, 0);  
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
 
 	// create viewer shader
 	_nodeEditorState->viewerShader = createShaderProgram("assets/viewer.vert", "assets/viewer.frag");
@@ -51,19 +45,59 @@ void InitializeNodeEditor()
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
 
+#define PARAM_WIDTH 40
+#define PARAM_HEIGHT 20
+
+Rect GetNodeRect(int handle)
+{
+	Node *node = GetNode(handle);
+
+	Rect rect = {};
+	rect.pos = node->pos;
+	rect.width = 100;
+	rect.width += node->params.Count() * PARAM_WIDTH;
+	rect.width += node->inputs.Count() * PARAM_WIDTH;
+	rect.height = 30;
+
+	return rect;
+}
+
 void DrawNode(int handle)
 {
-	Node *node = &_nodeState->nodes[handle];
-	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-	ImDrawRect(node->rect);
+	Node *node = GetNode(handle);
 
-	vec2 namePos = node->rect.pos + vec2(10.0f, node->rect.height - 10.0f);
+	Rect rect = GetNodeRect(handle);
+	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+	ImDrawRect(rect);
+
+	vec2 namePos = node->pos + vec2(10.0f, rect.height - 10.0f);
 	ImDrawText(namePos, node->name);
 
 	for(int i = 0; i < node->inputs.Count(); i++) {
+		Rect inputRect = {};
+		float offsetX = i * (PARAM_WIDTH + 10);
+		float offsetY = -PARAM_HEIGHT;
+		inputRect.pos = rect.pos + vec2(offsetX, offsetY);
+		inputRect.width = PARAM_WIDTH;
+		inputRect.height = PARAM_HEIGHT;
+		ImDrawSetColor(vec3(1.0f, 0.0f, 0.0f));
+		ImDrawRect(inputRect);
+
 		NodeInput input = node->inputs[i];
 		Node *inputNode = &_nodeState->nodes[input.handle];
-		ImDrawLine(inputNode->rect.pos, node->rect.pos);
+		ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+		ImDrawLine(inputNode->pos, inputRect.pos);
+	}
+
+	for(int i = 0; i < node->params.Count(); i++) {
+		Rect paramRect = {};
+		float offsetX = (i + node->inputs.Count()) * (PARAM_WIDTH + 10);
+		float offsetY = -PARAM_HEIGHT;
+		paramRect.pos = rect.pos + vec2(offsetX, offsetY);
+		paramRect.width = PARAM_WIDTH;
+		paramRect.height = PARAM_HEIGHT;
+		ImDrawSetColor(vec3(0.0f, 1.0f, 0.0f));
+		ImDrawRect(paramRect);
 	}
 }
 
@@ -71,15 +105,18 @@ void UpdateHoverState()
 {
 	_nodeEditorState->hoverState.hoveringElement = false;
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		if(PointInsideRect(mouse, _nodeState->nodes[i].rect)) {
+		Rect rect = GetNodeRect(i);
+		if(PointInsideRect(mouse, rect)) {
 			_nodeEditorState->hoverState.nodeHandle = i;
 			_nodeEditorState->hoverState.hoveringElement = true;
 		}
 	}
 }
 
-void ShowNode(Node *node)
+void ShowNode(int handle)
 {
+	Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
@@ -136,9 +173,58 @@ void UpdateNodeDragging()
 		}
 		else {
 			// handle continued dragging
-			_nodeState->nodes[_nodeEditorState->draggedNodeHandle].rect.pos = mouse;
+			_nodeState->nodes[_nodeEditorState->draggedNodeHandle].pos = mouse;
 		}
 	}
+}
+
+void NodeGUI()
+{
+	ImGui::Begin("nodes");
+	if(ImGui::Button("add blur node")) {
+		AddBlurNode();
+	}
+	ImGui::End();
+
+	ImGui::Begin("Inspector");
+	if(_nodeEditorState->draggedNodeHandle != -1) {
+		Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+
+		ImGui::Text("%s", node->name);
+
+		for(int i = 0; i < node->params.Count(); i++) {
+			char buffer[128];
+			sprintf(buffer, "%s", node->params[i].name);
+
+			switch(node->params[i].type) {
+				case PARAM_INT: {
+					if(ImGui::InputInt(buffer, &node->params[i].i)) {
+						node->changed = true;
+					}
+					break;
+				}
+				case PARAM_DOUBLE: {
+					if(ImGui::InputDouble(buffer, &node->params[i].d)) {
+						node->changed = true;
+					}
+					break;
+				}
+				case PARAM_VEC3: {
+					if(ImGui::InputFloat3(buffer, glm::value_ptr(node->params[i].v3))) {
+						node->changed = true;
+					}
+					break;
+				}
+				case PARAM_STRING: {
+					if(ImGui::InputText(buffer, node->params[i].str, ARRAY_SIZE(node->params[i].str))) {
+						node->changed = true;
+					}
+					break;
+				}
+			}
+		}
+	}
+	ImGui::End();
 }
 
 void UpdateNodeEditor()
@@ -160,7 +246,7 @@ void UpdateNodeEditor()
 	//////////////////
 	// VIEWER
 	if(_nodeEditorState->draggedNodeHandle != -1) {
-		ShowNode(&_nodeState->nodes[_nodeEditorState->draggedNodeHandle]);
+		ShowNode(_nodeEditorState->draggedNodeHandle);
 	}
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -173,15 +259,8 @@ void UpdateNodeEditor()
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	
-}
-
-void NodeGUI()
-{
-	ImGui::Begin("Inspector");
-	if(ImGui::Button("add blur node")) {
-		AddBlurNode();
-	}
-	ImGui::End();
+	// GUI
+	NodeGUI();
 }
 
 void CleanupNodeEditor()

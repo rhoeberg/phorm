@@ -126,9 +126,11 @@ enum NodeParameterType {
 	PARAM_STRING,
 };
 
+// TODO (rhoe) add a way to hide/expose node parameters from node editor
 struct NodeParameter {
 	NodeParameterType type;
 	char name[128];
+	bool exposed;
 
 	union {
 		int i;
@@ -170,7 +172,8 @@ typedef int(*NodeOperation)(Node *self);
 struct Node {
 	NodeOperation op;
 	NodeType type; //defines the return of the node operation
-	Rect rect;
+	/* Rect rect; */
+	vec2 pos;
 	bool changed;
 	char name[128];
 	VMArray<NodeInput> inputs;

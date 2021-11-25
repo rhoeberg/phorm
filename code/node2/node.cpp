@@ -79,28 +79,13 @@ void InitializeNodes()
 }
 
 // TODO (rhoe) change this to node constructor?
-// int AddNode(const char *name, NodeType type, NodeOperation op)
-// {
-// 	return AddNode(type, dataHandle, typeHandle, op, VMArray<NodeParameter>(), VMArray<NodeInput>());
-// }
-
-// int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params)
-// {
-// 	return AddNode(type, dataHandle, typeHandle, op, params, VMArray<NodeInput>());
-// }
-
-// int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeInput> inputs)
-// {
-// 	return AddNode(type, dataHandle, typeHandle, op, VMArray<NodeParameter>(), inputs);
-// }
-
 int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
 {
 	Node node = {};
 	sprintf(node.name, "%s", name);
-	node.rect.pos = vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-	node.rect.width = 150;
-	node.rect.height = 40;
+	node.pos = vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+	// node.rect.width = 150;
+	// node.rect.height = 40;
 	node.changed = true;
 	node.inputs = VMArray<NodeInput>();
 	node.type = type;
