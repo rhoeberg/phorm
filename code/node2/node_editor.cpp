@@ -102,15 +102,6 @@ Rect GetNodeParamRect(int handle, int paramIndex)
 	paramRect.width = PARAM_WIDTH;
 	paramRect.height = PARAM_HEIGHT;
 
-	// Rect nodeRect = GetNodeRect(handle);
-
-	// Rect inputRect = {};
-	// float offsetX = i * (PARAM_WIDTH + 10);
-	// float offsetY = -PARAM_HEIGHT;
-	// inputRect.pos = nodeRect.pos + vec2(offsetX, offsetY);
-	// inputRect.width = PARAM_WIDTH;
-	// inputRect.height = PARAM_HEIGHT;
-
 	return paramRect;
 }
 
@@ -133,19 +124,17 @@ void DrawNode(int handle)
 	for(int i = 0; i < node->inputs.Count(); i++) {
 
 		Rect inputRect = GetNodeInputRect(handle, i);
-		// float offsetX = i * (PARAM_WIDTH + 10);
-		// float offsetY = -PARAM_HEIGHT;
-		// inputRect.pos = rect.pos + vec2(offsetX, offsetY);
-		// inputRect.width = PARAM_WIDTH;
-		// inputRect.height = PARAM_HEIGHT;
 		ImDrawSetColor(vec3(1.0f, 0.0f, 0.0f));
 		ImDrawRect(inputRect);
 
-		Rect outputRect = GetNodeOutputRect(node->inputs[i].handle);
-		vec2 outputPos = GetRectCenter(outputRect);
-		vec2 inputPos = GetRectCenter(inputRect);
-		ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-		ImDrawLine(outputPos, inputPos);
+		// TODO (rhoe) make it more clean / safe to see if a node input is set
+		if(node->inputs[i].handle != -1) {
+			Rect outputRect = GetNodeOutputRect(node->inputs[i].handle);
+			vec2 outputPos = GetRectCenter(outputRect);
+			vec2 inputPos = GetRectCenter(inputRect);
+			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+			ImDrawLine(outputPos, inputPos);
+		}
 	}
 
 	// DRAW PARAMETERS
@@ -153,13 +142,6 @@ void DrawNode(int handle)
 	for(int i = 0; i < node->params.Count(); i++) {
 		if(node->params[i].exposed) {
 			Rect paramRect = GetNodeParamRect(handle, visibleParamsCount); 
-
-			// float offsetX = (visibleParamsCount + node->inputs.Count()) * (PARAM_WIDTH + 10);
-			// float offsetY = -PARAM_HEIGHT;
-			// paramRect.pos = rect.pos + vec2(offsetX, offsetY);
-			// paramRect.width = PARAM_WIDTH;
-			// paramRect.height = PARAM_HEIGHT;
-
 			ImDrawSetColor(vec3(0.0f, 1.0f, 0.0f));
 			ImDrawRect(paramRect);
 			visibleParamsCount++;
@@ -280,11 +262,11 @@ void UpdateNodeDragging()
 	}
 
 	if(_nodeEditorState->isDragging) {
-
 		// HANDLE STOP DRAGGING
 		if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
 			// handle stopped dragging
 			_nodeEditorState->isDragging = false;
+
 
 			switch(_nodeEditorState->draggedType) {
 				case EDITOR_ELEMENT_NODE: {
@@ -296,6 +278,13 @@ void UpdateNodeDragging()
 						int inHandle = _nodeEditorState->draggedNodeHandle;
 						int ctxHandle = _nodeEditorState->draggedCtxHandle;
 						ConnectNodes(inHandle, outHandle, ctxHandle);
+					}
+					else {
+						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+						int ctxHandle = _nodeEditorState->draggedCtxHandle;
+						node->changed = true;
+						node->inputs[ctxHandle].handle = -1;
+
 					}
 					break;
 				}

@@ -1,28 +1,12 @@
 #pragma once
 
-int MixTextureOperation(Node *self);
-
-int AddMixTextureNode()
-{
-	VMArray<NodeParameter> params = {
-		NodeParameter("mix", PARAM_DOUBLE, 0.5),
-	};
-
-	VMArray<NodeInput> inputs = {
-		NodeInput(TEXTURE_NODE),
-		NodeInput(TEXTURE_NODE),
-	};
-
-	return AddNode("MIX_TEXTURE", TEXTURE_NODE, MixTextureOperation, params, inputs);
-}
-
-int MixTextureOperation(Node *self)
+void MixTextureOperation(Node *self)
 {
 	// GET INPUTS
 	Texture *tex1 = GetTextureInput(self->inputs[0]);
 	Texture *tex2 = GetTextureInput(self->inputs[1]);
 	if(!tex1 || !tex2)
-		return -1;
+		return;
 
 	// GET SELF
 	// TODO (rhoe) make cleaner way to get parameters
@@ -42,6 +26,18 @@ int MixTextureOperation(Node *self)
 			output->pixels[index] = result;
 		}
 	}
+}
 
-	return self->GetDataLast();
+int AddMixTextureNode()
+{
+	VMArray<NodeParameter> params = {
+		NodeParameter("mix", PARAM_DOUBLE, 0.5),
+	};
+
+	VMArray<NodeInput> inputs = {
+		NodeInput(TEXTURE_NODE),
+		NodeInput(TEXTURE_NODE),
+	};
+
+	return AddNode("MIX_TEXTURE", TEXTURE_NODE, MixTextureOperation, params, inputs);
 }

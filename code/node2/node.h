@@ -114,6 +114,7 @@ struct NodeInput {
 
 	NodeInput(NodeType _type) {
 		type = _type;
+		handle = -1;
 	}
 
 	NodeInput() {}
@@ -166,8 +167,7 @@ struct NodeParameter {
 };
 
 struct Node;
-
-typedef int(*NodeOperation)(Node *self);
+typedef void(*NodeOperation)(Node *self);
 
 struct Node {
 	NodeOperation op;
@@ -194,7 +194,7 @@ struct Node {
 	{
 		if(changed) {
 			changed = false;
-			return op(this);
+			op(this);
 		}
 
 		return dataHandle;

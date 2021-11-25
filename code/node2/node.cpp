@@ -31,7 +31,9 @@ Texture* GetTexture(int handle)
 
 Texture* GetTextureInput(NodeInput input)
 {
-	if(input.type != TEXTURE_NODE) {
+	if(input.type != TEXTURE_NODE ||
+	   input.handle > _nodeState->textures.Count() - 1 ||
+	   input.handle < 0) {
 		return NULL;
 	}
 
@@ -50,6 +52,7 @@ bool ConnectNodes(int inHandle, int outHandle, int inputIndex)
 
 	Node *inputNode = GetNode(inHandle);
 	if(inputNode != NULL) {
+		inputNode->changed = true;
 		inputNode->inputs[inputIndex].handle = outHandle;
 	}
 

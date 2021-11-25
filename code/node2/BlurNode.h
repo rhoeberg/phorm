@@ -1,30 +1,14 @@
 #pragma once
 
-int BlurOperation(Node *self);
-
-int AddBlurNode()
-{
-	VMArray<NodeParameter> params = {
-		NodeParameter("amount", PARAM_INT, 20),
-	};
-
-	VMArray<NodeInput> inputs = {
-		NodeInput(TEXTURE_NODE),
-	};
-
-	return AddNode("BLUR", TEXTURE_NODE, BlurOperation, params, inputs);
-}
-
-int BlurOperation(Node *self)
+void BlurOperation(Node *self)
 {
 	// INPUTS
 	Texture *inputTexture = GetTextureInput(self->inputs[0]);
 	if(!inputTexture)
-		return -1;
+		return;
 
 	// SELF
 	Texture *output = GetTexture(self->GetDataLast());
-
 
 	// OPERATION
 	// int kernel[] = { 1, 2, 1 };
@@ -90,6 +74,17 @@ int BlurOperation(Node *self)
 
 		}
 	}
+}
 
-	return self->GetDataLast();
+int AddBlurNode()
+{
+	VMArray<NodeParameter> params = {
+		NodeParameter("amount", PARAM_INT, 20),
+	};
+
+	VMArray<NodeInput> inputs = {
+		NodeInput(TEXTURE_NODE),
+	};
+
+	return AddNode("BLUR", TEXTURE_NODE, BlurOperation, params, inputs);
 }

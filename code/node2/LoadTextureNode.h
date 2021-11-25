@@ -1,20 +1,6 @@
 #pragma once
 
-int LoadTextureOperation(Node *self);
-
-int AddLoadTextureNode()
-{
-	VMArray<NodeParameter> params = {
-		NodeParameter("path", PARAM_STRING, ""),
-	};
-
-	VMArray<NodeInput> inputs = {
-	};
-
-	return AddNode("LOAD_TEXTURE", TEXTURE_NODE, LoadTextureOperation, params, inputs);
-}
-
-int LoadTextureOperation(Node *self)
+void LoadTextureOperation(Node *self)
 {
 	int width;
 	int height;
@@ -28,6 +14,16 @@ int LoadTextureOperation(Node *self)
 		memcpy(output->pixels, data, sizeof(output->pixels));
 		free(data);
 	}
+}
 
-	return self->GetDataLast();
+int AddLoadTextureNode()
+{
+	VMArray<NodeParameter> params = {
+		NodeParameter("path", PARAM_STRING, ""),
+	};
+
+	VMArray<NodeInput> inputs = {
+	};
+
+	return AddNode("LOAD_TEXTURE", TEXTURE_NODE, LoadTextureOperation, params, inputs);
 }
