@@ -4,17 +4,15 @@ int BlurOperation(Node *self);
 
 int AddBlurNode()
 {
-	BlurNode blurNode = {};
-	blurNode.amount = 20;
-	int typeHandle = _nodeState->blurNodes.Insert(blurNode);
-	int nodeHandle = AddNode("BLUR", TEXTURE_NODE, typeHandle, BlurOperation);
+	VMArray<NodeParameter> params = {
+		NodeParameter("amount", PARAM_INT, 20),
+	};
 
-	Node *node = GetNode(nodeHandle);
-	if(node != NULL) {
-		node->AddInput(TEXTURE_NODE);
-	}
+	VMArray<NodeInput> inputs = {
+		NodeInput(TEXTURE_NODE),
+	};
 
-	return nodeHandle;
+	return AddNode("BLUR", TEXTURE_NODE, BlurOperation, params, inputs);
 }
 
 int BlurOperation(Node *self)
@@ -25,7 +23,6 @@ int BlurOperation(Node *self)
 		return -1;
 
 	// SELF
-	BlurNode *blurNode = &_nodeState->blurNodes[self->typeHandle];
 	Texture *output = GetTexture(self->GetDataLast());
 
 

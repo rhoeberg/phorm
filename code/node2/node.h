@@ -119,6 +119,50 @@ struct NodeInput {
 	NodeInput() {}
 };
 
+enum NodeParameterType {
+	PARAM_INT,
+	PARAM_DOUBLE,
+	PARAM_VEC3,
+	PARAM_STRING,
+};
+
+struct NodeParameter {
+	NodeParameterType type;
+	char name[128];
+
+	union {
+		int i;
+		double d;
+		vec3 v3;
+		char str[128];
+	};
+
+	// TODO (rhoe) can we make a unified constructor that sets a default parameter?
+	NodeParameter(const char *_name, NodeParameterType _type, int _i) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		i = _i;
+	}
+
+	NodeParameter(const char *_name, NodeParameterType _type, double _d) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		d = _d;
+	}
+
+	NodeParameter(const char *_name, NodeParameterType _type, vec3 _v3) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		v3 = _v3;
+	}
+
+	NodeParameter(const char *_name, NodeParameterType _type, const char *_str) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		sprintf(str, "%s", _str);
+	}
+};
+
 struct Node;
 
 typedef int(*NodeOperation)(Node *self);
@@ -126,11 +170,11 @@ typedef int(*NodeOperation)(Node *self);
 struct Node {
 	NodeOperation op;
 	NodeType type; //defines the return of the node operation
-	int typeHandle;
 	Rect rect;
 	bool changed;
 	char name[128];
 	VMArray<NodeInput> inputs;
+	VMArray<NodeParameter> params;
 
 	void AddInput(NodeType type)
 	{
@@ -162,36 +206,19 @@ struct Texture {
 	Pixel pixels[PIXEL_AMOUNT];
 };
 
-struct BlurNode {
-	int amount;
-};
-
-struct LoadTextureNode {
-	char path[128];
-};
-
-struct MixTextureNode {
-	float mix;
-};
-
 struct NodeState {
 	// base node array
 	VMArray<Node> nodes;
 
 	// data arrays
 	VMArray<Texture> textures;
-
-	// node sub type arrays
-	VMArray<BlurNode> blurNodes;
-	VMArray<LoadTextureNode> loadTextureNodes;
-	VMArray<MixTextureNode> mixTextureNodes;
 };
 
 global NodeState *_nodeState;
 
 int GetPixelIndex(int x, int y);
 Node* GetNode(int handle);
-int AddNode(const char *name, NodeType type, int typeHandle, NodeOperation op);
+int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
 Texture* GetTexture(int handle);
 Texture* GetTextureInput(NodeInput input);
 

@@ -60,9 +60,6 @@ void InitializeNodes()
 
 	// _nodeState->textureNodes = VMArray<TextureNode>();
 	_nodeState->nodes = VMArray<Node>();
-	_nodeState->blurNodes = VMArray<BlurNode>();
-	_nodeState->loadTextureNodes = VMArray<LoadTextureNode>();
-	_nodeState->mixTextureNodes = VMArray<MixTextureNode>();
 
 	// data containers
 	_nodeState->textures = VMArray<Texture>();
@@ -81,12 +78,23 @@ void InitializeNodes()
 	ConnectNodes(blurHandle, loadHandle, 0);
 }
 
-// int AddNode(NodeType type, int dataHandle, int typeHandle, NodeOperation op)
+// TODO (rhoe) change this to node constructor?
+// int AddNode(const char *name, NodeType type, NodeOperation op)
 // {
-// 	return AddNode(type, dataHandle, typeHandle, op, VMArray<NodeInput>());
+// 	return AddNode(type, dataHandle, typeHandle, op, VMArray<NodeParameter>(), VMArray<NodeInput>());
 // }
 
-int AddNode(const char *name, NodeType type, int typeHandle, NodeOperation op)
+// int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params)
+// {
+// 	return AddNode(type, dataHandle, typeHandle, op, params, VMArray<NodeInput>());
+// }
+
+// int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeInput> inputs)
+// {
+// 	return AddNode(type, dataHandle, typeHandle, op, VMArray<NodeParameter>(), inputs);
+// }
+
+int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
 {
 	Node node = {};
 	sprintf(node.name, "%s", name);
@@ -96,7 +104,8 @@ int AddNode(const char *name, NodeType type, int typeHandle, NodeOperation op)
 	node.changed = true;
 	node.inputs = VMArray<NodeInput>();
 	node.type = type;
-	node.typeHandle = typeHandle;
+	node.params = params;
+	node.inputs = inputs;
 	node.op = op;
 
 	switch(node.type) {
@@ -140,8 +149,6 @@ void CleanupNodes()
 {
 	_nodeState->nodes.Free();
 	_nodeState->textures.Free();
-	_nodeState->blurNodes.Free();
-	_nodeState->loadTextureNodes.Free();
 	free(_nodeState);
 }
 

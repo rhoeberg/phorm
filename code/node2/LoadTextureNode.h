@@ -4,10 +4,14 @@ int LoadTextureOperation(Node *self);
 
 int AddLoadTextureNode()
 {
-	LoadTextureNode loadTextureNode = {};
-	int typeHandle = _nodeState->loadTextureNodes.Insert(loadTextureNode);
-	int nodeHandle = AddNode("LOAD_TEXTURE", TEXTURE_NODE, typeHandle, LoadTextureOperation);
-	return nodeHandle;
+	VMArray<NodeParameter> params = {
+		NodeParameter("path", PARAM_STRING, ""),
+	};
+
+	VMArray<NodeInput> inputs = {
+	};
+
+	return AddNode("LOAD_TEXTURE", TEXTURE_NODE, LoadTextureOperation, params, inputs);
 }
 
 int LoadTextureOperation(Node *self)

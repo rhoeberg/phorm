@@ -9,6 +9,27 @@ VMArray<T>::VMArray()
 }
 
 template <typename T>
+VMArray<T>::VMArray(const VMArray<T>& old)
+{
+	count = old.count;
+	max = old.max;
+	data = (T*)malloc(sizeof(T) * max);
+	memcpy(data, old.data, sizeof(T) * max);
+}
+
+template <typename T>
+VMArray<T>::VMArray(std::initializer_list<T> init)
+{
+	max = ARRAY_START_SIZE;
+	data = (T*)malloc(sizeof(T) * max);
+	count = 0;
+
+	for(T const &t : init) {
+		Insert(t);
+	}
+}
+
+template <typename T>
 VMArray<T>::~VMArray()
 {
 	// if(data != NULL)

@@ -13,6 +13,8 @@ class VMArray {
 	void Grow();
  public:
 	VMArray();
+	VMArray(const VMArray<T>&);
+	VMArray(std::initializer_list<T> init);
 	~VMArray();
 	int Insert(T e);
 	int InsertNew();

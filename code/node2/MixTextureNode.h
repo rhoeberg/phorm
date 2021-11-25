@@ -4,18 +4,16 @@ int MixTextureOperation(Node *self);
 
 int AddMixTextureNode()
 {
-	MixTextureNode mixNode = {};
-	mixNode.mix = 0.5f;
-	int typeHandle = _nodeState->mixTextureNodes.Insert(mixNode);
-	int nodeHandle = AddNode("MIX_TEXTURE", TEXTURE_NODE, typeHandle, MixTextureOperation);
+	VMArray<NodeParameter> params = {
+		NodeParameter("mix", PARAM_DOUBLE, 0.5),
+	};
 
-	Node *node = GetNode(nodeHandle);
-	if(node != NULL) {
-		node->AddInput(TEXTURE_NODE);
-		node->AddInput(TEXTURE_NODE);
-	}
+	VMArray<NodeInput> inputs = {
+		NodeInput(TEXTURE_NODE),
+		NodeInput(TEXTURE_NODE),
+	};
 
-	return nodeHandle;
+	return AddNode("MIX_TEXTURE", TEXTURE_NODE, MixTextureOperation, params, inputs);
 }
 
 int MixTextureOperation(Node *self)
@@ -27,12 +25,13 @@ int MixTextureOperation(Node *self)
 		return -1;
 
 	// GET SELF
-	MixTextureNode *mixNode = &_nodeState->mixTextureNodes[self->typeHandle];
+	// TODO (rhoe) make cleaner way to get parameters
+	double mix = self->params[0].d;
 	Texture *output = GetTexture(self->GetDataLast());
 
 	// OPERATION
-	float inputMul1 = 1.0f - mixNode->mix;
-	float inputMul2 = mixNode->mix;
+	float inputMul1 = 1.0f - mix;
+	float inputMul2 = mix;
 	for(int x = 0; x < TEXTURE_SIZE; x++) {
 		for(int y = 0; y < TEXTURE_SIZE; y++) {
 			int index = GetPixelIndex(x, y);
