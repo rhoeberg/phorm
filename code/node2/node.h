@@ -172,7 +172,6 @@ typedef int(*NodeOperation)(Node *self);
 struct Node {
 	NodeOperation op;
 	NodeType type; //defines the return of the node operation
-	/* Rect rect; */
 	vec2 pos;
 	bool changed;
 	char name[128];

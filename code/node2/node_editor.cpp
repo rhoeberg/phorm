@@ -62,6 +62,20 @@ Rect GetNodeRect(int handle)
 	return rect;
 }
 
+Rect GetNodeOutputRect(int handle)
+{
+	Rect nodeRect = GetNodeRect(handle);
+
+	// DRAW OUTPUT
+	Rect result = {};
+	float outputOffsetX = (nodeRect.width / 2.0f) - PARAM_WIDTH / 2.0f;
+	result.pos = nodeRect.pos + vec2(outputOffsetX, nodeRect.height);
+	result.width = PARAM_WIDTH;
+	result.height = PARAM_HEIGHT;
+
+	return result;
+}
+
 void DrawNode(int handle)
 {
 	Node *node = GetNode(handle);
@@ -73,6 +87,11 @@ void DrawNode(int handle)
 	vec2 namePos = node->pos + vec2(10.0f, rect.height - 10.0f);
 	ImDrawText(namePos, node->name);
 
+	Rect outputRect = GetNodeOutputRect(handle);
+	ImDrawSetColor(vec3(0.0f, 0.0f, 1.0f));
+	ImDrawRect(outputRect);
+
+	// DRAW INPUTS
 	for(int i = 0; i < node->inputs.Count(); i++) {
 		Rect inputRect = {};
 		float offsetX = i * (PARAM_WIDTH + 10);
@@ -83,21 +102,27 @@ void DrawNode(int handle)
 		ImDrawSetColor(vec3(1.0f, 0.0f, 0.0f));
 		ImDrawRect(inputRect);
 
-		NodeInput input = node->inputs[i];
-		Node *inputNode = &_nodeState->nodes[input.handle];
+		Rect outputRect = GetNodeOutputRect(node->inputs[i].handle);
+		vec2 outputPos = GetRectCenter(outputRect);
+		vec2 inputPos = GetRectCenter(inputRect);
 		ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-		ImDrawLine(inputNode->pos, inputRect.pos);
+		ImDrawLine(outputPos, inputPos);
 	}
 
+	// DRAW PARAMETERS
+	int visibleParamsCount = 0;
 	for(int i = 0; i < node->params.Count(); i++) {
-		Rect paramRect = {};
-		float offsetX = (i + node->inputs.Count()) * (PARAM_WIDTH + 10);
-		float offsetY = -PARAM_HEIGHT;
-		paramRect.pos = rect.pos + vec2(offsetX, offsetY);
-		paramRect.width = PARAM_WIDTH;
-		paramRect.height = PARAM_HEIGHT;
-		ImDrawSetColor(vec3(0.0f, 1.0f, 0.0f));
-		ImDrawRect(paramRect);
+		if(node->params[i].exposed) {
+			Rect paramRect = {};
+			float offsetX = (visibleParamsCount + node->inputs.Count()) * (PARAM_WIDTH + 10);
+			float offsetY = -PARAM_HEIGHT;
+			paramRect.pos = rect.pos + vec2(offsetX, offsetY);
+			paramRect.width = PARAM_WIDTH;
+			paramRect.height = PARAM_HEIGHT;
+			ImDrawSetColor(vec3(0.0f, 1.0f, 0.0f));
+			ImDrawRect(paramRect);
+			visibleParamsCount++;
+		}
 	}
 }
 
@@ -158,13 +183,17 @@ void ShowNode(int handle)
 
 void UpdateNodeDragging()
 {
+	// START DRAGGING
 	if(_nodeEditorState->hoverState.hoveringElement) {
 		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeEditorState->isDragging) {
 			_nodeEditorState->draggedNodeHandle = _nodeEditorState->hoverState.nodeHandle;
 			_nodeEditorState->isDragging = true;
+			Node *node = GetNode(_nodeEditorState->hoverState.nodeHandle);
+			_nodeEditorState->dragOffset = node->pos - mouse;
 		}
 	}
 
+	// CONTINUE DRAGGING
 	if(_nodeEditorState->isDragging) {
 
 		if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
@@ -173,7 +202,8 @@ void UpdateNodeDragging()
 		}
 		else {
 			// handle continued dragging
-			_nodeState->nodes[_nodeEditorState->draggedNodeHandle].pos = mouse;
+			Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+			node->pos = mouse + _nodeEditorState->dragOffset;
 		}
 	}
 }
@@ -192,7 +222,13 @@ void NodeGUI()
 
 		ImGui::Text("%s", node->name);
 
+
 		for(int i = 0; i < node->params.Count(); i++) {
+
+			// EXPOSE
+			ImGui::Checkbox("", &node->params[i].exposed);
+			ImGui::SameLine();
+
 			char buffer[128];
 			sprintf(buffer, "%s", node->params[i].name);
 
