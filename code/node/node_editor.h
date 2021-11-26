@@ -31,4 +31,6 @@ struct NodeEditorState {
 	GLuint viewerShader;
 };
 
+void NodeEditorSetWindowSize(int width, int height);
+
 global NodeEditorState *_nodeEditorState;

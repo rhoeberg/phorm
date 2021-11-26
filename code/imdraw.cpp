@@ -50,27 +50,41 @@ global GLuint imDrawShader;
 global vec3 imDrawColor;
 global std::vector<TextCommand> imTextCommands;
 
+void ImDrawSetWindowSize(int width, int height)
+{
+    glm::mat4 projection;
+    projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
+	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    model = glm::translate(model, glm::vec3(0,0,0));
+
+    glUseProgram(imDrawShader);
+    GLuint projectionLoc = glGetUniformLocation(imDrawShader, "projection");
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    GLuint modelLoc = glGetUniformLocation(imDrawShader, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	glUseProgram(textShader);
+    projectionLoc = glGetUniformLocation(textShader, "projection");
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    modelLoc = glGetUniformLocation(imDrawShader, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+}
 
 void ImDrawInitialize()
 {
     imDrawShader = createShaderProgram("assets\\imdraw.vs", "assets\\imdraw.frag");
+	textShader = createShaderProgram("assets/font_shader.vert", "assets/font_shader.frag");
+
     
     glGenVertexArrays(1, &imDrawVAO);
     glGenBuffers(1, &imDrawVBO);
 
-    glUseProgram(imDrawShader);
     // GLuint viewLoc = glGetUniformLocation(imDrawShader, "view");
     // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    GLuint projectionLoc = glGetUniformLocation(imDrawShader, "projection");
-    glm::mat4 projection;
-    projection = glm::ortho(0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f);
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    GLuint modelLoc = glGetUniformLocation(imDrawShader, "model");
-	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-    model = glm::translate(model, glm::vec3(0,0,0));
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-
+	int width, height;
+	GetWindowSize(&width, &height);
+	ImDrawSetWindowSize(width, height);
 
 	// INITIALIZE FONT DRAWING
 	FILE *file = fopen("c:/windows/fonts/consola.ttf", "rb");
@@ -86,14 +100,6 @@ void ImDrawInitialize()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512,512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
 	// can free temp_bitmap at this point
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	textShader = createShaderProgram("assets/font_shader.vert", "assets/font_shader.frag");
-
-	glUseProgram(textShader);
-    projectionLoc = glGetUniformLocation(textShader, "projection");
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    modelLoc = glGetUniformLocation(imDrawShader, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
 }
 
 void ImDrawSetColor(vec3 color)
@@ -191,12 +197,6 @@ void _ImDrawText(float x, float y, char *text)
 				q.x1, q.y1, q.s1, q.t1,
 				q.x0, q.y1, q.s0, q.t1
 			};
-			// GLfloat vertices[] = {
-			// 	q.x0, q.y0, q.s0, q.t0,
-			// 	q.x1, q.y0, q.s1, q.t0,
-			// 	q.x1, q.y1, q.s1, q.t1,
-			// 	q.x0, q.y1, q.s0, q.t1
-			// };
 
 			GLuint indices[] = {
 				0, 1, 2,

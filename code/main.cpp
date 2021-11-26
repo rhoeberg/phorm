@@ -46,8 +46,8 @@
 // #include "texture_graph.cpp"
 // #include "node.cpp"
 #include "vm_array.cpp"
-#include "node2/node.cpp"
-#include "node2/node_editor.cpp"
+#include "node/node.cpp"
+#include "node/node_editor.cpp"
 
 int main(int argc, char *argv[])
 {
@@ -124,7 +124,9 @@ int main(int argc, char *argv[])
 		///////////////
 		// IMDRAW
 		///////////////
-		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		int screenWidth, screenHeight;
+		GetWindowSize(&screenWidth, &screenHeight);
+		glViewport(0, 0, screenWidth, screenHeight);
 		ImDrawRender();
 
 

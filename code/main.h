@@ -4,8 +4,15 @@ typedef glm::vec3 vec3;
 typedef glm::vec2 vec2;
 
 #define global static
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+/* #define SCREEN_WIDTH 1280 */
+/* #define SCREEN_HEIGHT 720 */
+
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+
+/* #define SCREEN_WIDTH 2560 */
+/* #define SCREEN_HEIGHT 1440 */
+
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
 bool keys[1024];
@@ -24,7 +31,9 @@ bool mouse_buttons[32];
 #include "render.h"
 /* #include "node.h" */
 #include "vm_array.h"
-#include "node2/node.h"
+#include "node/node.h"
+#include "glfw_wrapper.h"
+#include "node/node_editor.h"
 
 
 GLuint createRectVAO(float w, float h);

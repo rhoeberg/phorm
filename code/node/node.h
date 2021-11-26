@@ -1,49 +1,86 @@
 /*
   
-  Objective oriented approach to the node system
-  we have a base node class and from that we would make
-  core node types like:
-  - textureNode
-  - renderObjectNode
-  - materialNode
-  - etc..
+  A non OOP way of doing the node system.
+
+
+  _data is structured like:_
+  textureNodes[]
+  blurNode[]
+  ...
+  
+  RenderNodes[]
+  renderNodeType[]
+  ...
   
 
-  using these core types as the base classes we can then create interesting
-  nodes. like:
+  we have a node type for each base data type:
+  - texture
+  - renderobject
+  - ...
+  
+  each of these holds a function pointer specific to that type
+  called an operation
+  
+  
+  sub types are then stored in different arrays and can hold different
+  data needed for that type. The sub type also defines the operation
+  function pointer in the parent.
+  - specific data
+  - specific operation function
+
+  examples of sub types:
   - blur
-  - slice
-  - noise
-  - etc..
-
-
-  the core node types then provide a function (operation) which returns the type
-  consumed by the next node in the chain.
-  fx. a texture node provides a GetPixels function. 
-
-  an example:
-  a blur node is a texture node which have another texture node as input.
-  when another node is then connected to the blur node and calls the GetPixels 
-  function, the blur node then gets the pixels from its input by again calling
-  GetPixels() and from that result it does the blur algorithm and returns that result
-  futher down the chain of nodes.
+  - loadTexture
 
   
 
-  caching:
-  we also have the possibility of caching the results if nothing in the chain above
-  has changed.
-  in our blur example this would mean that the first time its operation is executed
-  it get the pixel from its input and does the algorithm, but the second time if
-  nothing has changed in its input and nothing has changed in itself it simply returns
-  the last calculated result.
- 
   
+
+  __ GENERALIZATION IDEA __  (not yet implemented)
+  we could further generalize the system by storing the data
+  of each type seperately (we kind of do that in sub types)
+  then we could get rid of the diffferent node types
+  and have a single general node type with a single function pointer
+  signature:
+  typedef int(*NodeOperation)(Node *self)
+  
+  the returned int would then be a contextual handle to the 
+  data type for that node.
+  that means sometimes its a handle to a texture
+  sometimes to a renderobject
+
+
+  
+  
+
+
+
+
+
+  __ HANDLE SYSTEM __ (not yet implemented)
+  we need unique handles pr node / sub node
+  these handles is going to be indices in their respective arrays.
+  
+  problem:
+  when removing a node its important that we dont move all elements of the node 
+  arrays, this would invalidate all handles above the removed handle.
+  
+  for this reason we need to simply "deactivate" the array slot when removing a node
+  this can be done either by having a bool in the node type which defines if its 
+  free or not.
+
+  another way to fix it could be to have a seperate parallel array with only bools
+  which defines if its active.
+  we then look in the "bool" array to find a free slot in the node array
+  
+
+  handles should be type specific
+  for this just create a thin struct wrapper around the handle so we can differentiate
+  the types
+
  */
 
 #pragma once
-
-#include <vector>
 
 #define TEXTURE_SIZE 512
 #define TEXTURE_CHANNEL_AMOUNT 4
@@ -67,72 +104,139 @@ struct Pixel {
 	}
 };
 
-class Node {
-public:
-	bool changed;
-	bool dragging;
-	Rect rect;
+enum NodeType {
+	TEXTURE_NODE,
+	RENDEROBJECT_NODE,
+};
+
+struct NodeInput {
+	NodeType type;
+	int handle;
+
+	NodeInput(NodeType _type) {
+		type = _type;
+		handle = -1;
+	}
+
+	NodeInput() {}
+};
+
+enum NodeParameterType {
+	PARAM_INT,
+	PARAM_DOUBLE,
+	PARAM_VEC3,
+	PARAM_STRING,
+};
+
+// TODO (rhoe) add a way to hide/expose node parameters from node editor
+struct NodeParameter {
+	NodeParameterType type;
 	char name[128];
+	bool exposed;
 
-	Node();
-	void RenderNode();
-	void Update();
-	void SetName(const char *name);
+	union {
+		int i;
+		double d;
+		vec3 v3;
+		char str[128];
+	};
 
-	virtual void ShowGUI() = 0;
+	// TODO (rhoe) can we make a unified constructor that sets a default parameter?
+	NodeParameter(const char *_name, NodeParameterType _type, int _i) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		i = _i;
+	}
+
+	NodeParameter(const char *_name, NodeParameterType _type, double _d) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		d = _d;
+	}
+
+	NodeParameter(const char *_name, NodeParameterType _type, vec3 _v3) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		v3 = _v3;
+	}
+
+	NodeParameter(const char *_name, NodeParameterType _type, const char *_str) {
+		type = _type;
+		sprintf(name, "%s", _name);
+		sprintf(str, "%s", _str);
+	}
 };
 
-class TextureNode : public Node {
-public:
-	Pixel pixels[PIXEL_AMOUNT]; // maybe change this into a pointer?
-	virtual Pixel* GetPixels() = 0;
+struct Node;
+typedef void(*NodeOperation)(Node *self);
+
+struct Node {
+	NodeOperation op;
+	NodeType type; //defines the return of the node operation
+	vec2 pos;
+	bool changed;
+	char name[128];
+	VMArray<NodeInput> inputs;
+	VMArray<NodeParameter> params;
+
+	void AddInput(NodeType type)
+	{
+		NodeInput input = {};
+		input.type = type;
+		input.handle = -1;
+		inputs.Insert(input);
+	}
+
+	void SetDataHandle(int handle) { dataHandle = handle; }
+
+	int GetDataLast() { return dataHandle; }
+
+	int GetData()
+	{
+		if(changed) {
+			changed = false;
+			op(this);
+		}
+
+		return dataHandle;
+	}
+
+private:
+	int dataHandle;
 };
 
-class LoadTextureNode : public TextureNode {
-public:
-	char path[128];
-
-	Pixel* GetPixels();
-	void LoadPixels();
-	void ShowGUI();
+struct Texture {
+	Pixel pixels[PIXEL_AMOUNT];
 };
 
-int GetPixelIndex(int x, int y)
-{
-	return ((y * TEXTURE_SIZE) + x);
-}
+struct RenderObject {
+	bool hasTexture;
+	GLuint textureID;
+	GLuint VAO;
+	int vertexAmount;
 
-class BlurTextureNode : public TextureNode {
-public:
-	TextureNode *input;
-	int amount;
-
-	BlurTextureNode();
-	Pixel* GetPixels();
-	void Blur();
-	void ShowGUI();
-
-};
-
-class AddTextureNode : public TextureNode {
-public:
-	TextureNode *input1;
-	TextureNode *input2;
-
-	// 0 = input 1
-	// 1 = input 2
-	// 0.5 = equal mix
-	float slider = 0.5f;
-
-	Pixel* GetPixels();
-	void AddInputs();
-	void ShowGUI();
+	// TODO (rhoe) add EBO indices
 };
 
 struct NodeState {
-	VMArray<TextureNode> textureNodes;
-	bool isDragging;
-	Node *selectedNode = NULL;
+	// base node array
+	VMArray<Node> nodes;
+
+	// data arrays
+	VMArray<Texture> textures;
+	VMArray<RenderObject> renderObjects;
 };
 
-global NodeState _nodeState;
+global NodeState *_nodeState;
+
+int GetPixelIndex(int x, int y);
+Node* GetNode(int handle);
+int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
+Texture* GetTexture(int handle);
+Texture* GetTextureInput(NodeInput input);
+RenderObject* GetRenderObject(int handle);
+
+#include "BlurNode.h"
+#include "LoadTextureNode.h"
+#include "MixTextureNode.h"
+#include "CubeNode.h"

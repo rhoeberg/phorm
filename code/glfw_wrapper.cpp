@@ -1,3 +1,5 @@
+global GLFWwindow *_win;
+
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -57,9 +59,21 @@ void dropCallback(GLFWwindow *window, int count, const char **paths)
 	}
 }
 
+void windowSizeCallback(GLFWwindow *window, int width, int height)
+{
+	// TODO (rhoe) remove coupling with application code
+	ImDrawSetWindowSize(width, height);
+	NodeEditorSetWindowSize(width, height);
+}
+
+void GetWindowSize(int *width, int *height)
+{
+	glfwGetWindowSize(_win, width, height);
+}
+
 GLFWwindow* initGlfw()
 {
-	GLFWwindow *win;
+	// GLFWwindow *win;
 
     glfwSetErrorCallback(errorCallback);
     if(!glfwInit()) {
@@ -70,30 +84,31 @@ GLFWwindow* initGlfw()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-    win = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "test", NULL, NULL);
-    if(!win) {
+    _win = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "test", NULL, NULL);
+    if(!_win) {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
-    glfwMakeContextCurrent(win);
+    glfwMakeContextCurrent(_win);
     
-    glfwSetCursorPosCallback(win, mouseCallback);
-    glfwSetKeyCallback(win, keyCallback);
-    glfwSetMouseButtonCallback(win, mouseButtonCallback);
-    glfwSetDropCallback(win, dropCallback);
+    glfwSetCursorPosCallback(_win, mouseCallback);
+    glfwSetKeyCallback(_win, keyCallback);
+    glfwSetMouseButtonCallback(_win, mouseButtonCallback);
+    glfwSetDropCallback(_win, dropCallback);
+    glfwSetWindowSizeCallback(_win, windowSizeCallback);
 
     // Set this to true so glew knows to use modern opengl
     glewExperimental = GL_TRUE;
     glewInit();
     
     int vWidth, vHeight;
-    glfwGetFramebufferSize(win, &vWidth, &vHeight);
+    glfwGetFramebufferSize(_win, &vWidth, &vHeight);
     glViewport(0, 0, vWidth, vHeight);
     
     // enable depths testing to remove pixels which is behind other pixels
     glEnable(GL_DEPTH_TEST);  
 
-	return win;
+	return _win;
 }
