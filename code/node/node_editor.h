@@ -24,11 +24,13 @@ struct NodeEditorState {
 	vec2 dragOffset;
 	NodeEditorElementType draggedType;
 
+	// VIEWER STATE
 	GLuint textureID;
 	GLuint viewerQuad;
 	GLuint fboTexture;
 	GLuint fbo;
 	GLuint viewerShader;
+	int viewerWidth, viewerHeight;
 };
 
 void NodeEditorSetWindowSize(int width, int height);

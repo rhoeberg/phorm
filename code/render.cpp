@@ -25,7 +25,6 @@ void InitializeRender()
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-
 	_renderState->cubeVAO = createCubeVAO();
 }
 
