@@ -108,18 +108,10 @@ int main(int argc, char *argv[])
 		UpdateRender();
 
 		///////////////
-		// NODE EDITOR
+		// NODES
 		///////////////
-		// UpdateNodeEditor();
-
-		///////////////
-		// TEXTURE GRAPH
-		///////////////
-		// UpdateTextureGraph();
-
 		UpdateNodes();
 		UpdateNodeEditor();
-		// NodeGUI();
 
 		///////////////
 		// IMDRAW
@@ -128,7 +120,6 @@ int main(int argc, char *argv[])
 		GetWindowSize(&screenWidth, &screenHeight);
 		glViewport(0, 0, screenWidth, screenHeight);
 		ImDrawRender();
-
 
 		///////////////
 		// BUFFER SWAP / IMGUI RENDER
