@@ -485,95 +485,8 @@ void UpdateViewerRender()
     glfwMakeContextCurrent(_win);
 }
 
-// void UpdateViewer()
-// {
-// 	glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
-// 	glUseProgram(GetTextureShader());
-
-// 	float vWidth = (float)_nodeEditorState->viewerWidth;
-// 	float vHeight = (float)_nodeEditorState->viewerHeight;
-// 	float aspectRatio = vWidth / vHeight;
-
-// 	glm::mat4 projection = glm::perspective(glm::radians(45.0f),
-// 											aspectRatio,
-// 											0.1f, 1000.0f);
-// 	GLuint projectionLoc = glGetUniformLocation(GetTextureShader(), "projection");
-// 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-// 	glDisable(GL_BLEND);
-// 	glEnable(GL_DEPTH_TEST);
-// 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-//     glViewport(0, 0, vWidth, vHeight);
-// 	if(_nodeEditorState->draggedNodeHandle != -1) {
-// 		ShowNode(_nodeEditorState->draggedNodeHandle);
-// 	}
-// 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-// 	int winWidth, winHeight;
-// 	GetWindowSize(&winWidth, &winHeight);
-//     glViewport(0, 0, winWidth, winHeight);
-// 	glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);
-//     glUseProgram(_nodeEditorState->viewerShader);
-// 	glBindVertexArray(_nodeEditorState->viewerQuad);
-// 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-// 	glBindVertexArray(0);
-// }
-
-// void UpdateViewerDetached()
-// {
-
-//     glfwMakeContextCurrent(_viewerWindow);
-// 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-
-// 	glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
-// 	glUseProgram(GetTextureShader());
-
-// 	int width, height;
-// 	GetViewerWindowSize(&width, &height);
-
-// 	float aspectRatio = (float)width / (float)height;
-
-// 	float vWidth = (float)_nodeEditorState->viewerWidth;
-// 	float vHeight = (float)_nodeEditorState->viewerHeight;
-// 	float aspectRatio = vWidth / vHeight;
-
-// 	glm::mat4 projection = glm::perspective(glm::radians(45.0f),
-// 											aspectRatio,
-// 											0.1f, 1000.0f);
-// 	GLuint projectionLoc = glGetUniformLocation(GetTextureShader(), "projection");
-// 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-// 	glDisable(GL_BLEND);
-// 	glEnable(GL_DEPTH_TEST);
-// 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-//     glViewport(0, 0, width, height);
-// 	if(_nodeEditorState->draggedNodeHandle != -1) {
-// 		ShowNode(_nodeEditorState->draggedNodeHandle);
-// 	}
-// 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-// 	int winWidth, winHeight;
-// 	GetViewerWindowSize(&winWidth, &winHeight);
-
-//     glViewport(0, 0, width, height);
-// 	glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);
-//     glUseProgram(_nodeEditorState->viewerShader);
-// 	glBindVertexArray(_nodeEditorState->viewerQuad);
-// 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-// 	glBindVertexArray(0);
-// 	glfwSwapBuffers(_viewerWindow);
-
-
-// 	// SET BACK TO MAIN WINDOW CONTEXT
-//     glfwMakeContextCurrent(_win);
-// }
-
 void UpdateNodeEditor()
 {
-    // glfwMakeContextCurrent(_win);
 	//////////////////
 	// CHECK HOVERSTATE
 	UpdateHoverState();
@@ -588,8 +501,6 @@ void UpdateNodeEditor()
 
 	//////////////////
 	// VIEWER
-	// UpdateViewer();
-	// UpdateViewerDetached();
     glfwMakeContextCurrent(_viewerWindow);
 	if(_nodeEditorState->draggedNodeHandle != -1) {
 		ShowNode(_nodeEditorState->draggedNodeHandle);
