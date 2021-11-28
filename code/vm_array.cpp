@@ -82,6 +82,12 @@ int VMArray<T>::Count()
 }
 
 template <typename T>
+T* VMArray<T>::Data()
+{
+	return data;
+}
+
+template <typename T>
 T& VMArray<T>::operator[](int index)
 {
 	//TODO (rhoe) check bounds here

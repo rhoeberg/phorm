@@ -2,24 +2,51 @@
 
 void CubeOperation(Node *self)
 {
-	RenderObject *output = GetRenderObject(self->GetDataLast());
-	
-	Texture *inputTexture = GetTextureInput(self->inputs[0]);
-	if(inputTexture) {
-		glBindTexture(GL_TEXTURE_2D, output->textureID);
-		// TODO (rhoe) define texture width and height in texture object
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, inputTexture->pixels);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		output->hasTexture = true;
-	}
-	else {
-		output->hasTexture = false;
-	}
+	Mesh *output = GetMesh(self->GetDataLast());
 
+	output->vertices = {
+		// BACK FACE
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // back, left, bottom
+		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  // back, right, bottom
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, //  back, right, top
+		-0.5f, 0.5f, -0.5f,  0.0f, 0.0f, // back, left, top
+       
+		// FRONT FACE
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // front, left, bottom
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f, //  front, right, bottom
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f, //  front, right, top
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // front, left, top
+    };
+
+	output->indices = {
+		// BACK FACE
+		0, 1, 2,
+		2, 3, 0,
+
+		// FRONT FACE
+		4, 5, 6,
+		6, 7, 4,
+
+		// LEFT FACE
+		0, 4, 7,
+		7, 3, 0,
+
+		// RIGHT FACE
+		5, 1, 2,
+		2, 6, 5,
+
+		// TOP FACE
+		7, 6, 2,
+		2, 3, 7,
+
+		// BOTTOM FACE
+		0, 1, 5,
+		5, 4, 0,
+	};
+    
 	// TODO (rhoe) create opengl ids on init
-	output->VAO = createCubeVAO();
-	output->vertexAmount = 36;
+	/* output->VAO = createCubeVAO(); */
+	/* output->vertexAmount = 36; */
 }
 
 int AddCubeNode()
@@ -28,9 +55,8 @@ int AddCubeNode()
 	};
 
 	VMArray<NodeInput> inputs = {
-		NodeInput(TEXTURE_NODE),
 	};
 
-	return AddNode("CUBE", RENDEROBJECT_NODE, CubeOperation, params, inputs);
+	return AddNode("CUBE", MESH_NODE, CubeOperation, params, inputs);
 }
 

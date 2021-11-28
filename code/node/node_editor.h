@@ -33,6 +33,6 @@ struct NodeEditorState {
 	int viewerWidth, viewerHeight;
 };
 
-void NodeEditorSetWindowSize(int width, int height);
+/* void NodeEditorSetWindowSize(int width, int height); */
 
 global NodeEditorState *_nodeEditorState;

@@ -64,7 +64,7 @@ void windowSizeCallback(GLFWwindow *window, int width, int height)
 {
 	// TODO (rhoe) remove coupling with application code
 	ImDrawSetWindowSize(width, height);
-	NodeEditorSetWindowSize(width, height);
+	// NodeEditorSetWindowSize(width, height);
 }
 
 void ViewerWindowSizeCallback(GLFWwindow *window, int width, int height)

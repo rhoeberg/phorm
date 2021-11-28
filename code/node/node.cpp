@@ -31,15 +31,36 @@ Texture* GetTexture(int handle)
 
 Texture* GetTextureInput(NodeInput input)
 {
-	if(input.type != TEXTURE_NODE ||
-	   input.handle > _nodeState->textures.Count() - 1 ||
-	   input.handle < 0) {
+	Node *inputNode = GetNode(input.handle);
+
+	if(inputNode == NULL ||
+	   input.type != TEXTURE_NODE ||
+	   inputNode->GetDataLast() > _nodeState->textures.Count() - 1 ||
+	   inputNode->GetDataLast() < 0) {
 		return NULL;
 	}
 
-	Node *inputNode = GetNode(input.handle);
 	Texture *texture = GetTexture(inputNode->GetData());
 	return texture;
+}
+
+Mesh* GetMesh(int handle)
+{
+	return &_nodeState->meshes[handle];
+}
+
+Mesh* GetMeshInput(NodeInput input)
+{
+	Node *inputNode = GetNode(input.handle);
+
+	if(inputNode == NULL ||
+	   input.type != MESH_NODE ||
+	   inputNode->GetDataLast() > _nodeState->meshes.Count() - 1 ||
+	   inputNode->GetDataLast() < 0) {
+		return NULL;
+	}
+	   
+	return GetMesh(inputNode->GetData());
 }
 
 RenderObject* GetRenderObject(int handle)
@@ -72,20 +93,32 @@ void InitializeNodes()
 
 	// data containers
 	_nodeState->textures = VMArray<Texture>();
+	_nodeState->meshes = VMArray<Mesh>();
 	_nodeState->renderObjects = VMArray<RenderObject>();
 
 	// TESTING STUFF
-	int loadHandle = AddLoadTextureNode();
-	int blurHandle = AddBlurNode();
-	int mixNodeHandle = AddMixTextureNode();
-	ConnectNodes(mixNodeHandle, loadHandle, 0);
-	ConnectNodes(mixNodeHandle, blurHandle, 1);
-	ConnectNodes(blurHandle, loadHandle, 0);
+	// int loadHandle = AddLoadTextureNode();
+	// int blurHandle = AddBlurNode();
+	// int mixNodeHandle = AddMixTextureNode();
+	// ConnectNodes(mixNodeHandle, loadHandle, 0);
+	// ConnectNodes(mixNodeHandle, blurHandle, 1);
+	// ConnectNodes(blurHandle, loadHandle, 0);
+}
+
+int AddNewRenderObject()
+{
+	RenderObject renderObject = {};
+	glGenVertexArrays(1, &renderObject.VAO);
+	glGenTextures(1, &renderObject.textureID);
+	int handle = _nodeState->renderObjects.Insert(renderObject);
+	return handle;
 }
 
 // TODO (rhoe) change this to node constructor?
 int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
 {
+	// TODO (rhoe) since similar node type dont change name we could
+	//             store the names in a string array and just refer to the handle
 	Node node = {};
 	sprintf(node.name, "%s", name);
 	int winWidth, winHeight;
@@ -99,16 +132,27 @@ int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParam
 	node.op = op;
 
 	switch(node.type) {
-		case TEXTURE_NODE:
+		case TEXTURE_NODE: {
 			node.SetDataHandle(_nodeState->textures.InsertNew());
 			break;
-		case RENDEROBJECT_NODE:
+		}
+		case MESH_NODE: {
+			Mesh mesh = {};
+			node.SetDataHandle(_nodeState->meshes.Insert(mesh));
+			break;
+		}
+		case RENDEROBJECT_NODE: {
 			RenderObject renderObject = {};
+			glfwMakeContextCurrent(_viewerWindow);
 			glGenVertexArrays(1, &renderObject.VAO);
+			glGenBuffers(1, &renderObject.EBO);
+			glGenBuffers(1, &renderObject.VBO);
 			glGenTextures(1, &renderObject.textureID);
+			glfwMakeContextCurrent(_win);
 			int handle = _nodeState->renderObjects.Insert(renderObject);
 			node.SetDataHandle(handle);
 			break;
+		}
 	}
 
 	return _nodeState->nodes.Insert(node);
@@ -120,8 +164,13 @@ void UpdateNodes()
 
 void CleanupNodes()
 {
+	// TODO (rhoe) freeing moar stuff
+	// we should also free all the arrays in the node
+	// like input and param
 	_nodeState->nodes.Free();
 	_nodeState->textures.Free();
+
+	
 	free(_nodeState);
 }
 

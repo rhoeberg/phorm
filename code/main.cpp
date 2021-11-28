@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 
 	InitializeNodes();
 	InitializeNodeEditor();
+	InitializeViewerRender();
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {

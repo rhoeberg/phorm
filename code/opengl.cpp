@@ -136,13 +136,15 @@ GLuint createRectVAO(float w, float h)
 GLuint createCubeVAO()
 {
    const GLfloat vertices[] = {
-       -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-       -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	   // BACK FACE
+       -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // left, bottom
+	   0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  // right, bottom
+	   0.5f,  0.5f, -0.5f,  1.0f, 1.0f, //  right, top
+	   0.5f,  0.5f, -0.5f,  1.0f, 1.0f, //  right, top 
+       -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // left, top
+       -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // left, top
         
+	   // FRONT FACE
        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
@@ -150,6 +152,7 @@ GLuint createCubeVAO()
        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
+	   // LEFT FACE
        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
@@ -157,6 +160,7 @@ GLuint createCubeVAO()
        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
+	   // RIGHT FACE
         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
@@ -164,6 +168,7 @@ GLuint createCubeVAO()
         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
+	   // BOTTOM FACE
        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
@@ -171,6 +176,7 @@ GLuint createCubeVAO()
        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
+	   // TOP FACE
        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,

@@ -19,6 +19,7 @@ class VMArray {
 	int Insert(T e);
 	int InsertNew();
 	int Count();
+	T* Data();
 	void Free();
 	void Clear();
 

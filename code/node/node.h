@@ -106,6 +106,7 @@ struct Pixel {
 
 enum NodeType {
 	TEXTURE_NODE,
+	MESH_NODE,
 	RENDEROBJECT_NODE,
 };
 
@@ -209,13 +210,18 @@ struct Texture {
 	Pixel pixels[PIXEL_AMOUNT];
 };
 
+struct Mesh {
+	VMArray<float> vertices;
+	VMArray<GLuint> indices;
+};
+
 struct RenderObject {
 	bool hasTexture;
 	GLuint textureID;
 	GLuint VAO;
-	int vertexAmount;
-
-	// TODO (rhoe) add EBO indices
+	GLuint VBO;
+	GLuint EBO;
+	int indicesCount;
 };
 
 struct NodeState {
@@ -224,6 +230,7 @@ struct NodeState {
 
 	// data arrays
 	VMArray<Texture> textures;
+	VMArray<Mesh> meshes;
 	VMArray<RenderObject> renderObjects;
 };
 
@@ -235,8 +242,11 @@ int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParam
 Texture* GetTexture(int handle);
 Texture* GetTextureInput(NodeInput input);
 RenderObject* GetRenderObject(int handle);
+Mesh* GetMesh(int handle);
+Mesh* GetMeshInput(NodeInput input);
 
 #include "BlurNode.h"
 #include "LoadTextureNode.h"
 #include "MixTextureNode.h"
 #include "CubeNode.h"
+#include "RenderObject.h"
