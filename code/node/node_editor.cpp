@@ -17,14 +17,20 @@ global ViewerRenderState _viewerRenderState;
 
 void InitializeViewerRender()
 {
+#if VIEWER_OTHER_WINDOW
     glfwMakeContextCurrent(_viewerWindow);
+#endif
+
 	_viewerRenderState.baseTextureObject = AddNewRenderObject();
 	RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
 
 	renderObject->VAO = createSpriteVAO();
 	renderObject->hasTexture = true;
 	renderObject->indicesCount = 12;
+
+#if VIEWER_OTHER_WINDOW
     glfwMakeContextCurrent(_win);
+#endif
 }
 
 
@@ -64,9 +70,13 @@ void InitializeNodeEditor()
 	// create quad to render texture to
 	// TODO (rhoe) make a cleaner API for creating objects
 	// on specific windows/context. Perhaps keep duplicate VAO etc pr context?
+#if VIEWER_OTHER_WINDOW
     glfwMakeContextCurrent(_viewerWindow);
+#endif
 	_nodeEditorState->viewerQuad = createSpriteVAO();
+#if VIEWER_OTHER_WINDOW
     glfwMakeContextCurrent(_win);
+#endif
 
 	// create fbo + fbo texture
 
@@ -431,7 +441,21 @@ void ShowNode(int handle)
 
 void UpdateViewerRender()
 {
+	int width, height;
+
+#if VIEWER_OTHER_WINDOW
     glfwMakeContextCurrent(_viewerWindow);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+	GetViewerWindowSize(&width, &height);
+    glViewport(0, 0, width, height);
+	float aspectRatio = (float)width / (float)height;
+#else
+	GetWindowSize(&width, &height);
+	float aspectRatio = (float)VIEWER_SIZE / (float)VIEWER_SIZE;
+    glViewport(width - VIEWER_SIZE, height - VIEWER_SIZE, VIEWER_SIZE, VIEWER_SIZE);
+#endif
+
 
 	if(_viewerRenderState.wireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -441,13 +465,7 @@ void UpdateViewerRender()
 	}
 
 
-	int width, height;
-	GetViewerWindowSize(&width, &height);
-	float aspectRatio = (float)width / (float)height;
-    glViewport(0, 0, width, height);
 
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
 
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
@@ -481,8 +499,11 @@ void UpdateViewerRender()
 	}
 
 	_viewerRenderState.renderList.Clear();
+
+#if VIEWER_OTHER_WINDOW
 	glfwSwapBuffers(_viewerWindow);
     glfwMakeContextCurrent(_win);
+#endif
 }
 
 void UpdateNodeEditor()
@@ -501,12 +522,15 @@ void UpdateNodeEditor()
 
 	//////////////////
 	// VIEWER
+#if VIEWER_OTHER_WINDOW
     glfwMakeContextCurrent(_viewerWindow);
+#endif
 	if(_nodeEditorState->draggedNodeHandle != -1) {
 		ShowNode(_nodeEditorState->draggedNodeHandle);
 	}
+#if VIEWER_OTHER_WINDOW
     glfwMakeContextCurrent(_win);
-
+#endif
 
 	///////////////////
 	// GUI

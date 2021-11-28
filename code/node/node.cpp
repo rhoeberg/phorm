@@ -143,12 +143,19 @@ int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParam
 		}
 		case RENDEROBJECT_NODE: {
 			RenderObject renderObject = {};
+
+#if VIEWER_OTHER_WINDOW
 			glfwMakeContextCurrent(_viewerWindow);
+#endif
+
 			glGenVertexArrays(1, &renderObject.VAO);
 			glGenBuffers(1, &renderObject.EBO);
 			glGenBuffers(1, &renderObject.VBO);
 			glGenTextures(1, &renderObject.textureID);
+
+#if VIEWER_OTHER_WINDOW
 			glfwMakeContextCurrent(_win);
+#endif
 			int handle = _nodeState->renderObjects.Insert(renderObject);
 			node.SetDataHandle(handle);
 			break;

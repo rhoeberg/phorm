@@ -7,6 +7,7 @@ typedef glm::vec2 vec2;
 /* #define SCREEN_WIDTH 1280 */
 /* #define SCREEN_HEIGHT 720 */
 
+#define VIEWER_OTHER_WINDOW true
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 

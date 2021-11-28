@@ -118,6 +118,7 @@ GLFWwindow* initGlfw()
     // enable depths testing to remove pixels which is behind other pixels
     glEnable(GL_DEPTH_TEST);  
 
+#if VIEWER_OTHER_WINDOW
 	/////////////////////
 	// CREATE VIEWER WINDOW
     _viewerWindow = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "test", NULL, _win);
@@ -136,9 +137,8 @@ GLFWwindow* initGlfw()
     glfwGetFramebufferSize(_viewerWindow, &vWidth, &vHeight);
     glViewport(0, 0, vWidth, vHeight);
     glEnable(GL_DEPTH_TEST);  
-    
-
     glfwMakeContextCurrent(_win);
+#endif
 
     // Set this to true so glew knows to use modern opengl
     glewExperimental = GL_TRUE;
