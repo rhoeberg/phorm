@@ -6,6 +6,14 @@
 #define NODE_HEIGHT 30
 #define NODE_BASE_WIDTH 100
 
+// TODO (rhoe) move these to seperate render system
+struct ViewerRenderState {
+	VMArray<int> renderList;
+};
+
+global ViewerRenderState _viewerRenderState;
+
+
 void NodeEditorSetWindowSize(int width, int height)
 {
 	//////////////
@@ -408,8 +416,30 @@ void ShowNode(int handle)
 			break;
 		}
 		case RENDEROBJECT_NODE: {
-			RenderObject *renderObject = GetRenderObject(node->GetData());
+			// RenderObject *renderObject = GetRenderObject(node->GetData());
+			_viewerRenderState.renderList.Insert(node->GetData());
+			break;
+		}
+	}
+}
 
+void UpdateViewerRender()
+{
+    glfwMakeContextCurrent(_viewerWindow);
+
+
+	int width, height;
+	GetViewerWindowSize(&width, &height);
+	float aspectRatio = (float)width / (float)height;
+    glViewport(0, 0, width, height);
+
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+
+
+	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
+		RenderObject *renderObject = GetRenderObject(_viewerRenderState.renderList[i]);
+		if(renderObject != NULL) {
 			if(renderObject->hasTexture) {
 				// render texture to quad here
 				glActiveTexture(GL_TEXTURE0);
@@ -417,6 +447,13 @@ void ShowNode(int handle)
 			}
 
 			glUseProgram(GetTextureShader());
+
+			// TODO (rhoe) we dont need to update projection uniform every frame
+			glm::mat4 projection = glm::perspective(glm::radians(45.0f),
+													aspectRatio,
+													0.1f, 1000.0f);
+			GLuint projectionLoc = glGetUniformLocation(GetTextureShader(), "projection");
+			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 			model = glm::translate(model, glm::vec3(0, 0, 0));
@@ -426,61 +463,15 @@ void ShowNode(int handle)
 			glBindVertexArray(renderObject->VAO);
 			glDrawArrays(GL_TRIANGLES, 0, renderObject->vertexAmount);
 			glBindVertexArray(0);
-			break;
 		}
-	}
-}
-
-struct ViewerRenderState {
-	VMArray<RenderObject> renderList;
-};
-
-global ViewerRenderState *_viewerRenderState;
-
-void UpdateViewerRender()
-{
-    glfwMakeContextCurrent(_viewerWindow);
-
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-
-	int width, height;
-	GetViewerWindowSize(&width, &height);
-	float aspectRatio = (float)width / (float)height;
-
-
-	// SET BACK TO MAIN WINDOW CONTEXT
-    glfwMakeContextCurrent(_win);
-	for(int i = 0; i < _viewerRenderState->renderList.Count(); i++) {
-		RenderObject *renderObject = &_viewerRenderState->renderList[i];
-
-		if(renderObject->hasTexture) {
-			// render texture to quad here
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
-		}
-
-		glUseProgram(GetTextureShader());
-
-		// TODO (rhoe) we dont need to update projection uniform every frame
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
-												aspectRatio,
-												0.1f, 1000.0f);
-		GLuint projectionLoc = glGetUniformLocation(GetTextureShader(), "projection");
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-		model = glm::translate(model, glm::vec3(0, 0, 0));
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
-		GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glBindVertexArray(renderObject->VAO);
-		glDrawArrays(GL_TRIANGLES, 0, renderObject->vertexAmount);
-		glBindVertexArray(0);
 		break;
 	}
 
-	_viewerRenderState->renderList.Clear();
+	_viewerRenderState.renderList.Clear();
+
+	glfwSwapBuffers(_viewerWindow);
+
+    glfwMakeContextCurrent(_win);
 }
 
 void UpdateViewer()
@@ -553,13 +544,14 @@ void UpdateViewerDetached()
 
 	// int winWidth, winHeight;
 	// GetViewerWindowSize(&winWidth, &winHeight);
+
     glViewport(0, 0, width, height);
 	glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);
     glUseProgram(_nodeEditorState->viewerShader);
 	glBindVertexArray(_nodeEditorState->viewerQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-	glfwSwapBuffers(_viewerWindow);
+	// glfwSwapBuffers(_viewerWindow);
 
 
 	// SET BACK TO MAIN WINDOW CONTEXT

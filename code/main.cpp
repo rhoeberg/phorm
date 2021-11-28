@@ -121,6 +121,12 @@ int main(int argc, char *argv[])
 		glViewport(0, 0, screenWidth, screenHeight);
 		ImDrawRender();
 
+
+		///////////////
+		// VIEWER RENDERING
+		///////////////
+		UpdateViewerRender();
+
 		///////////////
 		// BUFFER SWAP / IMGUI RENDER
 		///////////////
