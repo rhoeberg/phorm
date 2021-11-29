@@ -82,6 +82,16 @@ void GetWindowSize(int *width, int *height)
 	glfwGetWindowSize(_win, width, height);
 }
 
+void ShowViewerOtherWindow()
+{
+	glfwShowWindow(_viewerWindow);
+}
+
+void HideViewerOtherWindow()
+{
+	glfwHideWindow(_viewerWindow);
+}
+
 GLFWwindow* initGlfw()
 {
 	// GLFWwindow *win;
@@ -118,9 +128,11 @@ GLFWwindow* initGlfw()
     // enable depths testing to remove pixels which is behind other pixels
     glEnable(GL_DEPTH_TEST);  
 
-#if VIEWER_OTHER_WINDOW
 	/////////////////////
 	// CREATE VIEWER WINDOW
+	if(VIEWER_START_MAIN)
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
     _viewerWindow = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "test", NULL, _win);
     if(!_viewerWindow) {
         glfwTerminate();
@@ -138,7 +150,6 @@ GLFWwindow* initGlfw()
     glViewport(0, 0, vWidth, vHeight);
     glEnable(GL_DEPTH_TEST);  
     glfwMakeContextCurrent(_win);
-#endif
 
     // Set this to true so glew knows to use modern opengl
     glewExperimental = GL_TRUE;

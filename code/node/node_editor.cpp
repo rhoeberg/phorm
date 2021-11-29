@@ -17,20 +17,15 @@ global ViewerRenderState _viewerRenderState;
 
 void InitializeViewerRender()
 {
-#if VIEWER_OTHER_WINDOW
-    glfwMakeContextCurrent(_viewerWindow);
-#endif
-
 	_viewerRenderState.baseTextureObject = AddNewRenderObject();
 	RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
 
-	renderObject->VAO = createSpriteVAO();
+	// TODO (rhoe) currently we are wasting a gl id here
+	//             perhaps we should pass vao as parameter instead of
+	//             creating a new one
+	renderObject->VAOHandle = CreateSpriteVAO();
 	renderObject->hasTexture = true;
 	renderObject->indicesCount = 12;
-
-#if VIEWER_OTHER_WINDOW
-    glfwMakeContextCurrent(_win);
-#endif
 }
 
 
@@ -61,40 +56,23 @@ void InitializeNodeEditor()
 	_nodeEditorState->viewerWidth = VIEWER_SIZE;
 	_nodeEditorState->viewerHeight = VIEWER_SIZE;
 
-	// create texture for node
-	// glGenTextures(1, &_nodeEditorState->textureID);
-	// glBindTexture(GL_TEXTURE_2D, _nodeEditorState->textureID);
+	// create fbo + fbo texture
+	// glGenTextures(1, &_nodeEditorState->fboTexture);
+	// glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, VIEWER_SIZE, VIEWER_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	// glBindTexture(GL_TEXTURE_2D, 0);
-
-	// create quad to render texture to
-	// TODO (rhoe) make a cleaner API for creating objects
-	// on specific windows/context. Perhaps keep duplicate VAO etc pr context?
-#if VIEWER_OTHER_WINDOW
-    glfwMakeContextCurrent(_viewerWindow);
-#endif
-	_nodeEditorState->viewerQuad = createSpriteVAO();
-#if VIEWER_OTHER_WINDOW
-    glfwMakeContextCurrent(_win);
-#endif
-
-	// create fbo + fbo texture
-
-	glGenTextures(1, &_nodeEditorState->fboTexture);
-	glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, VIEWER_SIZE, VIEWER_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glGenFramebuffers(1, &_nodeEditorState->fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _nodeEditorState->fboTexture, 0);  
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// glGenFramebuffers(1, &_nodeEditorState->fbo);
+	// glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
+	// glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _nodeEditorState->fboTexture, 0);  
+	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// create viewer shader
-	_nodeEditorState->viewerShader = createShaderProgram("assets/viewer.vert", "assets/viewer.frag");
+	// _nodeEditorState->viewerShader = createShaderProgram("assets/viewer.vert", "assets/viewer.frag");
 
-	int winWidth, winHeight;
-	GetWindowSize(&winWidth, &winHeight);
+
+	// int winWidth, winHeight;
+	// GetWindowSize(&winWidth, &winHeight);
 	// NodeEditorSetWindowSize(winWidth, winHeight);
 }
 
@@ -102,6 +80,9 @@ void NodeGUI()
 {
 	ImGui::Begin("viewer");
 	ImGui::Checkbox("wireframe", &_viewerRenderState.wireframe);
+	if(ImGui::Button("toggle viewer window")) {
+		ToggleViewer();
+	}
 	ImGui::End();
 
 	ImGui::Begin("nodes");
@@ -425,6 +406,8 @@ void ShowNode(int handle)
 			RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
 
 			Texture *texture = GetTexture(node->GetData());
+
+			
 			glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -439,23 +422,14 @@ void ShowNode(int handle)
 	}
 }
 
-void UpdateViewerRender()
+void UpdateViewerMain()
 {
+    glfwMakeContextCurrent(_win);
 	int width, height;
 
-#if VIEWER_OTHER_WINDOW
-    glfwMakeContextCurrent(_viewerWindow);
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-	GetViewerWindowSize(&width, &height);
-    glViewport(0, 0, width, height);
-	float aspectRatio = (float)width / (float)height;
-#else
 	GetWindowSize(&width, &height);
 	float aspectRatio = (float)VIEWER_SIZE / (float)VIEWER_SIZE;
     glViewport(width - VIEWER_SIZE, height - VIEWER_SIZE, VIEWER_SIZE, VIEWER_SIZE);
-#endif
-
 
 	if(_viewerRenderState.wireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -463,10 +437,6 @@ void UpdateViewerRender()
 	else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-
-
-
-
 
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
 		RenderObject *renderObject = GetRenderObject(_viewerRenderState.renderList[i]);
@@ -491,7 +461,62 @@ void UpdateViewerRender()
 			// model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
 			GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-			glBindVertexArray(renderObject->VAO);
+
+			GLuint VAO = GetCurrentContextVAO(renderObject->VAOHandle);
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		break;
+	}
+
+	_viewerRenderState.renderList.Clear();
+}
+
+void UpdateViewerOther()
+{
+	int width, height;
+
+    glfwMakeContextCurrent(_viewerWindow);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+	GetViewerWindowSize(&width, &height);
+    glViewport(0, 0, width, height);
+	float aspectRatio = (float)width / (float)height;
+
+	if(_viewerRenderState.wireframe) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
+		RenderObject *renderObject = GetRenderObject(_viewerRenderState.renderList[i]);
+		if(renderObject != NULL) {
+			if(renderObject->hasTexture) {
+				// render texture to quad here
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
+			}
+
+			glUseProgram(GetTextureShader());
+
+			// TODO (rhoe) we dont need to update projection uniform every frame
+			glm::mat4 projection = glm::perspective(glm::radians(45.0f),
+													aspectRatio,
+													0.1f, 1000.0f);
+			GLuint projectionLoc = glGetUniformLocation(GetTextureShader(), "projection");
+			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+			model = glm::translate(model, glm::vec3(0, 0, 0));
+			// model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
+			GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			GLuint VAO = GetCurrentContextVAO(renderObject->VAOHandle);
+			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
@@ -500,10 +525,8 @@ void UpdateViewerRender()
 
 	_viewerRenderState.renderList.Clear();
 
-#if VIEWER_OTHER_WINDOW
 	glfwSwapBuffers(_viewerWindow);
     glfwMakeContextCurrent(_win);
-#endif
 }
 
 void UpdateNodeEditor()
@@ -522,15 +545,9 @@ void UpdateNodeEditor()
 
 	//////////////////
 	// VIEWER
-#if VIEWER_OTHER_WINDOW
-    glfwMakeContextCurrent(_viewerWindow);
-#endif
 	if(_nodeEditorState->draggedNodeHandle != -1) {
 		ShowNode(_nodeEditorState->draggedNodeHandle);
 	}
-#if VIEWER_OTHER_WINDOW
-    glfwMakeContextCurrent(_win);
-#endif
 
 	///////////////////
 	// GUI

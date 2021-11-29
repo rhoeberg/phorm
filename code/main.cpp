@@ -38,16 +38,14 @@
 #include "opengl.cpp"
 #include "audio.cpp"
 #include "util.cpp"
-// #include "node_editor.cpp"
 #include "gui.cpp"
 #include "glfw_wrapper.cpp"
 #include "math.cpp"
 #include "render.cpp"
-// #include "texture_graph.cpp"
-// #include "node.cpp"
 #include "vm_array.cpp"
 #include "node/node.cpp"
 #include "node/node_editor.cpp"
+#include "opengl_wrapper.cpp"
 
 int main(int argc, char *argv[])
 {
@@ -74,9 +72,14 @@ int main(int argc, char *argv[])
 
 	// InitializeTextureGraph();
 
+	InitializeOpenglWrapper();
 	InitializeNodes();
 	InitializeNodeEditor();
 	InitializeViewerRender();
+
+	if(VIEWER_START_MAIN) {
+		SetViewerInMain(true);
+	}
 
     double lastFrame = glfwGetTime();
     while(!glfwWindowShouldClose(win)) {
@@ -96,12 +99,14 @@ int main(int argc, char *argv[])
 		///////////////
 		// GUI
 		///////////////
+		glfwMakeContextCurrent(_win);
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		gui();
 		// bool show = true;
 		// ImGui::ShowDemoWindow(&show);
+
 
 		///////////////
 		// RENDER
@@ -126,7 +131,12 @@ int main(int argc, char *argv[])
 		///////////////
 		// VIEWER RENDERING
 		///////////////
-		UpdateViewerRender();
+		if(ViewerInMain()) {
+			UpdateViewerMain();
+		}
+		else {
+			UpdateViewerOther();
+		}
 
 		///////////////
 		// BUFFER SWAP / IMGUI RENDER

@@ -7,7 +7,7 @@ typedef glm::vec2 vec2;
 /* #define SCREEN_WIDTH 1280 */
 /* #define SCREEN_HEIGHT 720 */
 
-#define VIEWER_OTHER_WINDOW true
+#define VIEWER_START_MAIN true
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 
@@ -15,6 +15,10 @@ typedef glm::vec2 vec2;
 /* #define SCREEN_HEIGHT 1440 */
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
+
+#define ASSERT(Expression) if(!(Expression)) {*(volatile int *)0 = 0;}
+/* #define ASSERT(expr) static_assert(expr, "Assertion failed: " #expr) */
+#define NOT_IMPLEMENTED ASSERT(!"NOT_IMPLEMENTED")
 
 bool keys[1024];
 bool keys_registered[1024];
@@ -32,8 +36,9 @@ bool mouse_buttons[32];
 #include "render.h"
 /* #include "node.h" */
 #include "vm_array.h"
-#include "node/node.h"
 #include "glfw_wrapper.h"
+#include "opengl_wrapper.h"
+#include "node/node.h"
 #include "node/node_editor.h"
 
 
