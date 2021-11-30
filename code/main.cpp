@@ -49,7 +49,6 @@
 
 int main(int argc, char *argv[])
 {
-
 	GLFWwindow *win = initGlfw();
 
 	// initialize graphics
@@ -61,16 +60,11 @@ int main(int argc, char *argv[])
 	// initialize ImDraw
     ImDrawInitialize();
 
-	// Initilize Node editor
-	// NodeEditorInitialize();
-
 	// Initialize Audio
     if(!audioInitialize()) {
 		cleanup();
 		exit(1);
 	}
-
-	// InitializeTextureGraph();
 
 	InitializeOpenglWrapper();
 	InitializeNodes();
@@ -127,16 +121,10 @@ int main(int argc, char *argv[])
 		glViewport(0, 0, screenWidth, screenHeight);
 		ImDrawRender();
 
-
 		///////////////
 		// VIEWER RENDERING
 		///////////////
-		if(ViewerInMain()) {
-			UpdateViewerMain();
-		}
-		else {
-			UpdateViewerOther();
-		}
+		UpdateViewerRender();
 
 		///////////////
 		// BUFFER SWAP / IMGUI RENDER
