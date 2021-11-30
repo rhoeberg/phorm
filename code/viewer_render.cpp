@@ -1,10 +1,44 @@
 #include "viewer_render.h"
 
-// void AddToRenderQueue(int renderObjectHandle)
-// {
-	
-// 	_viewerRenderState.renderList.Insert(node->GetData());
-// }
+void InitializeViewerRender()
+{
+	_viewerRenderState.baseTextureObject = AddNewRenderObject();
+	RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
+
+	// TODO (rhoe) currently we are wasting a gl id here
+	//             perhaps we should pass vao as parameter instead of
+	//             creating a new one
+	renderObject->VAOHandle = CreateSpriteVAO();
+	renderObject->hasTexture = true;
+	renderObject->indicesCount = 12;
+}
+
+void AddTextureToRenderQueue(DataHandle textureHandle)
+{
+	if(textureHandle.type != TEXTURE_NODE) {
+		// TODO err
+	}
+	else {
+		RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
+		Texture *texture = GetTexture(textureHandle);
+
+		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		AddToRenderQueue(_viewerRenderState.baseTextureObject);
+	}
+}
+
+void AddToRenderQueue(DataHandle objectHandle)
+{
+	if(objectHandle.type != RENDEROBJECT_NODE) {
+		// TODO err
+	}
+	else {
+		_viewerRenderState.renderList.Insert(objectHandle);
+	}
+}
 
 void UpdateViewerRender()
 {

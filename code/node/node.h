@@ -105,18 +105,32 @@ struct Pixel {
 };
 
 enum NodeType {
+	NIL_NODE,
 	TEXTURE_NODE,
 	MESH_NODE,
 	RENDEROBJECT_NODE,
 };
 
+struct DataHandle {
+	unsigned int id;
+	NodeType type;
+};
+
+struct NodeHandle {
+	unsigned int id;
+	NodeType type;
+
+	NodeHandle() {
+		type = NIL_NODE;
+	}
+};
+
 struct NodeInput {
 	NodeType type;
-	int handle;
+	NodeHandle handle;
 
 	NodeInput(NodeType _type) {
 		type = _type;
-		handle = -1;
 	}
 
 	NodeInput() {}
@@ -184,15 +198,15 @@ struct Node {
 	{
 		NodeInput input = {};
 		input.type = type;
-		input.handle = -1;
+		input.handle = {};
 		inputs.Insert(input);
 	}
 
-	void SetDataHandle(int handle) { dataHandle = handle; }
+	void SetDataHandle(DataHandle handle) { dataHandle = handle; }
 
-	int GetDataLast() { return dataHandle; }
+	DataHandle GetDataLast() { return dataHandle; }
 
-	int GetData()
+	DataHandle GetData()
 	{
 		if(changed) {
 			changed = false;
@@ -203,7 +217,7 @@ struct Node {
 	}
 
 private:
-	int dataHandle;
+	DataHandle dataHandle;
 };
 
 struct Texture {
@@ -238,12 +252,13 @@ struct NodeState {
 global NodeState *_nodeState;
 
 int GetPixelIndex(int x, int y);
-Node* GetNode(int handle);
+bool NodeExists(NodeHandle handle);
+Node* GetNode(NodeHandle handle);
 int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
-Texture* GetTexture(int handle);
+Texture* GetTexture(DataHandle handle);
 Texture* GetTextureInput(NodeInput input);
-RenderObject* GetRenderObject(int handle);
-Mesh* GetMesh(int handle);
+RenderObject* GetRenderObject(DataHandle handle);
+Mesh* GetMesh(DataHandle handle);
 Mesh* GetMeshInput(NodeInput input);
 
 #include "BlurNode.h"

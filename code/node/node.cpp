@@ -5,28 +5,31 @@ int GetPixelIndex(int x, int y)
 	return ((y * TEXTURE_SIZE) + x);
 }
 
-bool NodeExists(int handle)
+bool NodeExists(NodeHandle handle)
 {
-	if(handle > _nodeState->nodes.Count() - 1  ||
-	   handle < 0) {
+	if(handle.id > _nodeState->nodes.Count() - 1  ||
+	   handle.type == NIL_NODE) {
 		return false;
 	}
 
 	return true;
 }
 
-Node* GetNode(int handle)
+Node* GetNode(NodeHandle handle)
 {
 	if(!NodeExists(handle)) {
 		return NULL;
 	}
 
-	return &_nodeState->nodes[handle];
+	return &_nodeState->nodes[handle.id];
 }
 
-Texture* GetTexture(int handle)
+Texture* GetTexture(DataHandle handle)
 {
-	return &_nodeState->textures[handle];
+	if(handle.type == TEXTURE_NODE)
+		return &_nodeState->textures[handle.id];
+	else
+		return NULL;
 }
 
 Texture* GetTextureInput(NodeInput input)
@@ -35,8 +38,8 @@ Texture* GetTextureInput(NodeInput input)
 
 	if(inputNode == NULL ||
 	   input.type != TEXTURE_NODE ||
-	   inputNode->GetDataLast() > _nodeState->textures.Count() - 1 ||
-	   inputNode->GetDataLast() < 0) {
+	   inputNode->GetDataLast().id > _nodeState->textures.Count() - 1 ||
+	   inputNode->GetDataLast().id < 0) {
 		return NULL;
 	}
 
@@ -44,9 +47,14 @@ Texture* GetTextureInput(NodeInput input)
 	return texture;
 }
 
-Mesh* GetMesh(int handle)
+Mesh* GetMesh(DataHandle handle)
 {
-	return &_nodeState->meshes[handle];
+	if(handle.type != MESH_NODE) {
+		// TODO err
+		return NULL;
+	}
+	
+	return &_nodeState->meshes[handle.id];
 }
 
 Mesh* GetMeshInput(NodeInput input)
@@ -55,22 +63,27 @@ Mesh* GetMeshInput(NodeInput input)
 
 	if(inputNode == NULL ||
 	   input.type != MESH_NODE ||
-	   inputNode->GetDataLast() > _nodeState->meshes.Count() - 1 ||
-	   inputNode->GetDataLast() < 0) {
+	   inputNode->GetDataLast().id > _nodeState->meshes.Count() - 1 ||
+	   inputNode->GetDataLast().id < 0) {
 		return NULL;
 	}
 	   
 	return GetMesh(inputNode->GetData());
 }
 
-RenderObject* GetRenderObject(int handle)
+RenderObject* GetRenderObject(DataHandle handle)
 {
-	return &_nodeState->renderObjects[handle];
+	if(handle.type != RENDEROBJECT_NODE) {
+		// TODO err
+		return NULL;
+	}
+	
+	return &_nodeState->renderObjects[handle.id];
 }
 
-bool ConnectNodes(int inHandle, int outHandle, int inputIndex)
+bool ConnectNodes(NodeHandle inHandle, NodeHandle outHandle, int inputIndex)
 {
-	if(inHandle == outHandle ||
+	if(inHandle.id == outHandle.id ||
 	   !NodeExists(inHandle) ||
 	   !NodeExists(outHandle)) {
 		return false;
@@ -105,19 +118,20 @@ void InitializeNodes()
 	// ConnectNodes(blurHandle, loadHandle, 0);
 }
 
-int AddNewRenderObject()
+DataHandle AddNewRenderObject()
 {
 	RenderObject renderObject = {};
 
 	renderObject.VAOHandle = AddVAO();
-	// glGenVertexArrays(1, &renderObject.VAO);
-	// glGenVertexArrays(1, &renderObject.VAO);
 	glGenBuffers(1, &renderObject.EBO);
 	glGenBuffers(1, &renderObject.VBO);
 	glGenTextures(1, &renderObject.textureID);
 
 	glGenTextures(1, &renderObject.textureID);
-	int handle = _nodeState->renderObjects.Insert(renderObject);
+
+	DataHandle handle = {};
+	handle.type = RENDEROBJECT_NODE;
+	handle.id = _nodeState->renderObjects.Insert(renderObject);
 	return handle;
 }
 
@@ -137,21 +151,25 @@ int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParam
 	node.params = params;
 	node.inputs = inputs;
 	node.op = op;
+	DataHandle dataHandle = {};
+	dataHandle.type = type;
 
 	switch(node.type) {
 		case TEXTURE_NODE: {
-			node.SetDataHandle(_nodeState->textures.InsertNew());
+			dataHandle.id = _nodeState->textures.InsertNew();
+			node.SetDataHandle(dataHandle);
 			break;
 		}
 		case MESH_NODE: {
 			Mesh mesh = {};
-			node.SetDataHandle(_nodeState->meshes.Insert(mesh));
+			dataHandle.id = _nodeState->meshes.Insert(mesh);
+			node.SetDataHandle(dataHandle);
 			break;
 		}
 		case RENDEROBJECT_NODE: {
 			RenderObject renderObject = {};
-			int handle = AddNewRenderObject();
-			node.SetDataHandle(handle);
+			dataHandle = AddNewRenderObject();
+			node.SetDataHandle(dataHandle);
 			break;
 		}
 	}

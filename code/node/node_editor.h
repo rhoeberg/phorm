@@ -13,7 +13,7 @@ enum NodeEditorElementType {
 };
 
 struct NodeHoverState {
-	int nodeHandle;
+	NodeHandle nodeHandle;
 	bool hoveringElement;
 	NodeEditorElementType elementType;
 	int ctxHandle;
@@ -24,7 +24,7 @@ struct NodeEditorState {
 
 	// create seperate dragstate struct
 	bool isDragging;
-	int draggedNodeHandle;
+	NodeHandle draggedNodeHandle;
 	int draggedCtxHandle;
 	vec2 dragOffset;
 	NodeEditorElementType draggedType;
