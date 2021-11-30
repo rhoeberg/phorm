@@ -46,6 +46,7 @@
 #include "node/node.cpp"
 #include "node/node_editor.cpp"
 #include "opengl_wrapper.cpp"
+#include "viewer_render.cpp"
 
 int main(int argc, char *argv[])
 {

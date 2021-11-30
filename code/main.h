@@ -4,13 +4,9 @@ typedef glm::vec3 vec3;
 typedef glm::vec2 vec2;
 
 #define global static
-/* #define SCREEN_WIDTH 1280 */
-/* #define SCREEN_HEIGHT 720 */
-
 #define VIEWER_START_MAIN true
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
-
 /* #define SCREEN_WIDTH 2560 */
 /* #define SCREEN_HEIGHT 1440 */
 
@@ -20,33 +16,24 @@ typedef glm::vec2 vec2;
 /* #define ASSERT(expr) static_assert(expr, "Assertion failed: " #expr) */
 #define NOT_IMPLEMENTED ASSERT(!"NOT_IMPLEMENTED")
 
-bool keys[1024];
-bool keys_registered[1024];
-vec2 mouse;
-/* double mouseX; */
-/* double mouseY; */
-bool mouse_buttons[32];
+global bool keys[1024];
+global bool keys_registered[1024];
+global vec2 mouse;
+global bool mouse_buttons[32];
 
 #include "audio.h"
 #include "opengl.h"
 #include "util.h"
-/* #include "node_editor.h" */
 #include "math.h"
 #include "imdraw.h"
 #include "render.h"
-/* #include "node.h" */
 #include "vm_array.h"
 #include "glfw_wrapper.h"
 #include "opengl_wrapper.h"
 #include "node/node.h"
 #include "node/node_editor.h"
-
+#include "viewer_render.h"
 
 GLuint createRectVAO(float w, float h);
 bool singleKeyPress(int GLFW_KEY);
 void cleanup();
-
-// dirty globals
-/* global GLuint baseShader; */
-/* global GLuint textureShader; */
-/* global GLuint cubeVAO; */
