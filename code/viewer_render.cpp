@@ -11,6 +11,9 @@ void InitializeViewerRender()
 	renderObject->VAOHandle = CreateSpriteVAO();
 	renderObject->hasTexture = true;
 	renderObject->indicesCount = 12;
+
+	_viewerRenderState.orbitDistance = 5.0f;
+	_viewerRenderState.orbitDragSpeed = 0.006f;
 }
 
 void AddTextureToRenderQueue(DataHandle textureHandle)
@@ -40,8 +43,33 @@ void AddToRenderQueue(DataHandle objectHandle)
 	}
 }
 
+struct Camera {
+	vec3 pos;
+};
+
 void UpdateViewerRender()
 {
+	if(scrollReady) {
+		_viewerRenderState.orbitDistance += scrollOffset;
+		scrollReady = false;
+	}
+
+	vec2 dragOffset;
+	// mouse drag
+	if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
+		dragOffset = mouse - _viewerRenderState.lastDragPos;
+		dragOffset *= _viewerRenderState.orbitDragSpeed;
+		_viewerRenderState.dragAmount += dragOffset;
+
+		if(_viewerRenderState.dragAmount.y > glm::radians(89.0f)) {
+			_viewerRenderState.dragAmount.y = glm::radians(89.0f);
+		}
+		else if(_viewerRenderState.dragAmount.y < glm::radians(-89.0f)) {
+			_viewerRenderState.dragAmount.y = glm::radians(-89.0f);
+		}
+	}
+	_viewerRenderState.lastDragPos = mouse;
+
 	///////////////////
 	// SETUP VIEWER MODE
 	float aspectRatio;
@@ -85,6 +113,24 @@ void UpdateViewerRender()
 
 			glUseProgram(GetTextureShader());
 
+			/////////////////
+			// VIEW
+			glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+
+			vec3 orbitPos = {};
+			float x = _viewerRenderState.orbitDistance * sin(-_viewerRenderState.dragAmount.x) * cos(_viewerRenderState.dragAmount.y);
+			float y = _viewerRenderState.orbitDistance * sin(_viewerRenderState.dragAmount.y);
+			float z = _viewerRenderState.orbitDistance * cos(_viewerRenderState.dragAmount.y) * cos(-_viewerRenderState.dragAmount.x);
+			orbitPos = vec3(x, y, z);
+
+			view = glm::lookAt(orbitPos, vec3(0, 0, 0), vec3(0, 1, 0));
+
+			GLuint viewLoc = glGetUniformLocation(GetTextureShader(), "view");
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+
+			/////////////////
+			// PROJECTION
 			// TODO (rhoe) we dont need to update projection uniform every frame
 			glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 													aspectRatio,
@@ -92,12 +138,17 @@ void UpdateViewerRender()
 			GLuint projectionLoc = glGetUniformLocation(GetTextureShader(), "projection");
 			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+
+			/////////////////
+			// MODEL
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 			model = glm::translate(model, glm::vec3(0, 0, 0));
-			// model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 1, 0));
 			GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
+
+			/////////////////
+			// DRAW
 			GLuint VAO = GetCurrentContextVAO(renderObject->VAOHandle);
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);

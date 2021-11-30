@@ -286,7 +286,7 @@ void UpdateNodeDragging()
 {
 	// START DRAGGING
 	if(_nodeEditorState->hoverState.hoveringElement) {
-		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeEditorState->isDragging) {
+		if(!mouseInViewer && mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeEditorState->isDragging) {
 			_nodeEditorState->draggedNodeHandle = _nodeEditorState->hoverState.nodeHandle;
 			_nodeEditorState->isDragging = true;
 			_nodeEditorState->draggedType = _nodeEditorState->hoverState.elementType;

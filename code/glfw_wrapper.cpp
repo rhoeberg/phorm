@@ -1,6 +1,8 @@
 global GLFWwindow *_win;
 global GLFWwindow *_viewerWindow;
 
+
+
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -14,8 +16,22 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
     }
 }  
 
+void SetMouse(double x, double y)
+{
+	mouse.x = x;
+	mouse.y = y;
+}
+
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
+	mouseInViewer = false;
+	SetMouse(xpos, ypos);
+}
+
+void mouseCallbackViewerWin(GLFWwindow* window, double xpos, double ypos)
+{
+	mouseInViewer = true;
+	SetMouse(xpos, ypos);
 	mouse.x = xpos;
 	mouse.y = ypos;
 }
@@ -28,6 +44,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     else if(action == GLFW_RELEASE) {
 		mouse_buttons[button] = false;
     }
+}
+
+void MouseScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
+{
+	scrollOffset = yoffset;
+	scrollReady = true;
 }
 
 static void errorCallback(int error, const char* description)
@@ -141,9 +163,10 @@ GLFWwindow* initGlfw()
     glfwMakeContextCurrent(_viewerWindow);
 
 	// TODO (rhoe) make callbacks for the viewer?
-    glfwSetCursorPosCallback(_win, mouseCallback);
-    glfwSetKeyCallback(_win, keyCallback);
-    glfwSetMouseButtonCallback(_win, mouseButtonCallback);
+    glfwSetCursorPosCallback(_viewerWindow, mouseCallbackViewerWin);
+    glfwSetKeyCallback(_viewerWindow, keyCallback);
+    glfwSetMouseButtonCallback(_viewerWindow, mouseButtonCallback);
+    glfwSetScrollCallback(_viewerWindow, MouseScrollCallback);
     // glfwSetDropCallback(_win, dropCallback);
     glfwSetWindowSizeCallback(_win, ViewerWindowSizeCallback);
     glfwGetFramebufferSize(_viewerWindow, &vWidth, &vHeight);

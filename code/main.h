@@ -20,6 +20,9 @@ global bool keys[1024];
 global bool keys_registered[1024];
 global vec2 mouse;
 global bool mouse_buttons[32];
+global bool mouseInViewer;
+global bool scrollReady;
+global double scrollOffset;
 
 #include "audio.h"
 #include "opengl.h"

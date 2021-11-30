@@ -6,6 +6,13 @@ struct ViewerRenderState {
 	VMArray<DataHandle> renderList;
 	DataHandle baseTextureObject;
 	bool wireframe;
+
+	bool dragging;
+	vec2 startDragPos;
+	vec2 lastDragPos;
+	vec2 dragAmount;
+	float orbitDistance;
+	float orbitDragSpeed;
 };
 
 void InitializeViewerRender();
