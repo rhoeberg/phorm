@@ -34,7 +34,8 @@ GLuint textShader;
 
 // vec2 *imDrawVertices = NULL;
 // GLfloat *imDrawVertices = NULL;
-#include <vector>
+// #include <vector>
+#include "vm_array.h"
 
 #define MAX_TEXT_SIZE 512
 
@@ -43,12 +44,14 @@ struct TextCommand {
 	vec2 pos;
 };
 
-global std::vector<GLfloat> imDrawVertices; // TODO (rhoe) remove std dependencies
+// global std::vector<GLfloat> imDrawVertices; // TODO (rhoe) remove std dependencies
+global VMArray<GLfloat> imDrawVertices; // TODO (rhoe) remove std dependencies
 global GLuint imDrawVAO;
 global GLuint imDrawVBO;
 global GLuint imDrawShader;
 global vec3 imDrawColor;
-global std::vector<TextCommand> imTextCommands;
+// global std::vector<TextCommand> imTextCommands;
+global VMArray<TextCommand> imTextCommands;
 
 void ImDrawSetWindowSize(int width, int height)
 {
@@ -111,11 +114,11 @@ void ImDrawSetColor(vec3 color)
 
 void ImDrawAddVertex(vec2 v)
 {
-	imDrawVertices.push_back(v.x);
-	imDrawVertices.push_back(v.y);
-	imDrawVertices.push_back(imDrawColor.r);
-	imDrawVertices.push_back(imDrawColor.g);
-	imDrawVertices.push_back(imDrawColor.b);
+	imDrawVertices.Insert(v.x);
+	imDrawVertices.Insert(v.y);
+	imDrawVertices.Insert(imDrawColor.r);
+	imDrawVertices.Insert(imDrawColor.g);
+	imDrawVertices.Insert(imDrawColor.b);
 }
 
 void ImDrawPushQuad(vec2 p1, vec2 p2, vec2 p3, vec2 p4)
@@ -172,7 +175,7 @@ void ImDrawText(vec2 pos, char *text)
 	TextCommand textCommand = {};
 	sprintf(textCommand.text, "%s", text);
 	textCommand.pos = pos;
-	imTextCommands.push_back(textCommand);
+	imTextCommands.Insert(textCommand);
 }
 
 void _ImDrawText(float x, float y, char *text)
@@ -235,35 +238,34 @@ void _ImDrawText(float x, float y, char *text)
 void ImDrawRender()
 {
 	glDisable(GL_DEPTH_TEST);
-    if(imDrawVertices.size() > 0) {
+    if(imDrawVertices.Count() > 0) {
 		glUseProgram(imDrawShader);
 		glBindVertexArray(imDrawVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawVertices.size(), imDrawVertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawVertices.Count(), imDrawVertices.Data(), GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
 		glEnableVertexAttribArray(1);
-
 		glBindVertexArray(0);
 
 		glBindVertexArray(imDrawVAO);
-		glDrawArrays(GL_TRIANGLES, 0, imDrawVertices.size() / 2);
+		glDrawArrays(GL_TRIANGLES, 0, imDrawVertices.Count() / 5);
 		glBindVertexArray(0);
 
-		imDrawVertices.clear();
+		imDrawVertices.Clear();
 		glUseProgram(0);
     }
 	glEnable(GL_DEPTH_TEST);
 
-	for(int i = 0; i < imTextCommands.size(); i++) {
+	for(int i = 0; i < imTextCommands.Count(); i++) {
 		TextCommand *command = &imTextCommands[i];
 		_ImDrawText(command->pos.x, command->pos.y, command->text);
 	}
-	imTextCommands.clear();
+	imTextCommands.Clear();
 }
 
 void imDrawClean()
 {
-    imDrawVertices.clear();
+    imDrawVertices.Clear();
 }
