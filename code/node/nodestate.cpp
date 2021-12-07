@@ -9,12 +9,12 @@ void InitializeNodes()
 	_nodeState->meshes = VMArray<Mesh>();
 	_nodeState->renderObjects = VMArray<RenderObject>();
 	_nodeState->videoNodes = VMArray<VideoNodeState>();
+	_nodeState->doubles = VMArray<double>();
 }
 
 bool NodeExists(NodeHandle handle)
 {
-	if(handle.id > _nodeState->nodes.Count() - 1  ||
-	   handle.type == NIL_NODE) {
+	if(handle.id > _nodeState->nodes.Count() - 1) {
 		return false;
 	}
 
@@ -32,15 +32,27 @@ Node* GetNode(NodeHandle handle)
 
 double* GetDouble(DataHandle handle)
 {
-	if(handle.type == DOUBLE_NODE)
+	if(handle.type == DATA_DOUBLE)
 		return &_nodeState->doubles[handle.id];
 	else
 		return NULL;
 }
 
+double* GetDoubleOutput(NodeHandle handle)
+{
+	Node *node = GetNode(handle);
+	if(!NodeExists(handle) ||
+	   node->type != DATA_DOUBLE) {
+		NOT_IMPLEMENTED
+		return NULL;
+	}
+
+	return GetDouble(node->GetData());
+}
+
 Texture* GetTexture(DataHandle handle)
 {
-	if(handle.type == TEXTURE_NODE)
+	if(handle.type == DATA_TEXTURE)
 		return &_nodeState->textures[handle.id];
 	else
 		return NULL;
@@ -51,7 +63,7 @@ Texture* GetTextureInput(NodeInput input)
 	Node *inputNode = GetNode(input.handle);
 
 	if(inputNode == NULL ||
-	   input.type != TEXTURE_NODE ||
+	   input.type != DATA_TEXTURE ||
 	   inputNode->GetDataLast().id > _nodeState->textures.Count() - 1 ||
 	   inputNode->GetDataLast().id < 0) {
 		return NULL;
@@ -63,7 +75,7 @@ Texture* GetTextureInput(NodeInput input)
 
 Mesh* GetMesh(DataHandle handle)
 {
-	if(handle.type != MESH_NODE) {
+	if(handle.type != DATA_MESH) {
 		// TODO err
 		return NULL;
 	}
@@ -76,7 +88,7 @@ Mesh* GetMeshInput(NodeInput input)
 	Node *inputNode = GetNode(input.handle);
 
 	if(inputNode == NULL ||
-	   input.type != MESH_NODE ||
+	   input.type != DATA_MESH ||
 	   inputNode->GetDataLast().id > _nodeState->meshes.Count() - 1 ||
 	   inputNode->GetDataLast().id < 0) {
 		return NULL;
@@ -87,7 +99,7 @@ Mesh* GetMeshInput(NodeInput input)
 
 RenderObject* GetRenderObject(DataHandle handle)
 {
-	if(handle.type != RENDEROBJECT_NODE) {
+	if(handle.type != DATA_RENDEROBJECT) {
 		// TODO err
 		return NULL;
 	}
@@ -95,13 +107,34 @@ RenderObject* GetRenderObject(DataHandle handle)
 	return &_nodeState->renderObjects[handle.id];
 }
 
-bool ConnectNodes(NodeHandle inHandle, NodeHandle outHandle, int inputIndex)
+bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramIndex)
 {
-	Node *inputNode = GetNode(inHandle);
+	Node *node = GetNode(handle);
 	Node *outputNode = GetNode(outHandle);
 
-	if(inHandle.id == outHandle.id ||
-	   !NodeExists(inHandle) ||
+	if(handle.id == outHandle.id ||
+	   !NodeExists(handle) ||
+	   !NodeExists(outHandle) ||
+	   node->params[paramIndex].type != outputNode->type) {
+		return false;
+	}
+
+	if(node != NULL) {
+		node->changed = true;
+		node->params[paramIndex].handle = outHandle;
+		node->params[paramIndex].handleIsset = true;
+	}
+
+	return true;
+}
+
+bool ConnectNodeInput(NodeHandle handle, NodeHandle outHandle, int inputIndex)
+{
+	Node *inputNode = GetNode(handle);
+	Node *outputNode = GetNode(outHandle);
+
+	if(handle.id == outHandle.id ||
+	   !NodeExists(handle) ||
 	   !NodeExists(outHandle) ||
 	   inputNode->inputs[inputIndex].type != outputNode->type) {
 		return false;
@@ -110,7 +143,7 @@ bool ConnectNodes(NodeHandle inHandle, NodeHandle outHandle, int inputIndex)
 	if(inputNode != NULL) {
 		inputNode->changed = true;
 		inputNode->inputs[inputIndex].handle = outHandle;
-		inputNode->inputs[inputIndex].isset = true;
+		inputNode->inputs[inputIndex].handleIsset = true;
 	}
 
 	return true;
@@ -128,53 +161,9 @@ DataHandle AddNewRenderObject()
 	glGenTextures(1, &renderObject.textureID);
 
 	DataHandle handle = {};
-	handle.type = RENDEROBJECT_NODE;
+	handle.type = DATA_RENDEROBJECT;
 	handle.id = _nodeState->renderObjects.Insert(renderObject);
 	return handle;
-}
-
-// TODO (rhoe) change this to node constructor?
-int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
-{
-	// TODO (rhoe) since similar node type dont change name we could
-	//             store the names in a string array and just refer to the handle
-	Node node = {};
-	sprintf(node.name, "%s", name);
-	int winWidth, winHeight;
-	GetWindowSize(&winWidth, &winHeight);
-	node.pos = vec2(winWidth / 2, winHeight / 2);
-	node.changed = true;
-	node.inputs = VMArray<NodeInput>();
-	node.type = type;
-	node.params = params;
-	node.inputs = inputs;
-	node.op = op;
-	DataHandle dataHandle = {};
-	dataHandle.type = type;
-
-	switch(node.type) {
-		case TEXTURE_NODE: {
-			dataHandle.id = _nodeState->textures.InsertNew();
-			break;
-		}
-		case MESH_NODE: {
-			Mesh mesh = {};
-			dataHandle.id = _nodeState->meshes.Insert(mesh);
-			break;
-		}
-		case RENDEROBJECT_NODE: {
-			RenderObject renderObject = {};
-			dataHandle = AddNewRenderObject();
-			break;
-		}
-		case DOUBLE_NODE: {
-			dataHandle.id = _nodeState->doubles.Insert(0.0);
-			break;
-		}
-	}
-
-	node.SetDataHandle(dataHandle);
-	return _nodeState->nodes.Insert(node);
 }
 
 void CleanupNodes()

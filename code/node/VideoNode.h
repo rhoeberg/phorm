@@ -4,7 +4,7 @@ void VideoOperation(Node *self)
 {
 	// SELF
 	Texture *output = GetTexture(self->GetDataLast());
-	double time = self->params[0].d;
+	double time = self->params[0].Double();
 	VideoNodeState *state = &_nodeState->videoNodes[self->extraHandle];
 
 	if(!self->initialized) {
@@ -26,7 +26,7 @@ void VideoOperation(Node *self)
 
 	plm_frame_t *frame = NULL;
 
-	if(!plm_seek(state->plm, time, false)) {
+	if(!plm_seek(state->plm, time, true)) {
 		printf("couldn't seek frame\n");
 		/* exit(1); */
 	}
@@ -44,7 +44,7 @@ void VideoOperation(Node *self)
 int AddVideoNode()
 {
 	VMArray<NodeParameter> params = {
-		NodeParameter("time", PARAM_DOUBLE, 0.0),
+		NodeParameter("time", DATA_DOUBLE, 0.0),
 	};
 
 	VMArray<NodeInput> inputs = {
@@ -52,5 +52,5 @@ int AddVideoNode()
 
 	_nodeState->videoNodes.Insert(VideoNodeState());
 
-	return AddNode("VIDEO", TEXTURE_NODE, VideoOperation, params, inputs);
+	return AddNode("VIDEO", DATA_TEXTURE, VideoOperation, params, inputs);
 }

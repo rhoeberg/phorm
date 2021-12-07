@@ -20,14 +20,15 @@ global NodeState *_nodeState;
 
 bool NodeExists(NodeHandle handle);
 Node* GetNode(NodeHandle handle);
-int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
 double* GetDouble(DataHandle handle);
+double* GetDoubleOutput(NodeHandle handle);
 Texture* GetTexture(DataHandle handle);
 Texture* GetTextureInput(NodeInput input);
 RenderObject* GetRenderObject(DataHandle handle);
 Mesh* GetMesh(DataHandle handle);
 Mesh* GetMeshInput(NodeInput input);
-bool ConnectNodes(NodeHandle inHandle, NodeHandle outHandle, int inputIndex);
+bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramIndex);
+bool ConnectNodeInput(NodeHandle inHandle, NodeHandle outHandle, int inputIndex);
 DataHandle AddNewRenderObject();
 
 #include "BlurNode.h"
@@ -36,3 +37,5 @@ DataHandle AddNewRenderObject();
 #include "CubeNode.h"
 #include "VideoNode.h"
 #include "renderobject_node.h"
+#include "TimeNode.h"
+

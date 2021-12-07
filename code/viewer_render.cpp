@@ -19,7 +19,7 @@ void InitializeViewerRender()
 
 void AddTextureToRenderQueue(DataHandle textureHandle)
 {
-	if(textureHandle.type != TEXTURE_NODE) {
+	if(textureHandle.type != DATA_TEXTURE) {
 		// TODO err
 	}
 	else {
@@ -36,7 +36,7 @@ void AddTextureToRenderQueue(DataHandle textureHandle)
 
 void AddToRenderQueue(DataHandle objectHandle)
 {
-	if(objectHandle.type != RENDEROBJECT_NODE) {
+	if(objectHandle.type != DATA_RENDEROBJECT) {
 		// TODO err
 	}
 	else {

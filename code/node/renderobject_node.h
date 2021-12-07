@@ -53,9 +53,9 @@ int AddRenderObject()
 	};
 
 	VMArray<NodeInput> inputs = {
-		NodeInput(MESH_NODE),
-		NodeInput(TEXTURE_NODE),
+		NodeInput(DATA_MESH),
+		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode("RENDER_OBJECT", RENDEROBJECT_NODE, RenderObjectOperation, params, inputs);
+	return AddNode("RENDER_OBJECT", DATA_RENDEROBJECT, RenderObjectOperation, params, inputs);
 }

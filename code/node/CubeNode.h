@@ -6,10 +6,10 @@ void CubeOperation(Node *self)
 
 	output->vertices = {
 		// BACK FACE
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // back, left, bottom
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  // back, right, bottom
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, //  back, right, top
-		-0.5f, 0.5f, -0.5f,  0.0f, 0.0f, // back, left, top
+		-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // back, left, bottom
+		0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  // back, right, bottom
+		0.5f,  0.5f, -0.5f,  0.0f, 1.0f, //  back, right, top
+		-0.5f, 0.5f, -0.5f,  1.0f, 0.0f, // back, left, top
        
 		// FRONT FACE
 		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // front, left, bottom
@@ -57,6 +57,6 @@ int AddCubeNode()
 	VMArray<NodeInput> inputs = {
 	};
 
-	return AddNode("CUBE", MESH_NODE, CubeOperation, params, inputs);
+	return AddNode("CUBE", DATA_MESH, CubeOperation, params, inputs);
 }
 

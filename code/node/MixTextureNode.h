@@ -10,7 +10,8 @@ void MixTextureOperation(Node *self)
 
 	// GET SELF
 	// TODO (rhoe) make cleaner way to get parameters
-	double mix = self->params[0].d;
+	/* double mix = self->params[0].d; */
+	double mix = self->params[0].Double();
 	Texture *output = GetTexture(self->GetDataLast());
 
 	// OPERATION
@@ -31,13 +32,13 @@ void MixTextureOperation(Node *self)
 int AddMixTextureNode()
 {
 	VMArray<NodeParameter> params = {
-		NodeParameter("mix", PARAM_DOUBLE, 0.5),
+		NodeParameter("mix", DATA_DOUBLE, 0.5),
 	};
 
 	VMArray<NodeInput> inputs = {
-		NodeInput(TEXTURE_NODE),
-		NodeInput(TEXTURE_NODE),
+		NodeInput(DATA_TEXTURE),
+		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode("MIX_TEXTURE", TEXTURE_NODE, MixTextureOperation, params, inputs);
+	return AddNode("MIX_TEXTURE", DATA_TEXTURE, MixTextureOperation, params, inputs);
 }

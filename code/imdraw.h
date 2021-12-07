@@ -7,3 +7,4 @@ void ImDrawPoint(vec2 p, float size);
 void ImDrawLine(vec2 a, vec2 b,float size);
 void ImDrawRect(Rect rect);
 void ImDrawText(vec2 pos, char *text);
+void ImDrawText(vec2 pos, char *text, vec3 color);

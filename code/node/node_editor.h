@@ -2,8 +2,6 @@
 
 #define PARAM_WIDTH 40
 #define PARAM_HEIGHT 20
-#define NODE_HEIGHT 30
-#define NODE_BASE_WIDTH 100
 
 enum NodeEditorElementType {
 	EDITOR_ELEMENT_NODE,
@@ -25,6 +23,7 @@ struct NodeEditorState {
 	// create seperate dragstate struct
 	bool isDragging;
 	NodeHandle draggedNodeHandle;
+	bool draggedHandleIsset;
 	int draggedCtxHandle;
 	vec2 dragOffset;
 	NodeEditorElementType draggedType;
@@ -37,6 +36,7 @@ struct NodeEditorState {
 	GLuint viewerShader;
 	int viewerWidth, viewerHeight;
 	NodeHandle selectedNode;
+	bool selectedHandleIsset;
 };
 
 /* void NodeEditorSetWindowSize(int width, int height); */

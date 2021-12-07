@@ -21,14 +21,16 @@
 void InitializeNodeEditor()
 {
 	_nodeEditorState = (NodeEditorState*)malloc(sizeof(NodeEditorState));
-	_nodeEditorState->isDragging = false;
 	_nodeEditorState->draggedNodeHandle = {};
+	_nodeEditorState->isDragging = false;
+	_nodeEditorState->draggedHandleIsset = false;
 	_nodeEditorState->hoverState.hoveringElement = false;
 
 	_nodeEditorState->viewerWidth = VIEWER_SIZE;
 	_nodeEditorState->viewerHeight = VIEWER_SIZE;
 
 	_nodeEditorState->selectedNode = {};
+	_nodeEditorState->selectedHandleIsset = false;
 
 	// create fbo + fbo texture
 	// glGenTextures(1, &_nodeEditorState->fboTexture);
@@ -78,10 +80,13 @@ void NodeGUI()
 	if(ImGui::Button("add renderobject")) {
 		AddRenderObject();
 	}
+	if(ImGui::Button("add time")) {
+		AddTimeNode();
+	}
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
-	if(_nodeEditorState->draggedNodeHandle.type != NIL_NODE) {
+	if(_nodeEditorState->draggedHandleIsset) {
 		Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
 
 		ImGui::Text("%s", node->name);
@@ -99,13 +104,13 @@ void NodeGUI()
 			sprintf(buffer, "%s", &param->name);
 
 			switch(node->params[i].type) {
-				case PARAM_INT: {
+				case DATA_INT: {
 					if(ImGui::InputInt(buffer, &param->i)) {
 						node->changed = true;
 					}
 					break;
 				}
-				case PARAM_DOUBLE: {
+				case DATA_DOUBLE: {
 					if(ImGui::InputDouble(buffer, &node->params[i].d)) {
 						node->changed = true;
 					}
@@ -114,13 +119,13 @@ void NodeGUI()
 					// }
 					break;
 				}
-				case PARAM_VEC3: {
+				case DATA_VEC3: {
 					if(ImGui::InputFloat3(buffer, glm::value_ptr(param->v3))) {
 						node->changed = true;
 					}
 					break;
 				}
-				case PARAM_STRING: {
+				case DATA_STRING: {
 					if(ImGui::InputText(buffer, param->str, ARRAY_SIZE(param->str))) {
 						node->changed = true;
 					}
@@ -132,23 +137,25 @@ void NodeGUI()
 	ImGui::End();
 }
 
-Rect GetNodeRect(NodeHandle handle)
-{
-	Node *node = GetNode(handle);
+// Rect GetNodeRect(NodeHandle handle)
+// {
+// 	Node *node = GetNode(handle);
 
-	Rect rect = {};
-	rect.pos = node->pos;
-	rect.width = NODE_BASE_WIDTH;
-	rect.width += node->params.Count() * PARAM_WIDTH;
-	rect.width += node->inputs.Count() * PARAM_WIDTH;
-	rect.height = NODE_HEIGHT;
+// 	Rect rect = {};
+// 	rect.pos = node->pos;
+// 	rect.width = NODE_BASE_WIDTH;
+// 	rect.width += node->params.Count() * PARAM_WIDTH;
+// 	rect.width += node->inputs.Count() * PARAM_WIDTH;
+// 	rect.height = NODE_HEIGHT;
 
-	return rect;
-}
+// 	return rect;
+// }
 
 Rect GetNodeOutputRect(NodeHandle handle)
 {
-	Rect nodeRect = GetNodeRect(handle);
+	// Rect nodeRect = GetNodeRect(handle);
+	Node *node = GetNode(handle);
+	Rect nodeRect = node->rect;
 
 	// DRAW OUTPUT
 	Rect result = {};
@@ -162,7 +169,9 @@ Rect GetNodeOutputRect(NodeHandle handle)
 
 Rect GetNodeInputRect(NodeHandle handle, int inputIndex)
 {
-	Rect nodeRect = GetNodeRect(handle);
+	// Rect nodeRect = GetNodeRect(handle);
+	Node *node = GetNode(handle);
+	Rect nodeRect = node->rect;
 
 	Rect inputRect = {};
 	float offsetX = inputIndex * (PARAM_WIDTH + 10);
@@ -176,8 +185,9 @@ Rect GetNodeInputRect(NodeHandle handle, int inputIndex)
 
 Rect GetNodeParamRect(NodeHandle handle, int paramIndex)
 {
+	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
-	Rect nodeRect = GetNodeRect(handle);
+	Rect nodeRect = node->rect;
 
 	Rect paramRect = {};
 	float offsetX = (paramIndex + node->inputs.Count()) * (PARAM_WIDTH + 10);
@@ -193,12 +203,14 @@ void DrawNode(NodeHandle handle)
 {
 	Node *node = GetNode(handle);
 
-	Rect rect = GetNodeRect(handle);
-	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-	ImDrawRect(rect);
+	// Rect rect = GetNodeRect(handle);
+	// ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+	// ImDrawRect(rect);
 
-	vec2 namePos = node->pos + vec2(10.0f, rect.height - 10.0f);
-	ImDrawText(namePos, node->name);
+	// vec2 namePos = node->pos + vec2(10.0f, rect.height - 10.0f);
+	// ImDrawText(namePos, node->name);
+	// BaseNodeDrawFunction(node);
+	node->drawingFunction(node);
 
 	Rect outputRect = GetNodeOutputRect(handle);
 	ImDrawSetColor(vec3(0.0f, 0.0f, 1.0f));
@@ -212,7 +224,7 @@ void DrawNode(NodeHandle handle)
 		ImDrawRect(inputRect);
 
 		// TODO (rhoe) make it more clean / safe to see if a node input is set
-		if(node->inputs[i].handle.type != NIL_NODE) {
+		if(node->inputs[i].handleIsset) {
 			Rect outputRect = GetNodeOutputRect(node->inputs[i].handle);
 			vec2 outputPos = GetRectCenter(outputRect);
 			vec2 inputPos = GetRectCenter(inputRect);
@@ -229,6 +241,15 @@ void DrawNode(NodeHandle handle)
 			ImDrawSetColor(vec3(0.0f, 1.0f, 0.0f));
 			ImDrawRect(paramRect);
 			visibleParamsCount++;
+
+			if(node->params[i].handleIsset) {
+				Rect outputRect = GetNodeOutputRect(node->params[i].handle);
+				vec2 outputPos = GetRectCenter(outputRect);
+				vec2 paramPos = GetRectCenter(paramRect);
+				ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+				ImDrawLine(outputPos, paramPos);
+
+			}
 		}
 	}
 }
@@ -238,54 +259,53 @@ void UpdateHoverState()
 	_nodeEditorState->hoverState.hoveringElement = false;
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		Node *node = &_nodeState->nodes[i];
-		if(node->type != NIL_NODE) {
-			NodeHandle handle = {};
-			handle.id = i;
-			handle.type = node->type;
+		NodeHandle handle = {};
+		handle.id = i;
+		handle.type = node->type;
 
-			// CHECK NODE
-			Rect nodeRect = GetNodeRect(handle);
-			if(PointInsideRect(mouse, nodeRect)) {
-				_nodeEditorState->hoverState.nodeHandle = handle;
-				_nodeEditorState->hoverState.hoveringElement = true;
-				_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_NODE;
+		// CHECK NODE
+		// Rect nodeRect = GetNodeRect(handle);
+		Rect nodeRect = node->rect;
+		if(PointInsideRect(mouse, nodeRect)) {
+			_nodeEditorState->hoverState.nodeHandle = handle;
+			_nodeEditorState->hoverState.hoveringElement = true;
+			_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_NODE;
+		}
+		else {
+
+			// CHECK INPUTS
+			for(int j = 0; j < node->inputs.Count(); j++) {
+				Rect inputRect = GetNodeInputRect(handle, j);
+				if(PointInsideRect(mouse, inputRect)) {
+					_nodeEditorState->hoverState.nodeHandle = handle;
+					_nodeEditorState->hoverState.hoveringElement = true;
+					_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_INPUT;
+					_nodeEditorState->hoverState.ctxHandle = j;
+					break;
+				}
 			}
-			else {
 
-				// CHECK INPUTS
-				for(int j = 0; j < node->inputs.Count(); j++) {
-					Rect inputRect = GetNodeInputRect(handle, j);
-					if(PointInsideRect(mouse, inputRect)) {
+			// CHECK INPUTS PARAM
+			if(!_nodeEditorState->hoverState.hoveringElement) {
+				for(int j = 0; j < node->params.Count(); j++) {
+					Rect paramRect = GetNodeParamRect(handle, j);
+					if(PointInsideRect(mouse, paramRect)) {
 						_nodeEditorState->hoverState.nodeHandle = handle;
 						_nodeEditorState->hoverState.hoveringElement = true;
-						_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_INPUT;
+						_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_PARAM;
 						_nodeEditorState->hoverState.ctxHandle = j;
-						break;
 					}
 				}
-
-				// CHECK INPUTS PARAM
-				if(!_nodeEditorState->hoverState.hoveringElement) {
-					for(int j = 0; j < node->params.Count(); j++) {
-						Rect paramRect = GetNodeParamRect(handle, j);
-						if(PointInsideRect(mouse, paramRect)) {
-							_nodeEditorState->hoverState.nodeHandle = handle;
-							_nodeEditorState->hoverState.hoveringElement = true;
-							_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_PARAM;
-							_nodeEditorState->hoverState.ctxHandle = j;
-						}
-					}
-				}
+			}
 
 
-				// CHECK OUTPUTS
-				if(!_nodeEditorState->hoverState.hoveringElement) {
-					Rect outputRect = GetNodeOutputRect(handle);
-					if(PointInsideRect(mouse, outputRect)) {
-						_nodeEditorState->hoverState.nodeHandle = handle;
-						_nodeEditorState->hoverState.hoveringElement = true;
-						_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_OUTPUT;
-					}
+			// CHECK OUTPUTS
+			if(!_nodeEditorState->hoverState.hoveringElement) {
+				Rect outputRect = GetNodeOutputRect(handle);
+				if(PointInsideRect(mouse, outputRect)) {
+					_nodeEditorState->hoverState.nodeHandle = handle;
+					_nodeEditorState->hoverState.hoveringElement = true;
+					_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_OUTPUT;
 				}
 			}
 		}
@@ -299,11 +319,12 @@ void UpdateNodeDragging()
 		if(!mouseInViewer && mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeEditorState->isDragging) {
 			_nodeEditorState->draggedNodeHandle = _nodeEditorState->hoverState.nodeHandle;
 			_nodeEditorState->isDragging = true;
+			_nodeEditorState->draggedHandleIsset = true;
 			_nodeEditorState->draggedType = _nodeEditorState->hoverState.elementType;
 			_nodeEditorState->draggedCtxHandle = _nodeEditorState->hoverState.ctxHandle;
 
 			Node *node = GetNode(_nodeEditorState->hoverState.nodeHandle);
-			_nodeEditorState->dragOffset = node->pos - mouse;
+			_nodeEditorState->dragOffset = node->rect.pos - mouse;
 		}
 	}
 
@@ -323,18 +344,32 @@ void UpdateNodeDragging()
 						NodeHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
 						NodeHandle inHandle = _nodeEditorState->draggedNodeHandle;
 						int ctxHandle = _nodeEditorState->draggedCtxHandle;
-						ConnectNodes(inHandle, outHandle, ctxHandle);
+						ConnectNodeInput(inHandle, outHandle, ctxHandle);
 					}
 					else {
 						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
 						int ctxHandle = _nodeEditorState->draggedCtxHandle;
 						node->changed = true;
-						node->inputs[ctxHandle].handle.type = NIL_NODE;
+						node->inputs[ctxHandle].handleIsset = false;
 
 					}
 					break;
 				}
 				case EDITOR_ELEMENT_PARAM: {
+					if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
+						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+						NodeHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
+						NodeHandle inHandle = _nodeEditorState->draggedNodeHandle;
+						int ctxHandle = _nodeEditorState->draggedCtxHandle;
+						node->changed = true;
+						ConnectNodeParameter(inHandle, outHandle, ctxHandle);
+					}
+					else {
+						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+						int ctxHandle = _nodeEditorState->draggedCtxHandle;
+						node->changed = true;
+						node->params[ctxHandle].handleIsset = false;
+					}
 					break;
 				}
 				case EDITOR_ELEMENT_OUTPUT: {
@@ -342,7 +377,7 @@ void UpdateNodeDragging()
 						NodeHandle outHandle = _nodeEditorState->draggedNodeHandle;
 						NodeHandle inHandle = _nodeEditorState->hoverState.nodeHandle;
 						int ctxHandle = _nodeEditorState->hoverState.ctxHandle;
-						ConnectNodes(inHandle, outHandle, ctxHandle);
+						ConnectNodeInput(inHandle, outHandle, ctxHandle);
 					}
 					break;
 				}
@@ -353,7 +388,7 @@ void UpdateNodeDragging()
 			switch(_nodeEditorState->draggedType) {
 				case EDITOR_ELEMENT_NODE: {
 					Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
-					node->pos = mouse + _nodeEditorState->dragOffset;
+					node->rect.pos = mouse + _nodeEditorState->dragOffset;
 					break;
 				}
 				case EDITOR_ELEMENT_INPUT: {
@@ -388,11 +423,11 @@ void ShowNode(NodeHandle handle)
 {
 	Node *node = GetNode(handle);
 	switch(node->type) {
-		case TEXTURE_NODE: {
+		case DATA_TEXTURE: {
 			AddTextureToRenderQueue(node->GetData());
 			break;
 		}
-		case RENDEROBJECT_NODE: {
+		case DATA_RENDEROBJECT: {
 			AddToRenderQueue(node->GetData());
 			break;
 		}
@@ -408,8 +443,9 @@ void UpdateNodeEditor()
 	UpdateNodeDragging();
 
 	if(keys[GLFW_KEY_SPACE]) {
-		if(_nodeEditorState->draggedNodeHandle.type != NIL_NODE) {
+		if(_nodeEditorState->draggedHandleIsset) {
 			_nodeEditorState->selectedNode = _nodeEditorState->draggedNodeHandle;
+			_nodeEditorState->selectedHandleIsset = true;
 		}
 	}
 
@@ -425,7 +461,7 @@ void UpdateNodeEditor()
 
 	//////////////////
 	// VIEWER
-	if(_nodeEditorState->selectedNode.type != NIL_NODE) {
+	if(_nodeEditorState->selectedHandleIsset) {
 		ShowNode(_nodeEditorState->selectedNode);
 	}
 

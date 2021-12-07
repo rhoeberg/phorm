@@ -19,11 +19,11 @@ void LoadTextureOperation(Node *self)
 int AddLoadTextureNode()
 {
 	VMArray<NodeParameter> params = {
-		NodeParameter("path", PARAM_STRING, ""),
+		NodeParameter("path", DATA_STRING, ""),
 	};
 
 	VMArray<NodeInput> inputs = {
 	};
 
-	return AddNode("LOAD_TEXTURE", TEXTURE_NODE, LoadTextureOperation, params, inputs);
+	return AddNode("LOAD_TEXTURE", DATA_TEXTURE, LoadTextureOperation, params, inputs);
 }

@@ -45,6 +45,7 @@ GLuint textShader;
 struct TextCommand {
 	char text[MAX_TEXT_SIZE];
 	vec2 pos;
+	vec3 color;
 };
 
 global VMArray<GLfloat> imDrawVertices;
@@ -200,13 +201,20 @@ void ImDrawRect(Rect rect)
 
 void ImDrawText(vec2 pos, char *text)
 {
+	// draw black default text
+	ImDrawText(pos, text, vec3(0, 0, 0));
+}
+
+void ImDrawText(vec2 pos, char *text, vec3 color)
+{
 	TextCommand textCommand = {};
 	sprintf(textCommand.text, "%s", text);
 	textCommand.pos = pos;
+	textCommand.color = color;
 	imTextCommands.Insert(textCommand);
 }
 
-void _ImDrawText(float x, float y, char *text)
+void _ImDrawText(float x, float y, char *text, vec3 color)
 {
 	// assume orthographic projection with units = screen pixels, origin at top left
 	glEnable(GL_BLEND);
@@ -217,16 +225,19 @@ void _ImDrawText(float x, float y, char *text)
 	glBindTexture(GL_TEXTURE_2D, ftex);
 	glUseProgram(textShader);
 
+    GLuint colorLoc = glGetUniformLocation(textShader, "textColor");
+    glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+
 	while (*text) {
 		if (*text >= 32 && *text < 128) {
 			stbtt_aligned_quad q;
 			stbtt_GetBakedQuad(cdata, 512,512, *text-32, &x,&y,&q,1);//1=opengl & d3d10+,0=d3d9
 
 			GLfloat vertices[] = {
-				q.x0, q.y0, q.s0, q.t0,
-				q.x1, q.y0, q.s1, q.t0,
-				q.x1, q.y1, q.s1, q.t1,
-				q.x0, q.y1, q.s0, q.t1
+				q.x0, q.y0, q.s0, q.t0, 
+				q.x1, q.y0, q.s1, q.t0, 
+				q.x1, q.y1, q.s1, q.t1, 
+				q.x0, q.y1, q.s0, q.t1 
 			};
 
 			GLuint indices[] = {
@@ -276,7 +287,7 @@ void ImDrawRender()
 
 	for(int i = 0; i < imTextCommands.Count(); i++) {
 		TextCommand *command = &imTextCommands[i];
-		_ImDrawText(command->pos.x, command->pos.y, command->text);
+		_ImDrawText(command->pos.x, command->pos.y, command->text, command->color);
 	}
 	imTextCommands.Clear();
 }
