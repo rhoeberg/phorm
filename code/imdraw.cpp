@@ -1,10 +1,7 @@
 /*
-  imdraw.cpp should be should be changed into a 2d drawing libary
-  (thats basically what it is anyways)
-  this version of imdraw can keep its own projection and view matrices
-
-  we need a orthographic projection to get the correct coordinate system
-  this should give is the coords:
+  imdraw.cpp is a 2d immediate mode drawing library
+  
+  it uses the following coordinate system:
 
 (0, 0)
   -----------------
@@ -17,9 +14,17 @@
               (WIDTH, HEIGHT)
 
 			  
+  TODO:
+  
+  - buffer data every frame
+     currently we buffer data every frame, which technically should 
+     by allocating every frame. It doesnt seems to have an effect on performance
+     so far so maybe opengl is smart enough to reuse the same buffers. 
+     it could be a source of optimisation in the future.
+  
+  - dependency on glfw_wrapper
+     we should make sure there is no dependency on the glfw_wrapper
 
-  Later we will write a "in world" version which takes projection and view 
-  from the scene renderer
  */
 
 // TODO (rhoe) A stb_truetype implementation is already included from DearImgui
@@ -32,26 +37,27 @@ stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
 GLuint ftex;
 GLuint textShader;
 
-// vec2 *imDrawVertices = NULL;
-// GLfloat *imDrawVertices = NULL;
-// #include <vector>
 #include "vm_array.h"
 
 #define MAX_TEXT_SIZE 512
+#define IMDRAW_VBO_BUFFER_SIZE 1024
 
 struct TextCommand {
 	char text[MAX_TEXT_SIZE];
 	vec2 pos;
 };
 
-// global std::vector<GLfloat> imDrawVertices; // TODO (rhoe) remove std dependencies
-global VMArray<GLfloat> imDrawVertices; // TODO (rhoe) remove std dependencies
+global VMArray<GLfloat> imDrawVertices;
 global GLuint imDrawVAO;
 global GLuint imDrawVBO;
 global GLuint imDrawShader;
 global vec3 imDrawColor;
-// global std::vector<TextCommand> imTextCommands;
 global VMArray<TextCommand> imTextCommands;
+// global size_t imVBOSize;
+
+global GLuint imdrawTextVAO;
+global GLuint imdrawTextVBO;
+global GLuint imdrawTextEBO;
 
 void ImDrawSetWindowSize(int width, int height)
 {
@@ -78,17 +84,29 @@ void ImDrawInitialize()
     imDrawShader = createShaderProgram("assets\\imdraw.vs", "assets\\imdraw.frag");
 	textShader = createShaderProgram("assets/font_shader.vert", "assets/font_shader.frag");
 
-    
     glGenVertexArrays(1, &imDrawVAO);
     glGenBuffers(1, &imDrawVBO);
 
-    // GLuint viewLoc = glGetUniformLocation(imDrawShader, "view");
-    // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUseProgram(imDrawShader);
+	glBindVertexArray(imDrawVAO);
+
+	// start by allocation a default size on gpu
+	glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
+	// imVBOSize = sizeof(GLfloat) * IMDRAW_VBO_BUFFER_SIZE;
+	// glBufferData(GL_ARRAY_BUFFER, imVBOSize, NULL, GL_DYNAMIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
 
 	int width, height;
 	GetWindowSize(&width, &height);
 	ImDrawSetWindowSize(width, height);
 
+
+	/////////////////////////
 	// INITIALIZE FONT DRAWING
 	FILE *file = fopen("c:/windows/fonts/consola.ttf", "rb");
 	if(!file) {
@@ -103,6 +121,16 @@ void ImDrawInitialize()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512,512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
 	// can free temp_bitmap at this point
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glGenVertexArrays(1, &imdrawTextVAO);
+	glGenBuffers(1, &imdrawTextVBO);
+	glGenBuffers(1, &imdrawTextEBO);
+
+	glBindVertexArray(imdrawTextVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, imdrawTextVBO);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
 }
 
 void ImDrawSetColor(vec3 color)
@@ -206,25 +234,16 @@ void _ImDrawText(float x, float y, char *text)
 				2, 3, 0
 			};
 
-			GLuint VAO, VBO, EBO;
-			glGenVertexArrays(1, &VAO);
-			glGenBuffers(1, &VBO);
-			glGenBuffers(1, &EBO);
+			glBindVertexArray(imdrawTextVAO);
 
-			glBindVertexArray(VAO);
-
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, imdrawTextVBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, imdrawTextEBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
-			glEnableVertexAttribArray(0);
-
 			glBindVertexArray(0);
 
-			glBindVertexArray(VAO);
+			glBindVertexArray(imdrawTextVAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
@@ -242,11 +261,8 @@ void ImDrawRender()
 		glUseProgram(imDrawShader);
 		glBindVertexArray(imDrawVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawVertices.Count(), imDrawVertices.Data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(1);
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawVertices.Count(), imDrawVertices.Data(), GL_DYNAMIC_DRAW);
 		glBindVertexArray(0);
 
 		glBindVertexArray(imDrawVAO);
@@ -267,5 +283,5 @@ void ImDrawRender()
 
 void imDrawClean()
 {
-    imDrawVertices.Clear();
+    // imDrawVertices.Free();
 }
