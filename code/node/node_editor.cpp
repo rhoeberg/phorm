@@ -28,6 +28,8 @@ void InitializeNodeEditor()
 	_nodeEditorState->viewerWidth = VIEWER_SIZE;
 	_nodeEditorState->viewerHeight = VIEWER_SIZE;
 
+	_nodeEditorState->selectedNode = {};
+
 	// create fbo + fbo texture
 	// glGenTextures(1, &_nodeEditorState->fboTexture);
 	// glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);
@@ -70,6 +72,9 @@ void NodeGUI()
 	if(ImGui::Button("add cube")) {
 		AddCubeNode();
 	}
+	if(ImGui::Button("add video")) {
+		AddVideoNode();
+	}
 	if(ImGui::Button("add renderobject")) {
 		AddRenderObject();
 	}
@@ -84,16 +89,18 @@ void NodeGUI()
 
 		for(int i = 0; i < node->params.Count(); i++) {
 
+			NodeParameter *param = &node->params[i];
+
 			// EXPOSE
-			ImGui::Checkbox("", &node->params[i].exposed);
+			ImGui::Checkbox("", &param->exposed);
 			ImGui::SameLine();
 
 			char buffer[128];
-			sprintf(buffer, "%s", node->params[i].name);
+			sprintf(buffer, "%s", &param->name);
 
 			switch(node->params[i].type) {
 				case PARAM_INT: {
-					if(ImGui::InputInt(buffer, &node->params[i].i)) {
+					if(ImGui::InputInt(buffer, &param->i)) {
 						node->changed = true;
 					}
 					break;
@@ -102,16 +109,19 @@ void NodeGUI()
 					if(ImGui::InputDouble(buffer, &node->params[i].d)) {
 						node->changed = true;
 					}
+					// if(ImGui::SliderScalar(buffer, ImGuiDataType_Double, &param->d, &param->d_min, &param->d_max)) {
+						// node->changed = true;
+					// }
 					break;
 				}
 				case PARAM_VEC3: {
-					if(ImGui::InputFloat3(buffer, glm::value_ptr(node->params[i].v3))) {
+					if(ImGui::InputFloat3(buffer, glm::value_ptr(param->v3))) {
 						node->changed = true;
 					}
 					break;
 				}
 				case PARAM_STRING: {
-					if(ImGui::InputText(buffer, node->params[i].str, ARRAY_SIZE(node->params[i].str))) {
+					if(ImGui::InputText(buffer, param->str, ARRAY_SIZE(param->str))) {
 						node->changed = true;
 					}
 					break;
@@ -370,14 +380,13 @@ void UpdateNodeDragging()
 					break;
 				}
 			}
-
 		}
 	}
 }
 
 void ShowNode(NodeHandle handle)
 {
-	Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+	Node *node = GetNode(handle);
 	switch(node->type) {
 		case TEXTURE_NODE: {
 			AddTextureToRenderQueue(node->GetData());
@@ -398,6 +407,12 @@ void UpdateNodeEditor()
 
 	UpdateNodeDragging();
 
+	if(keys[GLFW_KEY_SPACE]) {
+		if(_nodeEditorState->draggedNodeHandle.type != NIL_NODE) {
+			_nodeEditorState->selectedNode = _nodeEditorState->draggedNodeHandle;
+		}
+	}
+
 	//////////////////
 	// DRAW NODES
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
@@ -410,8 +425,8 @@ void UpdateNodeEditor()
 
 	//////////////////
 	// VIEWER
-	if(_nodeEditorState->draggedNodeHandle.type != NIL_NODE) {
-		ShowNode(_nodeEditorState->draggedNodeHandle);
+	if(_nodeEditorState->selectedNode.type != NIL_NODE) {
+		ShowNode(_nodeEditorState->selectedNode);
 	}
 
 	///////////////////

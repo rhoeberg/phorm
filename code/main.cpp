@@ -14,7 +14,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include "stb_ds.h"
+// #define STB_IMAGE_WRITE_IMPLEMENTATION
+// #include "stb_image_write.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 
@@ -33,6 +34,9 @@
 #include "portaudio.h"
 #include "stb_vorbis.c"
 
+#define PL_MPEG_IMPLEMENTATION
+#include "pl_mpeg.h"
+
 #include "main.h"
 #include "imdraw.cpp"
 #include "opengl.cpp"
@@ -47,6 +51,7 @@
 #include "node/node_editor.cpp"
 #include "opengl_wrapper.cpp"
 #include "viewer_render.cpp"
+// #include "video.cpp"
 
 int main(int argc, char *argv[])
 {

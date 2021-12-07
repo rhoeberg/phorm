@@ -36,6 +36,7 @@ struct NodeEditorState {
 	GLuint fbo;
 	GLuint viewerShader;
 	int viewerWidth, viewerHeight;
+	NodeHandle selectedNode;
 };
 
 /* void NodeEditorSetWindowSize(int width, int height); */

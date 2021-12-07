@@ -109,6 +109,7 @@ enum NodeType {
 	TEXTURE_NODE,
 	MESH_NODE,
 	RENDEROBJECT_NODE,
+	DOUBLE_NODE,
 };
 
 struct DataHandle {
@@ -128,9 +129,11 @@ struct NodeHandle {
 struct NodeInput {
 	NodeType type;
 	NodeHandle handle;
+	bool isset;
 
 	NodeInput(NodeType _type) {
 		type = _type;
+		isset = false;
 	}
 
 	NodeInput() {}
@@ -193,6 +196,8 @@ struct Node {
 	char name[128];
 	VMArray<NodeInput> inputs;
 	VMArray<NodeParameter> params;
+	int extraHandle;
+	bool initialized;
 
 	void AddInput(NodeType type)
 	{
@@ -205,16 +210,7 @@ struct Node {
 	void SetDataHandle(DataHandle handle) { dataHandle = handle; }
 
 	DataHandle GetDataLast() { return dataHandle; }
-
-	DataHandle GetData()
-	{
-		if(changed) {
-			changed = false;
-			op(this);
-		}
-
-		return dataHandle;
-	}
+	DataHandle GetData();
 
 private:
 	DataHandle dataHandle;
@@ -239,6 +235,21 @@ struct RenderObject {
 	int indicesCount;
 };
 
+struct VideoNodeState {
+	plm_t *plm;
+};
+
+int GetPixelIndex(int x, int y);
+bool NodeExists(NodeHandle handle);
+Node* GetNode(NodeHandle handle);
+int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
+double* GetDouble(DataHandle handle);
+Texture* GetTexture(DataHandle handle);
+Texture* GetTextureInput(NodeInput input);
+RenderObject* GetRenderObject(DataHandle handle);
+Mesh* GetMesh(DataHandle handle);
+Mesh* GetMeshInput(NodeInput input);
+
 struct NodeState {
 	// base node array
 	VMArray<Node> nodes;
@@ -247,22 +258,15 @@ struct NodeState {
 	VMArray<Texture> textures;
 	VMArray<Mesh> meshes;
 	VMArray<RenderObject> renderObjects;
+	VMArray<double> doubles;
+	VMArray<VideoNodeState> videoNodes;
 };
 
 global NodeState *_nodeState;
-
-int GetPixelIndex(int x, int y);
-bool NodeExists(NodeHandle handle);
-Node* GetNode(NodeHandle handle);
-int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
-Texture* GetTexture(DataHandle handle);
-Texture* GetTextureInput(NodeInput input);
-RenderObject* GetRenderObject(DataHandle handle);
-Mesh* GetMesh(DataHandle handle);
-Mesh* GetMeshInput(NodeInput input);
 
 #include "BlurNode.h"
 #include "LoadTextureNode.h"
 #include "MixTextureNode.h"
 #include "CubeNode.h"
+#include "VideoNode.h"
 #include "RenderObject.h"

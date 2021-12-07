@@ -1,5 +1,24 @@
 #include "node.h"
 
+DataHandle Node::GetData()
+{
+	bool inputChanged = false;
+	for(int i = 0; i < inputs.Count(); i++) {
+		if(inputs[i].isset) {
+			Node *inputNode = GetNode(inputs[i].handle);
+			if(inputNode->changed)
+				inputChanged = true;
+		}
+	}
+
+	if(changed || inputChanged) {
+		changed = false;
+		op(this);
+	}
+
+	return dataHandle;
+}
+
 int GetPixelIndex(int x, int y)
 {
 	return ((y * TEXTURE_SIZE) + x);
@@ -22,6 +41,14 @@ Node* GetNode(NodeHandle handle)
 	}
 
 	return &_nodeState->nodes[handle.id];
+}
+
+double* GetDouble(DataHandle handle)
+{
+	if(handle.type == DOUBLE_NODE)
+		return &_nodeState->doubles[handle.id];
+	else
+		return NULL;
 }
 
 Texture* GetTexture(DataHandle handle)
@@ -83,16 +110,20 @@ RenderObject* GetRenderObject(DataHandle handle)
 
 bool ConnectNodes(NodeHandle inHandle, NodeHandle outHandle, int inputIndex)
 {
+	Node *inputNode = GetNode(inHandle);
+	Node *outputNode = GetNode(outHandle);
+
 	if(inHandle.id == outHandle.id ||
 	   !NodeExists(inHandle) ||
-	   !NodeExists(outHandle)) {
+	   !NodeExists(outHandle) ||
+	   inputNode->inputs[inputIndex].type != outputNode->type) {
 		return false;
 	}
 
-	Node *inputNode = GetNode(inHandle);
 	if(inputNode != NULL) {
 		inputNode->changed = true;
 		inputNode->inputs[inputIndex].handle = outHandle;
+		inputNode->inputs[inputIndex].isset = true;
 	}
 
 	return true;
@@ -108,14 +139,7 @@ void InitializeNodes()
 	_nodeState->textures = VMArray<Texture>();
 	_nodeState->meshes = VMArray<Mesh>();
 	_nodeState->renderObjects = VMArray<RenderObject>();
-
-	// TESTING STUFF
-	// int loadHandle = AddLoadTextureNode();
-	// int blurHandle = AddBlurNode();
-	// int mixNodeHandle = AddMixTextureNode();
-	// ConnectNodes(mixNodeHandle, loadHandle, 0);
-	// ConnectNodes(mixNodeHandle, blurHandle, 1);
-	// ConnectNodes(blurHandle, loadHandle, 0);
+	_nodeState->videoNodes = VMArray<VideoNodeState>();
 }
 
 DataHandle AddNewRenderObject()
@@ -157,23 +181,25 @@ int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParam
 	switch(node.type) {
 		case TEXTURE_NODE: {
 			dataHandle.id = _nodeState->textures.InsertNew();
-			node.SetDataHandle(dataHandle);
 			break;
 		}
 		case MESH_NODE: {
 			Mesh mesh = {};
 			dataHandle.id = _nodeState->meshes.Insert(mesh);
-			node.SetDataHandle(dataHandle);
 			break;
 		}
 		case RENDEROBJECT_NODE: {
 			RenderObject renderObject = {};
 			dataHandle = AddNewRenderObject();
-			node.SetDataHandle(dataHandle);
+			break;
+		}
+		case DOUBLE_NODE: {
+			dataHandle.id = _nodeState->doubles.Insert(0.0);
 			break;
 		}
 	}
 
+	node.SetDataHandle(dataHandle);
 	return _nodeState->nodes.Insert(node);
 }
 
@@ -189,7 +215,6 @@ void CleanupNodes()
 	_nodeState->nodes.Free();
 	_nodeState->textures.Free();
 
-	
 	free(_nodeState);
 }
 
