@@ -1,4 +1,5 @@
 #include "viewer_render.h"
+#include "node/nodestate.h"
 
 void InitializeViewerRender()
 {

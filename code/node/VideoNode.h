@@ -44,7 +44,7 @@ void VideoOperation(Node *self)
 int AddVideoNode()
 {
 	VMArray<NodeParameter> params = {
-		NodeParameter("time", PARAM_DOUBLE, 0.0, 0.0, 100.0),
+		NodeParameter("time", PARAM_DOUBLE, 0.0),
 	};
 
 	VMArray<NodeInput> inputs = {

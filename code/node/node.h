@@ -32,31 +32,6 @@
   - blur
   - loadTexture
 
-  
-
-  
-
-  __ GENERALIZATION IDEA __  (not yet implemented)
-  we could further generalize the system by storing the data
-  of each type seperately (we kind of do that in sub types)
-  then we could get rid of the diffferent node types
-  and have a single general node type with a single function pointer
-  signature:
-  typedef int(*NodeOperation)(Node *self)
-  
-  the returned int would then be a contextual handle to the 
-  data type for that node.
-  that means sometimes its a handle to a texture
-  sometimes to a renderobject
-
-
-  
-  
-
-
-
-
-
   __ HANDLE SYSTEM __ (not yet implemented)
   we need unique handles pr node / sub node
   these handles is going to be indices in their respective arrays.
@@ -82,27 +57,9 @@
 
 #pragma once
 
-#define TEXTURE_SIZE 512
-#define TEXTURE_CHANNEL_AMOUNT 4
-#define PIXEL_AMOUNT (TEXTURE_SIZE * TEXTURE_SIZE)
-
-struct Pixel {
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-	unsigned char a;
-
-	Pixel() {
-		r = g = b = a = 0;
-	}
-
-	Pixel(unsigned int _r, unsigned int _g, unsigned int _b, unsigned int _a) {
-		r = _r;
-		g = _g;
-		b = _b;
-		a = _a;
-	}
-};
+#include "texture.h"
+#include "mesh.h"
+#include "renderobject.h"
 
 enum NodeType {
 	NIL_NODE,
@@ -215,58 +172,3 @@ struct Node {
 private:
 	DataHandle dataHandle;
 };
-
-struct Texture {
-	Pixel pixels[PIXEL_AMOUNT];
-};
-
-struct Mesh {
-	VMArray<float> vertices;
-	VMArray<GLuint> indices;
-};
-
-struct RenderObject {
-	bool hasTexture;
-	GLuint textureID;
-	int VAOHandle; // not a direct VAO id but an abstract handle
-	int VAO; // not a direct VAO id but an abstract handle
-	GLuint VBO;
-	GLuint EBO;
-	int indicesCount;
-};
-
-struct VideoNodeState {
-	plm_t *plm;
-};
-
-int GetPixelIndex(int x, int y);
-bool NodeExists(NodeHandle handle);
-Node* GetNode(NodeHandle handle);
-int AddNode(const char *name, NodeType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
-double* GetDouble(DataHandle handle);
-Texture* GetTexture(DataHandle handle);
-Texture* GetTextureInput(NodeInput input);
-RenderObject* GetRenderObject(DataHandle handle);
-Mesh* GetMesh(DataHandle handle);
-Mesh* GetMeshInput(NodeInput input);
-
-struct NodeState {
-	// base node array
-	VMArray<Node> nodes;
-
-	// data arrays
-	VMArray<Texture> textures;
-	VMArray<Mesh> meshes;
-	VMArray<RenderObject> renderObjects;
-	VMArray<double> doubles;
-	VMArray<VideoNodeState> videoNodes;
-};
-
-global NodeState *_nodeState;
-
-#include "BlurNode.h"
-#include "LoadTextureNode.h"
-#include "MixTextureNode.h"
-#include "CubeNode.h"
-#include "VideoNode.h"
-#include "RenderObject.h"

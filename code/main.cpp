@@ -51,6 +51,9 @@
 #include "node/node_editor.cpp"
 #include "opengl_wrapper.cpp"
 #include "viewer_render.cpp"
+#include "node/texture.cpp"
+#include "node/mesh.cpp"
+#include "node/nodestate.cpp"
 // #include "video.cpp"
 
 int main(int argc, char *argv[])
@@ -116,7 +119,7 @@ int main(int argc, char *argv[])
 		///////////////
 		// NODES
 		///////////////
-		UpdateNodes();
+		// UpdateNodes();
 		UpdateNodeEditor();
 
 		///////////////

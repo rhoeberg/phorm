@@ -35,7 +35,10 @@ global double scrollOffset;
 #include "opengl_wrapper.h"
 #include "node/node.h"
 #include "node/node_editor.h"
+#include "node/nodestate.h"
 #include "viewer_render.h"
+/* #include "node/texture.h" */
+/* #include "node/mesh.h" */
 
 GLuint createRectVAO(float w, float h);
 bool singleKeyPress(int GLFW_KEY);
