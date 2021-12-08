@@ -50,34 +50,45 @@ struct Camera {
 
 void UpdateViewerRender()
 {
-	if(scrollReady) {
-		_viewerRenderState.orbitDistance += scrollOffset;
-		scrollReady = false;
-	}
+	// TODO (rhoe) store this somewhere
+	int width, height;
+	GetWindowSize(&width, &height);
+	Rect viewerRect = {};
+	viewerRect.width = VIEWER_SIZE;
+	viewerRect.height = VIEWER_SIZE;
+	viewerRect.pos = vec2(width - VIEWER_SIZE, 0);
 
-	vec2 dragOffset;
-	// mouse drag
-	if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
-		dragOffset = mouse - _viewerRenderState.lastDragPos;
-		dragOffset *= _viewerRenderState.orbitDragSpeed;
-		_viewerRenderState.dragAmount += dragOffset;
 
-		if(_viewerRenderState.dragAmount.y > glm::radians(89.0f)) {
-			_viewerRenderState.dragAmount.y = glm::radians(89.0f);
+	if((!ViewerInMain()) || (PointInsideRect(mouse, viewerRect))) {
+		if(scrollReady) {
+			_viewerRenderState.orbitDistance += scrollOffset;
+			scrollReady = false;
 		}
-		else if(_viewerRenderState.dragAmount.y < glm::radians(-89.0f)) {
-			_viewerRenderState.dragAmount.y = glm::radians(-89.0f);
+
+		vec2 dragOffset;
+		// mouse drag
+		if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
+			dragOffset = mouse - _viewerRenderState.lastDragPos;
+			dragOffset *= _viewerRenderState.orbitDragSpeed;
+			_viewerRenderState.dragAmount += dragOffset;
+
+			if(_viewerRenderState.dragAmount.y > glm::radians(89.0f)) {
+				_viewerRenderState.dragAmount.y = glm::radians(89.0f);
+			}
+			else if(_viewerRenderState.dragAmount.y < glm::radians(-89.0f)) {
+				_viewerRenderState.dragAmount.y = glm::radians(-89.0f);
+			}
 		}
+		_viewerRenderState.lastDragPos = mouse;
 	}
-	_viewerRenderState.lastDragPos = mouse;
 
 	///////////////////
 	// SETUP VIEWER MODE
 	float aspectRatio;
 	if(ViewerInMain()) {
 		glfwMakeContextCurrent(_win);
-		int width, height;
-		GetWindowSize(&width, &height);
+		// int width, height;
+		// GetWindowSize(&width, &height);
 		aspectRatio = (float)VIEWER_SIZE / (float)VIEWER_SIZE;
 		glViewport(width - VIEWER_SIZE, height - VIEWER_SIZE, VIEWER_SIZE, VIEWER_SIZE);
 	}
@@ -114,6 +125,9 @@ void UpdateViewerRender()
 
 			glUseProgram(GetTextureShader());
 
+
+
+			
 			/////////////////
 			// VIEW
 			glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);

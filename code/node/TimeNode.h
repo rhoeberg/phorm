@@ -1,8 +1,5 @@
 #pragma once
 
-#define NODE_HEIGHT 30
-#define NODE_BASE_WIDTH 100
-
 void TimeOperation(Node *self)
 {
 	double *output = GetDouble(self->GetDataLast());

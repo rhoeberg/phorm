@@ -1,5 +1,8 @@
 #include "node.h"
 
+#define NODE_HEIGHT 30
+#define NODE_BASE_WIDTH 100
+
 DataHandle Node::GetData()
 {
 	if(Changed()) {
