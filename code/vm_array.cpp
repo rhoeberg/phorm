@@ -33,6 +33,16 @@ VMArray<T>::VMArray(std::initializer_list<T> init)
 	}
 }
 
+
+template <typename T>
+VMArray<T>::VMArray(int _max, int _count, T *_data)
+{
+	max = _max;
+	count = _count;
+	data = (T*)malloc(sizeof(T) * max);
+	memcpy(data, _data, count * sizeof(T));
+}
+
 template <typename T>
 VMArray<T>::~VMArray()
 {
@@ -79,6 +89,12 @@ template <typename T>
 int VMArray<T>::Count()
 {
 	return count;
+}
+
+template <typename T>
+int VMArray<T>::Max()
+{
+	return max;
 }
 
 template <typename T>

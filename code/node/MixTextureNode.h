@@ -31,14 +31,14 @@ void MixTextureOperation(Node *self)
 
 int AddMixTextureNode()
 {
-	VMArray<NodeParameter> params = {
+	FixedArray<NodeParameter> params = {
 		NodeParameter("mix", DATA_DOUBLE, 0.5),
 	};
 
-	VMArray<NodeInput> inputs = {
+	FixedArray<NodeInput> inputs = {
 		NodeInput(DATA_TEXTURE),
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode("MIX_TEXTURE", DATA_TEXTURE, MixTextureOperation, params, inputs);
+	return AddNode("MIX_TEXTURE", DATA_TEXTURE, OP_TEXTURE_MIX, params, inputs);
 }

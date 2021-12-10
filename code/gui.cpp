@@ -92,5 +92,11 @@ void gui()
 
     ImGui::Begin("debug", &show);
 	ImGui::Text("mouse:%f %f", mouse.x, mouse.y);
+	if(ImGui::Button("save")) {
+		SaveNodes();
+	}
+	if(ImGui::Button("load")) {
+		LoadNodes();
+	}
     ImGui::End();
 }

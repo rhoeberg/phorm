@@ -43,14 +43,14 @@ void VideoOperation(Node *self)
 
 int AddVideoNode()
 {
-	VMArray<NodeParameter> params = {
+	FixedArray<NodeParameter> params = {
 		NodeParameter("time", DATA_DOUBLE, 0.0),
 	};
 
-	VMArray<NodeInput> inputs = {
+	FixedArray<NodeInput> inputs = {
 	};
 
 	_nodeState->videoNodes.Insert(VideoNodeState());
 
-	return AddNode("VIDEO", DATA_TEXTURE, VideoOperation, params, inputs);
+	return AddNode("VIDEO", DATA_TEXTURE, OP_TEXTURE_VIDEO, params, inputs);
 }

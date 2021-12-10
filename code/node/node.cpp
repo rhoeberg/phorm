@@ -1,13 +1,11 @@
 #include "node.h"
 
-#define NODE_HEIGHT 30
-#define NODE_BASE_WIDTH 100
-
 DataHandle Node::GetData()
 {
 	if(Changed()) {
 		changed = false;
-		op(this);
+		// op(this);
+		CallNodeOp(this);
 	}
 
 	return dataHandle;
@@ -52,27 +50,12 @@ double NodeParameter::Double()
 	return 0.0;
 }
 
-void BaseNodeDrawFunction(Node *node)
-{
-	// Rect rect = GetNodeRect(handle);
-	node->rect.width = NODE_BASE_WIDTH;
-	node->rect.width += node->params.Count() * PARAM_WIDTH;
-	node->rect.width += node->inputs.Count() * PARAM_WIDTH;
-	node->rect.height = NODE_HEIGHT;
-	// Rect rect = node->rect;
-	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-	ImDrawRect(node->rect);
+// int AddNode(const char *name, NodeDataType type, NodeOp op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
+// {
+// 	return AddNode(name, type, op, NODE_DRAW_DEFAULT, params, inputs);
+// }
 
-	vec2 namePos = node->rect.pos + vec2(10.0f, node->rect.height - 10.0f);
-	ImDrawText(namePos, node->name);
-}
-
-int AddNode(const char *name, NodeDataType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
-{
-	return AddNode(name, type, op, BaseNodeDrawFunction, params, inputs);
-}
-
-int AddNode(const char *name, NodeDataType type, NodeOperation op, NodeDrawingFunction drawingFunction, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
+int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs)
 {
 	// TODO (rhoe) since similar node type dont change name we could
 	//             store the names in a string array and just refer to the handle
@@ -84,14 +67,11 @@ int AddNode(const char *name, NodeDataType type, NodeOperation op, NodeDrawingFu
 	// node.rect.w = NODE_BASE_WIDTH;
 	// node.rect.h = NODE_HEIGHT;
 	node.changed = true;
-	// node.changeVer = 1;
-	// node.lastChangeVer = 0;
-	node.inputs = VMArray<NodeInput>();
 	node.type = type;
 	node.params = params;
 	node.inputs = inputs;
 	node.op = op;
-	node.drawingFunction = drawingFunction;
+	// node.drawFunc = drawFunc;
 	DataHandle dataHandle = {};
 	dataHandle.type = type;
 
@@ -106,7 +86,6 @@ int AddNode(const char *name, NodeDataType type, NodeOperation op, NodeDrawingFu
 			break;
 		}
 		case DATA_RENDEROBJECT: {
-			RenderObject renderObject = {};
 			dataHandle = AddNewRenderObject();
 			break;
 		}

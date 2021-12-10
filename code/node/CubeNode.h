@@ -51,12 +51,12 @@ void CubeOperation(Node *self)
 
 int AddCubeNode()
 {
-	VMArray<NodeParameter> params = {
+	FixedArray<NodeParameter> params = {
 	};
 
-	VMArray<NodeInput> inputs = {
+	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode("CUBE", DATA_MESH, CubeOperation, params, inputs);
+	return AddNode("CUBE", DATA_MESH, OP_MESH_CUBE, params, inputs);
 }
 

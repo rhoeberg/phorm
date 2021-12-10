@@ -1,7 +1,5 @@
 #pragma once
 
-using namespace std;
-
 #define ARRAY_START_SIZE 16
 
 template <typename T>
@@ -14,11 +12,13 @@ class VMArray {
  public:
 	VMArray();
 	VMArray(const VMArray<T>&);
+	VMArray(int _max, int _count, T *_data);
 	VMArray(std::initializer_list<T> init);
 	~VMArray();
 	int Insert(T e);
 	int InsertNew();
 	int Count();
+	int Max();
 	T* Data();
 	void Free();
 	void Clear();

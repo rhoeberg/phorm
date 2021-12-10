@@ -14,6 +14,7 @@ struct NodeState {
 	VMArray<RenderObject> renderObjects;
 	VMArray<double> doubles;
 	VMArray<VideoNodeState> videoNodes;
+	HashMap<NodeHandle> labels;
 };
 
 global NodeState *_nodeState;
@@ -29,13 +30,7 @@ Mesh* GetMesh(DataHandle handle);
 Mesh* GetMeshInput(NodeInput input);
 bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramIndex);
 bool ConnectNodeInput(NodeHandle inHandle, NodeHandle outHandle, int inputIndex);
+RenderObject CreateRenderObject();
 DataHandle AddNewRenderObject();
-
-#include "BlurNode.h"
-#include "LoadTextureNode.h"
-#include "MixTextureNode.h"
-#include "CubeNode.h"
-#include "VideoNode.h"
-#include "renderobject_node.h"
-#include "TimeNode.h"
-
+int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs);
+/* int AddNode(const char *name, NodeDataType type, NodeOp op, NodeDrawFunc drawFunc, VMArray<NodeParameter> params, VMArray<NodeInput> inputs); */

@@ -77,6 +77,7 @@ enum NodeDataType {
 	DATA_INT,
 	DATA_VEC3,
 	DATA_STRING,
+	DATA_NONE,
 };
 
 struct DataHandle {
@@ -123,9 +124,12 @@ struct NodeParameter {
 		int i;
 		double d;
 		vec3 v3;
+
+		// TOOD (rhoe) here we could use a handle to a String type stored somewhere else
 		char str[128];
 	};
 
+	NodeParameter() {};
 	// TODO (rhoe) can we make a unified constructor that sets a default parameter?
 	NodeParameter(const char *_name, NodeDataType _type, int _i) {
 		type = _type;
@@ -158,21 +162,31 @@ struct NodeParameter {
 	double Double();
 };
 
-struct Node;
-typedef void(*NodeOperation)(Node *self);
-typedef void(*NodeDrawingFunction)(Node *self);
+/* struct Node; */
+/* typedef void(*NodeOperation)(Node *self); */
+/* typedef void(*NodeDrawingFunction)(Node *self); */
+enum NodeOp;
+enum NodeDrawFunc;
+
+/* struct ParamList { */
+	/* NodeParameter params[MAX_PARAMETERS]; */
+/* }; */
 
 struct Node {
-	NodeOperation op;
-	NodeDrawingFunction drawingFunction;
+	/* NodeOperation op; */
+	/* NodeDrawingFunction drawingFunction; */
+	NodeOp op;
+	NodeDrawFunc drawFunc;
 	NodeDataType type; //defines the return of the node operation
 	Rect rect;
 	bool changed;
 	/* uint8_t changeVer; */
 	/* uint8_t lastChangeVer; */
 	char name[128];
-	VMArray<NodeInput> inputs;
-	VMArray<NodeParameter> params;
+	/* VMArray<NodeInput> inputs; */
+	/* VMArray<NodeParameter> params; */
+	FixedArray<NodeInput> inputs;
+	FixedArray<NodeParameter> params;
 	int extraHandle;
 	bool initialized;
 
@@ -195,5 +209,5 @@ private:
 	DataHandle dataHandle;
 };
 
-int AddNode(const char *name, NodeDataType type, NodeOperation op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
-int AddNode(const char *name, NodeDataType type, NodeOperation op, NodeDrawingFunction drawingFunction, VMArray<NodeParameter> params, VMArray<NodeInput> inputs);
+/* #include "node_op.h" */
+

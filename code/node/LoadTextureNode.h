@@ -18,12 +18,12 @@ void LoadTextureOperation(Node *self)
 
 int AddLoadTextureNode()
 {
-	VMArray<NodeParameter> params = {
+	FixedArray<NodeParameter> params = {
 		NodeParameter("path", DATA_STRING, ""),
 	};
 
-	VMArray<NodeInput> inputs = {
+	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode("LOAD_TEXTURE", DATA_TEXTURE, LoadTextureOperation, params, inputs);
+	return AddNode("LOAD_TEXTURE", DATA_TEXTURE, OP_TEXTURE_LOAD, params, inputs);
 }

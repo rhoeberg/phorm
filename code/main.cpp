@@ -47,6 +47,9 @@
 #include "math.cpp"
 #include "render.cpp"
 #include "vm_array.cpp"
+#include "vm_fixedarray.cpp"
+#include "string.cpp"
+#include "hashmap.cpp"
 #include "node/node.cpp"
 #include "node/node_editor.cpp"
 #include "opengl_wrapper.cpp"
@@ -54,6 +57,7 @@
 #include "node/texture.cpp"
 #include "node/mesh.cpp"
 #include "node/nodestate.cpp"
+#include "node/save.cpp"
 // #include "video.cpp"
 
 int main(int argc, char *argv[])
@@ -125,6 +129,7 @@ int main(int argc, char *argv[])
 		///////////////
 		// IMDRAW
 		///////////////
+		glfwMakeContextCurrent(_win);
 		int screenWidth, screenHeight;
 		GetWindowSize(&screenWidth, &screenHeight);
 		glViewport(0, 0, screenWidth, screenHeight);

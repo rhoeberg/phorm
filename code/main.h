@@ -31,12 +31,17 @@ global double scrollOffset;
 #include "imdraw.h"
 #include "render.h"
 #include "vm_array.h"
+#include "vm_fixedarray.h"
+#include "string.h"
+#include "hashmap.h"
 #include "glfw_wrapper.h"
 #include "opengl_wrapper.h"
 #include "node/node.h"
-#include "node/node_editor.h"
 #include "node/nodestate.h"
+#include "node/node_op.h"
+#include "node/node_editor.h"
 #include "viewer_render.h"
+#include "save.h"
 /* #include "node/texture.h" */
 /* #include "node/mesh.h" */
 

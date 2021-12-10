@@ -78,13 +78,13 @@ void BlurOperation(Node *self)
 
 int AddBlurNode()
 {
-	VMArray<NodeParameter> params = {
+	FixedArray<NodeParameter> params = {
 		NodeParameter("amount", DATA_INT, 20),
 	};
 
-	VMArray<NodeInput> inputs = {
+	FixedArray<NodeInput> inputs = {
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode("BLUR", DATA_TEXTURE, BlurOperation, params, inputs);
+	return AddNode("BLUR", DATA_TEXTURE, OP_TEXTURE_BLUR, params, inputs);
 }

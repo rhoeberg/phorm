@@ -10,6 +10,7 @@ void InitializeNodes()
 	_nodeState->renderObjects = VMArray<RenderObject>();
 	_nodeState->videoNodes = VMArray<VideoNodeState>();
 	_nodeState->doubles = VMArray<double>();
+	_nodeState->labels = HashMap<NodeHandle>();
 }
 
 bool NodeExists(NodeHandle handle)
@@ -100,8 +101,7 @@ Mesh* GetMeshInput(NodeInput input)
 RenderObject* GetRenderObject(DataHandle handle)
 {
 	if(handle.type != DATA_RENDEROBJECT) {
-		// TODO err
-		return NULL;
+		NOT_IMPLEMENTED
 	}
 	
 	return &_nodeState->renderObjects[handle.id];
@@ -149,16 +149,25 @@ bool ConnectNodeInput(NodeHandle handle, NodeHandle outHandle, int inputIndex)
 	return true;
 }
 
+RenderObject CreateRenderObject()
+{
+	RenderObject result = {};
+
+	result.VAOHandle = AddVAO();
+	glGenBuffers(1, &result.EBO);
+	glGenBuffers(1, &result.VBO);
+	glGenTextures(1, &result.textureID);
+
+	return result;
+}
+
 DataHandle AddNewRenderObject()
 {
-	RenderObject renderObject = {};
-
-	renderObject.VAOHandle = AddVAO();
-	glGenBuffers(1, &renderObject.EBO);
-	glGenBuffers(1, &renderObject.VBO);
-	glGenTextures(1, &renderObject.textureID);
-
-	glGenTextures(1, &renderObject.textureID);
+	RenderObject renderObject = CreateRenderObject();
+	// renderObject.VAOHandle = AddVAO();
+	// glGenBuffers(1, &renderObject.EBO);
+	// glGenBuffers(1, &renderObject.VBO);
+	// glGenTextures(1, &renderObject.textureID);
 
 	DataHandle handle = {};
 	handle.type = DATA_RENDEROBJECT;

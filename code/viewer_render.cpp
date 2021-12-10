@@ -1,7 +1,7 @@
 #include "viewer_render.h"
 #include "node/nodestate.h"
 
-void InitializeViewerRender()
+void CreateViewerTextureRenderObject()
 {
 	_viewerRenderState.baseTextureObject = AddNewRenderObject();
 	RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
@@ -12,6 +12,20 @@ void InitializeViewerRender()
 	renderObject->VAOHandle = CreateSpriteVAO();
 	renderObject->hasTexture = true;
 	renderObject->indicesCount = 12;
+}
+
+void InitializeViewerRender()
+{
+	CreateViewerTextureRenderObject();
+	// _viewerRenderState.baseTextureObject = AddNewRenderObject();
+	// RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
+
+	// // TODO (rhoe) currently we are wasting a gl id here
+	// //             perhaps we should pass vao as parameter instead of
+	// //             creating a new one
+	// renderObject->VAOHandle = CreateSpriteVAO();
+	// renderObject->hasTexture = true;
+	// renderObject->indicesCount = 12;
 
 	_viewerRenderState.orbitDistance = 5.0f;
 	_viewerRenderState.orbitDragSpeed = 0.006f;
@@ -37,7 +51,7 @@ void AddTextureToRenderQueue(DataHandle textureHandle)
 void AddToRenderQueue(DataHandle objectHandle)
 {
 	if(objectHandle.type != DATA_RENDEROBJECT) {
-		// TODO err
+		NOT_IMPLEMENTED
 	}
 	else {
 		_viewerRenderState.renderList.Insert(objectHandle);
@@ -116,6 +130,7 @@ void UpdateViewerRender()
 	// RENDER OBJECTS
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
 		RenderObject *renderObject = GetRenderObject(_viewerRenderState.renderList[i]);
+
 		if(renderObject != NULL) {
 			if(renderObject->hasTexture) {
 				// render texture to quad here
@@ -124,9 +139,6 @@ void UpdateViewerRender()
 			}
 
 			glUseProgram(GetTextureShader());
-
-
-
 			
 			/////////////////
 			// VIEW
@@ -157,7 +169,8 @@ void UpdateViewerRender()
 			/////////////////
 			// MODEL
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-			model = glm::translate(model, glm::vec3(0, 0, 0));
+			// model = glm::translate(model, glm::vec3(0, 0, 0));
+			model = glm::translate(model, renderObject->pos);
 			GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 

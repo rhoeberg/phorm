@@ -5,6 +5,7 @@
 struct ViewerRenderState {
 	VMArray<DataHandle> renderList;
 	DataHandle baseTextureObject;
+	/* RenderObject textureRenderObject; */
 	bool wireframe;
 
 	bool dragging;

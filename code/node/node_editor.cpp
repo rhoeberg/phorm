@@ -83,6 +83,9 @@ void NodeGUI()
 	if(ImGui::Button("add time")) {
 		AddTimeNode();
 	}
+	if(ImGui::Button("add label")) {
+		AddLabelNode();
+	}
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
@@ -126,8 +129,10 @@ void NodeGUI()
 					break;
 				}
 				case DATA_STRING: {
-					if(ImGui::InputText(buffer, param->str, ARRAY_SIZE(param->str))) {
-						node->changed = true;
+					static char strBuffer[128];
+					ImGui::InputText(buffer, strBuffer, ARRAY_SIZE(strBuffer));
+					if(ImGui::Button("update string")) {
+						memcpy(param->str, strBuffer, ARRAY_SIZE(strBuffer));
 					}
 					break;
 				}
@@ -203,18 +208,13 @@ void DrawNode(NodeHandle handle)
 {
 	Node *node = GetNode(handle);
 
-	// Rect rect = GetNodeRect(handle);
-	// ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-	// ImDrawRect(rect);
+	CallNodeDrawFunction(node);
 
-	// vec2 namePos = node->pos + vec2(10.0f, rect.height - 10.0f);
-	// ImDrawText(namePos, node->name);
-	// BaseNodeDrawFunction(node);
-	node->drawingFunction(node);
-
-	Rect outputRect = GetNodeOutputRect(handle);
-	ImDrawSetColor(vec3(0.0f, 0.0f, 1.0f));
-	ImDrawRect(outputRect);
+	if(node->type != DATA_NONE) {
+		Rect outputRect = GetNodeOutputRect(handle);
+		ImDrawSetColor(vec3(0.0f, 0.0f, 1.0f));
+		ImDrawRect(outputRect);
+	}
 
 	// DRAW INPUTS
 	for(int i = 0; i < node->inputs.Count(); i++) {
@@ -248,7 +248,6 @@ void DrawNode(NodeHandle handle)
 				vec2 paramPos = GetRectCenter(paramRect);
 				ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 				ImDrawLine(outputPos, paramPos);
-
 			}
 		}
 	}
