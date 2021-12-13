@@ -50,6 +50,7 @@
 #include "vm_fixedarray.cpp"
 #include "string.cpp"
 #include "hashmap.cpp"
+#include "node/node_parameter.cpp"
 #include "node/node.cpp"
 #include "node/node_editor.cpp"
 #include "opengl_wrapper.cpp"

@@ -2,15 +2,34 @@ void InitializeNodes()
 {
 	_nodeState = (NodeState*)malloc(sizeof(NodeState));
 
-	_nodeState->nodes = VMArray<Node>();
+
+	// TODO (rhoe) replace placement new
+	// apparently we need to use "placement new" syntax here
+	// because we want to call the constructor on a object
+	// which has already been allocated with malloc
+	// not very pretty syntax maybe we should just use a custom
+	// init function instead of constructor
+
+	new(&_nodeState->nodes) VMArray<Node>();
 
 	// data containers
-	_nodeState->textures = VMArray<Texture>();
-	_nodeState->meshes = VMArray<Mesh>();
-	_nodeState->renderObjects = VMArray<RenderObject>();
-	_nodeState->videoNodes = VMArray<VideoNodeState>();
-	_nodeState->doubles = VMArray<double>();
-	_nodeState->labels = HashMap<NodeHandle>();
+	// _nodeState->textures = VMArray<Texture>();
+	// _nodeState->meshes = VMArray<Mesh>();
+	// _nodeState->renderObjects = VMArray<RenderObject>();
+	// _nodeState->videoNodes = VMArray<VideoNodeState>();
+	// _nodeState->labelNodes = VMArray<LabelNodeState>();
+	// _nodeState->doubles = VMArray<double>();
+
+	new(&_nodeState->textures) VMArray<Texture>();
+	new(&_nodeState->meshes) VMArray<Mesh>();
+	new(&_nodeState->renderObjects) VMArray<RenderObject>();
+	new(&_nodeState->videoNodes) VMArray<VideoNodeState>();
+	new(&_nodeState->labelNodes) VMArray<LabelNodeState>();
+	new(&_nodeState->doubles) VMArray<double>();
+
+	new(&_nodeState->labels) HashMap<NodeHandle>();
+
+	_nodeState->strings = VMArray<String>();
 }
 
 bool NodeExists(NodeHandle handle)
@@ -121,7 +140,7 @@ bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramInde
 
 	if(node != NULL) {
 		node->changed = true;
-		node->params[paramIndex].handle = outHandle;
+		node->params[paramIndex].nodeHandle = outHandle;
 		node->params[paramIndex].handleIsset = true;
 	}
 
@@ -164,15 +183,33 @@ RenderObject CreateRenderObject()
 DataHandle AddNewRenderObject()
 {
 	RenderObject renderObject = CreateRenderObject();
-	// renderObject.VAOHandle = AddVAO();
-	// glGenBuffers(1, &renderObject.EBO);
-	// glGenBuffers(1, &renderObject.VBO);
-	// glGenTextures(1, &renderObject.textureID);
-
 	DataHandle handle = {};
 	handle.type = DATA_RENDEROBJECT;
 	handle.id = _nodeState->renderObjects.Insert(renderObject);
 	return handle;
+}
+
+DataHandle AddString(char *value)
+{
+	String string = value;
+	DataHandle handle = {};
+	handle.type = DATA_STRING;
+
+	// TODO (rhoe) think about how we free the strings
+	handle.id = _nodeState->strings.Insert(string);
+	return handle;
+}
+
+String* GetString(DataHandle handle)
+{
+	if(handle.type != DATA_STRING ||
+	   handle.id < 0 ||
+	   handle.id > _nodeState->strings.Count()) {
+		return NULL;
+		NOT_IMPLEMENTED
+	}
+
+	return &_nodeState->strings[handle.id];
 }
 
 void CleanupNodes()
@@ -182,6 +219,11 @@ void CleanupNodes()
 	// like input and param
 	_nodeState->nodes.Free();
 	_nodeState->textures.Free();
+
+	for(int i = 0; i < _nodeState->strings.Count(); i++) {
+		_nodeState->strings[i].Free();
+	}
+	_nodeState->strings.Free();
 
 	free(_nodeState);
 }

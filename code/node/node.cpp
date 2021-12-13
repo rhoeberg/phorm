@@ -11,6 +11,11 @@ DataHandle Node::GetData()
 	return dataHandle;
 }
 
+void Node::CallOp()
+{
+	CallNodeOp(this);
+}
+
 bool Node::Changed()
 {
 	bool inputChanged = false;
@@ -24,7 +29,7 @@ bool Node::Changed()
 
 	for(int i = 0; i < params.Count(); i++) {
 		if(params[i].handleIsset) {
-			Node *paramNode = GetNode(params[i].handle);
+			Node *paramNode = GetNode(params[i].nodeHandle);
 			if(paramNode->changed) {
 				inputChanged = true;
 			}
@@ -38,24 +43,7 @@ bool Node::Changed()
 	return false;
 }
 
-double NodeParameter::Double()
-{
-	if(handleIsset) {
-		return *GetDoubleOutput(handle);
-	}
-
-	if(type == DATA_DOUBLE)
-		return d;
-
-	return 0.0;
-}
-
-// int AddNode(const char *name, NodeDataType type, NodeOp op, VMArray<NodeParameter> params, VMArray<NodeInput> inputs)
-// {
-// 	return AddNode(name, type, op, NODE_DRAW_DEFAULT, params, inputs);
-// }
-
-int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs)
+int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle)
 {
 	// TODO (rhoe) since similar node type dont change name we could
 	//             store the names in a string array and just refer to the handle
@@ -71,6 +59,7 @@ int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParam
 	node.params = params;
 	node.inputs = inputs;
 	node.op = op;
+	node.extraHandle = extraHandle;
 	// node.drawFunc = drawFunc;
 	DataHandle dataHandle = {};
 	dataHandle.type = type;
@@ -90,7 +79,8 @@ int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParam
 			break;
 		}
 		case DATA_DOUBLE: {
-			dataHandle.id = _nodeState->doubles.Insert(0.0);
+			double value = 0.0;
+			dataHandle.id = _nodeState->doubles.Insert(value);
 			break;
 		}
 	}

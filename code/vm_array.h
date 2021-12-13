@@ -15,7 +15,7 @@ class VMArray {
 	VMArray(int _max, int _count, T *_data);
 	VMArray(std::initializer_list<T> init);
 	~VMArray();
-	int Insert(T e);
+	int Insert(const T &e);
 	int InsertNew();
 	int Count();
 	int Max();

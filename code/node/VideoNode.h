@@ -37,20 +37,18 @@ void VideoOperation(Node *self)
 		plm_frame_to_rgba(frame, (uint8_t*)(&output->pixels), w * 4);
 		/* free(rgb_buffer); */
 	}
-	
-
 }
 
 int AddVideoNode()
 {
 	FixedArray<NodeParameter> params = {
-		NodeParameter("time", DATA_DOUBLE, 0.0),
+		NodeParameter("time", 0.0),
 	};
 
 	FixedArray<NodeInput> inputs = {
 	};
 
-	_nodeState->videoNodes.Insert(VideoNodeState());
+	int extraHandle = _nodeState->videoNodes.Insert(VideoNodeState());
 
-	return AddNode("VIDEO", DATA_TEXTURE, OP_TEXTURE_VIDEO, params, inputs);
+	return AddNode("VIDEO", DATA_TEXTURE, OP_TEXTURE_VIDEO, params, inputs, extraHandle);
 }

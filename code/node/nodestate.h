@@ -4,6 +4,19 @@ struct VideoNodeState {
 	plm_t *plm;
 };
 
+struct LabelNodeState {
+	String key;
+};
+
+// NEXT deletion of nodes
+// we will use a dataslot type to verify our slots
+template <typename T>
+struct DataSlot {
+	T t;
+	int slotID; 
+	bool free;
+};
+
 struct NodeState {
 	// base node array
 	VMArray<Node> nodes;
@@ -13,8 +26,10 @@ struct NodeState {
 	VMArray<Mesh> meshes;
 	VMArray<RenderObject> renderObjects;
 	VMArray<double> doubles;
-	VMArray<VideoNodeState> videoNodes;
 	HashMap<NodeHandle> labels;
+	VMArray<VideoNodeState> videoNodes;
+	VMArray<LabelNodeState> labelNodes;
+	VMArray<String> strings;
 };
 
 global NodeState *_nodeState;
@@ -32,5 +47,13 @@ bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramInde
 bool ConnectNodeInput(NodeHandle inHandle, NodeHandle outHandle, int inputIndex);
 RenderObject CreateRenderObject();
 DataHandle AddNewRenderObject();
-int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs);
-/* int AddNode(const char *name, NodeDataType type, NodeOp op, NodeDrawFunc drawFunc, VMArray<NodeParameter> params, VMArray<NodeInput> inputs); */
+DataHandle AddString(char *value);
+String* GetString(DataHandle handle);
+
+
+// TODO (rhoe) function that gets data resource in a generic way
+/* template <typename T> */
+/* T GetData<T>(DataHandle handle) */
+// needs specialized template implementations
+// template<typename T>
+// T GetData<T>(DataHandle handle)

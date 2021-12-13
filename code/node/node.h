@@ -61,35 +61,6 @@
 #include "mesh.h"
 #include "renderobject.h"
 
-/* enum NodeType { */
-/* 	NIL_NODE, */
-/* 	TEXTURE_NODE, */
-/* 	MESH_NODE, */
-/* 	RENDEROBJECT_NODE, */
-/* 	DOUBLE_NODE, */
-/* }; */
-
-enum NodeDataType {
-	DATA_TEXTURE,
-	DATA_MESH,
-	DATA_RENDEROBJECT,
-	DATA_DOUBLE,
-	DATA_INT,
-	DATA_VEC3,
-	DATA_STRING,
-	DATA_NONE,
-};
-
-struct DataHandle {
-	unsigned int id;
-	NodeDataType type;
-};
-
-struct NodeHandle {
-	unsigned int id;
-	NodeDataType type;
-};
-
 struct NodeInput {
 	NodeDataType type;
 	NodeHandle handle;
@@ -109,58 +80,6 @@ struct NodeInput {
 /* 	PARAM_VEC3, */
 /* 	PARAM_STRING, */
 /* }; */
-
-// TODO (rhoe) add a way to hide/expose node parameters from node editor
-struct NodeParameter {
-	NodeDataType type;
-	NodeHandle handle;
-	bool handleIsset;
-	/* uint8_t changeVer; */
-	char name[128];
-	bool exposed;
-
-	// TODO (rhoe) Make these private
-	union {
-		int i;
-		double d;
-		vec3 v3;
-
-		// TOOD (rhoe) here we could use a handle to a String type stored somewhere else
-		char str[128];
-	};
-
-	NodeParameter() {};
-	// TODO (rhoe) can we make a unified constructor that sets a default parameter?
-	NodeParameter(const char *_name, NodeDataType _type, int _i) {
-		type = _type;
-		sprintf(name, "%s", _name);
-		i = _i;
-		handleIsset = false;
-	}
-
-	NodeParameter(const char *_name, NodeDataType _type, double _d) {
-		type = _type;
-		sprintf(name, "%s", _name);
-		d = _d;
-		handleIsset = false;
-	}
-
-	NodeParameter(const char *_name, NodeDataType _type, vec3 _v3) {
-		type = _type;
-		sprintf(name, "%s", _name);
-		v3 = _v3;
-		handleIsset = false;
-	}
-
-	NodeParameter(const char *_name, NodeDataType _type, const char *_str) {
-		type = _type;
-		sprintf(name, "%s", _name);
-		sprintf(str, "%s", _str);
-		handleIsset = false;
-	}
-
-	double Double();
-};
 
 /* struct Node; */
 /* typedef void(*NodeOperation)(Node *self); */
@@ -202,6 +121,7 @@ struct Node {
 
 	DataHandle GetDataLast() { return dataHandle; }
 	DataHandle GetData();
+	void CallOp();
 
 	bool Changed();
 
@@ -209,5 +129,4 @@ private:
 	DataHandle dataHandle;
 };
 
-/* #include "node_op.h" */
-
+int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle = -1);

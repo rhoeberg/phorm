@@ -19,7 +19,7 @@ void LoadTextureOperation(Node *self)
 int AddLoadTextureNode()
 {
 	FixedArray<NodeParameter> params = {
-		NodeParameter("path", DATA_STRING, ""),
+		NodeParameter("path", ""),
 	};
 
 	FixedArray<NodeInput> inputs = {

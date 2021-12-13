@@ -19,7 +19,7 @@ enum NodeOp {
 void BaseNodeDrawFunction(Node *node);
 void CallNodeDrawFunction(Node *self);
 
-#include "nodestate.h"
+/* #include "nodestate.h" */
 #include "BlurNode.h"
 #include "LoadTextureNode.h"
 #include "MixTextureNode.h"

@@ -1,29 +1,24 @@
 #include "string.h"
 
-String::String()
+// TODO (rhoe) unsafe if using non terminated string
+size_t StrSize(char *str)
 {
-	bufferSize = STRING_STARTING_LENGTH;
-	buffer = (char*)malloc(bufferSize);
-	length = 0;
+	char *current = str;
+
+	int size = 0;
+	while(current[0] != '\0') {
+		size++;
+		current++;
+	}
+
+	return size;
 }
 
-String::String(char *str)
+void String::FindBufferSize(int min)
 {
-	bufferSize = STRING_STARTING_LENGTH;
-	length = StrSize(str);
-	while(length > bufferSize) {
+	while(min+1 > bufferSize) {
 		bufferSize += STRING_STARTING_LENGTH;
 	}
-	buffer = (char*)malloc(bufferSize);
-	memcpy(buffer, str, length);
-}
-
-String::String(String &other)
-{
-	bufferSize = other.bufferSize;
-	length = other.length;
-	buffer = (char*)malloc(bufferSize);
-	memcpy(buffer, other.buffer, other.length);
 }
 
 void String::ResizeBuffer(int min)
@@ -31,11 +26,38 @@ void String::ResizeBuffer(int min)
 	if(min <= bufferSize)
 		return;
 
-	while(min > bufferSize) {
-		bufferSize += STRING_STARTING_LENGTH;
-	}
+	FindBufferSize(min);
 		
 	buffer = (char*)realloc(buffer, bufferSize);
+}
+
+String::String()
+{
+	bufferSize = STRING_STARTING_LENGTH;
+	buffer = (char*)calloc(1, bufferSize);
+	length = 0;
+	initialized = true;
+}
+
+String::String(char *str)
+{
+	bufferSize = STRING_STARTING_LENGTH;
+	length = StrSize(str);
+	FindBufferSize(length);
+	buffer = (char*)calloc(1, bufferSize);
+	buffer[length] = '\0';
+	memcpy(buffer, str, length);
+	initialized = true;
+}
+
+String::String(String &other)
+{
+	bufferSize = other.bufferSize;
+	length = other.length;
+	buffer = (char*)calloc(1, bufferSize);
+	memcpy(buffer, other.buffer, other.length);
+	buffer[length] = '\0';
+	initialized = true;
 }
 
 void String::Concat(char *str)
@@ -48,11 +70,36 @@ void String::Concat(char *str)
 	char *strPos = buffer + length;
 	memcpy(strPos, str, strSize);
 	length += strSize;
+	buffer[length] = '\0';
+}
+
+void String::Concat(String& other)
+{
+	if((length + other.length) > bufferSize) {
+		ResizeBuffer(length + other.length);
+	}
+
+	char *strPos = buffer + length;
+	memcpy(strPos, other.buffer, other.length);
+	length += other.length;
+	buffer[length] = '\0';
 }
 
 String& String::operator=(char *str) {
 	Free();
 	*this = String(str);
+	return *this;
+}
+
+String& String::operator=(const String &other) {
+	Free();
+
+	bufferSize = other.bufferSize;
+	length = other.length;
+	buffer = (char*)calloc(1, bufferSize);
+	memcpy(buffer, other.buffer, other.length);
+	buffer[length] = '\0';
+
 	return *this;
 }
 
@@ -65,7 +112,7 @@ char String::operator[](int index) {
 }
 
 void String::Print() {
-	printf("%.*s\n", length, buffer);
+	printf("%s\n", buffer);
 }
 
 bool String::Equals(char *str)
@@ -81,7 +128,7 @@ bool String::Equals(char *str)
 	return true;
 }
 
-bool String::Equals(String other)
+bool String::Equals(String &other)
 {
 	if(other.length != length)
 		return false;
@@ -95,22 +142,39 @@ bool String::Equals(String other)
 }
 
 String::~String() {
-	free(buffer);
+	Free();
 }
 
 void String::Free() {
-	free(buffer);
+	if(initialized)
+		free(buffer);
 }
 
-size_t StrSize(char *str)
+void Test_String()
 {
-	char *current = str;
+	String s1 = "bla bla testing";
+	String s2 = "rasmus";
+	String s3 = "rasmus";
+	String s4 = "concatme";
+	s4.Concat(s2);
 
-	int size = 0;
-	while(current[0] != '\0') {
-		size++;
-		current++;
-	}
+	printf("=== TESTING STRING TYPE\n");
+	printf("s1: %s\n", s1.buffer);
+	printf("s1 null terminator: %d\n", s1.buffer[s1.length]);
+	printf("s4: %s\n", s4.buffer);
 
-	return size;
+	ASSERT(s1.length == 15);
+	ASSERT(s1.length != 0);
+	ASSERT(s1.length != 14);
+	ASSERT(s1.length != 16);
+	ASSERT(s1.length != 1000);
+	ASSERT(s2.Equals(s3));
+	ASSERT(s2.Equals("rasmus"));
+	ASSERT(!s2.Equals("peter"));
+	ASSERT(s1.buffer[s1.length] == 0);
+	ASSERT(s1.buffer[s1.length] == '\0');
+	ASSERT(s4.length == 14);
+	ASSERT(s4.buffer[s4.length] == 0);
+	
+	printf("STRING TEST: success\n");
 }

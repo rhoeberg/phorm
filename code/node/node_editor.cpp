@@ -94,15 +94,22 @@ void NodeGUI()
 
 		ImGui::Text("%s", node->name);
 
+		if(ImGui::Button("OP")) {
+			node->CallOp();
+		}
 
 		for(int i = 0; i < node->params.Count(); i++) {
 
 			NodeParameter *param = &node->params[i];
 
 			// EXPOSE
-			ImGui::Checkbox("", &param->exposed);
+			ImGui::Checkbox("##exposed", &param->exposed);
 			ImGui::SameLine();
 
+			// TODO (rhoe) be carefull about imgui widget names
+			//             they are used as id's and have to be unique
+			//             maybe we need to use the imgui hidden name id feature
+			//             where we add the id of the object somehow
 			char buffer[128];
 			sprintf(buffer, "%s", &param->name);
 
@@ -129,15 +136,29 @@ void NodeGUI()
 					break;
 				}
 				case DATA_STRING: {
-					static char strBuffer[128];
-					ImGui::InputText(buffer, strBuffer, ARRAY_SIZE(strBuffer));
-					if(ImGui::Button("update string")) {
-						memcpy(param->str, strBuffer, ARRAY_SIZE(strBuffer));
+					// static char buf[128];
+					// ImGui::InputText(buffer, buf, ARRAY_SIZE(buf));
+					String *str = GetString(param->dataHandle);
+					if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
+						node->changed = true;
 					}
 					break;
 				}
 			}
 		}
+	}
+	ImGui::End();
+
+	ImGui::Begin("LABELS");
+
+	HashMap<NodeHandle> *labels = &_nodeState->labels;
+	HashIter<NodeHandle> iter = HashIter<NodeHandle>(labels);
+
+	HashNode<NodeHandle> *next = iter.Next();
+	while(next) {
+		// we have the next label do something
+		ImGui::Text("key:%s/tvalue:%d", next->key.buffer, next->value.id);
+		next = iter.Next();
 	}
 	ImGui::End();
 }
@@ -243,7 +264,7 @@ void DrawNode(NodeHandle handle)
 			visibleParamsCount++;
 
 			if(node->params[i].handleIsset) {
-				Rect outputRect = GetNodeOutputRect(node->params[i].handle);
+				Rect outputRect = GetNodeOutputRect(node->params[i].nodeHandle);
 				vec2 outputPos = GetRectCenter(outputRect);
 				vec2 paramPos = GetRectCenter(paramRect);
 				ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));

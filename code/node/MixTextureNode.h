@@ -32,7 +32,7 @@ void MixTextureOperation(Node *self)
 int AddMixTextureNode()
 {
 	FixedArray<NodeParameter> params = {
-		NodeParameter("mix", DATA_DOUBLE, 0.5),
+		NodeParameter("mix", 0.5),
 	};
 
 	FixedArray<NodeInput> inputs = {

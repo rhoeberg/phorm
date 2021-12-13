@@ -4,7 +4,7 @@ template <typename T>
 VMArray<T>::VMArray()
 {
 	max = ARRAY_START_SIZE;
-	data = (T*)malloc(sizeof(T) * max);
+	data = (T*)calloc(max, sizeof(T));
 	count = 0;
 }
 
@@ -13,7 +13,7 @@ VMArray<T>::VMArray(const VMArray<T>& old)
 {
 	count = old.count;
 	max = old.max;
-	data = (T*)malloc(sizeof(T) * max);
+	data = (T*)calloc(max, sizeof(T));
 	memcpy(data, old.data, sizeof(T) * max);
 }
 
@@ -25,10 +25,10 @@ template <typename T>
 VMArray<T>::VMArray(std::initializer_list<T> init)
 {
 	max = ARRAY_START_SIZE;
-	data = (T*)malloc(sizeof(T) * max);
+	data = (T*)calloc(max, sizeof(T));
 	count = 0;
 
-	for(T const &t : init) {
+	for(const T &t : init) {
 		Insert(t);
 	}
 }
@@ -39,7 +39,7 @@ VMArray<T>::VMArray(int _max, int _count, T *_data)
 {
 	max = _max;
 	count = _count;
-	data = (T*)malloc(sizeof(T) * max);
+	data = (T*)calloc(max, sizeof(T));
 	memcpy(data, _data, count * sizeof(T));
 }
 
@@ -58,7 +58,7 @@ void VMArray<T>::Grow()
 }
 
 template <typename T>
-int VMArray<T>::Insert(T e)
+int VMArray<T>::Insert(const T &e)
 {
 	int result = -1;
 

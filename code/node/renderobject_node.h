@@ -35,7 +35,7 @@ void RenderObjectOperation(Node *self)
 int AddRenderObject()
 {
 	FixedArray<NodeParameter> params = {
-		NodeParameter("pos", DATA_VEC3, vec3(0, 0, 0)),
+		NodeParameter("pos", vec3(0, 0, 0)),
 	};
 
 	FixedArray<NodeInput> inputs = {

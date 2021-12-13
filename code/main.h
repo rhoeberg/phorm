@@ -36,6 +36,8 @@ global double scrollOffset;
 #include "hashmap.h"
 #include "glfw_wrapper.h"
 #include "opengl_wrapper.h"
+#include "types.h"
+#include "node/node_parameter.h"
 #include "node/node.h"
 #include "node/nodestate.h"
 #include "node/node_op.h"

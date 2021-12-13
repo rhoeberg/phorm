@@ -120,7 +120,8 @@ void LoadNodes()
 		int count;
 		fread(&count, sizeof(int), 1, saveFile.file);
 		for(int i = 0; i < count; i++) {
-			_nodeState->doubles.Insert(0.0);
+			double value = 0.0;
+			_nodeState->doubles.Insert(value);
 		}
 	}
 

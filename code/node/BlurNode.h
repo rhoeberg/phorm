@@ -79,7 +79,7 @@ void BlurOperation(Node *self)
 int AddBlurNode()
 {
 	FixedArray<NodeParameter> params = {
-		NodeParameter("amount", DATA_INT, 20),
+		NodeParameter("amount", 20),
 	};
 
 	FixedArray<NodeInput> inputs = {

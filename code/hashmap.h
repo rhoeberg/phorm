@@ -18,21 +18,69 @@ struct HashNode {
 };
 
 template <typename T>
-class HashMap
+struct HashMap
 {
 	HashNode<T> *elements;
 	size_t max;
+	int salt;
 
-	void InitializeElements();
-
-public:
 	HashMap();
 	HashMap(int _max);
 	~HashMap();
+	void InitializeElements();
 	void Free();
-	int CalcHash(String key);
-	void Insert(String key, T value);
+	int CalcHash(String &key);
+	void Insert(String &key, T value);
+	bool Remove(String &key);
 	T* Get(String key);
+	bool Exist(String &key);
+};
+
+template <typename T>
+struct HashIter {
+	int index;
+	int depth;
+	HashMap<T> *map;
+
+	HashIter(HashMap<T> *_map) {
+		map = _map;
+		index = 0;
+		depth = 0;
+	}
+
+	HashNode<T>* Next() {
+		// get next
+
+		while(true) {
+			HashNode<T> *next = &map->elements[index];
+			if(index >= map->max) {
+				return NULL;
+			}
+
+			for(int i = 0; i < depth; i++) {
+				if(next->next) {
+					next = next->next;
+				}
+			}
+
+			// found the next result
+			// return it to user
+			if(next && !next->free) {
+				return next;
+			}
+
+			// continue the iteration
+			if(next->next) {
+				depth++;
+			}
+			else {
+				index++;
+				depth = 0;
+			}
+		}
+
+		return NULL;
+	}
 };
 
 void Test_HashMap();
