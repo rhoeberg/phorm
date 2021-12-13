@@ -14,6 +14,7 @@ HashMap<T>::HashMap()
 {
 	elements = (HashNode<T>*)calloc(1, sizeof(HashNode<T>) * HASHMAP_DEFAULT_SIZE);
 	max = HASHMAP_DEFAULT_SIZE;
+	salt = 0;
 
 	InitializeElements();
 }
@@ -23,6 +24,7 @@ HashMap<T>::HashMap(int _max)
 {
 	elements = (HashNode<T>*)calloc(1, sizeof(T) * _max);
 	max = _max;
+	salt = 0;
 
 	InitializeElements();
 }
@@ -45,7 +47,7 @@ int HashMap<T>::CalcHash(String &key)
 {
 	int n = 0;
 	for(int i = 0; i < key.length; i++) {
-		n += key[i] * salt;
+		n += key[i] * (salt + 1);
 	}
 
 	return n % max;
@@ -94,12 +96,16 @@ bool HashMap<T>::Remove(String &key)
 		layer++;
 	}
 
+	// we found the hashnode we want to free
+	next->free = true;
+
+	// if target key is chain parent then move chain up
 	if(next->next) {
 		HashNode<T> *tmp = next->next;
 		*next = *next->next;
 		free(next->next);
 	}
-	
+
 	return true;
 }
 
@@ -168,7 +174,7 @@ void Test_HashMap()
 		// all strings will hash to 0
 
 		HashMap<int> map = HashMap<int>();
-		map.salt = 0;
+		map.salt = -1;
 
 		map.Insert(String("rasmus"), 33);
 		map.Insert(String("louise"), 29);

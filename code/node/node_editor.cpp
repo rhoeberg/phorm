@@ -157,7 +157,7 @@ void NodeGUI()
 	HashNode<NodeHandle> *next = iter.Next();
 	while(next) {
 		// we have the next label do something
-		ImGui::Text("key:%s/tvalue:%d", next->key.buffer, next->value.id);
+		ImGui::Text("key:%s\tvalue:%d", next->key.buffer, next->value.id);
 		next = iter.Next();
 	}
 	ImGui::End();

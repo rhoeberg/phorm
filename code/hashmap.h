@@ -63,12 +63,6 @@ struct HashIter {
 				}
 			}
 
-			// found the next result
-			// return it to user
-			if(next && !next->free) {
-				return next;
-			}
-
 			// continue the iteration
 			if(next->next) {
 				depth++;
@@ -76,6 +70,12 @@ struct HashIter {
 			else {
 				index++;
 				depth = 0;
+			}
+
+			// found the next result
+			// return it to user
+			if(next && !next->free) {
+				return next;
 			}
 		}
 

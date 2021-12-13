@@ -23,9 +23,7 @@ void LabelOperation(Node *self)
 
 	// add new key to hashmap
 	_nodeState->labels.Insert(*string, input->handle);
-
-
-	/* char *labelPar = self->params[0].str; */
+	state->key = *string;
 }
 
 void DrawLabelNode(Node *self)
