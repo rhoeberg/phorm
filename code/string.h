@@ -12,6 +12,7 @@ struct String
 	String();
 	String(char *str);
 	String(String &str);
+	void ReCalc();
 	void FindBufferSize(int min);
 	void ResizeBuffer(int min);
 	void Concat(char *str);

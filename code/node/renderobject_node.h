@@ -36,6 +36,7 @@ int AddRenderObject()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("pos", vec3(0, 0, 0)),
+		NodeParameter("label", "")
 	};
 
 	FixedArray<NodeInput> inputs = {

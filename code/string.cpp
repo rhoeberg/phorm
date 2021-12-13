@@ -14,6 +14,18 @@ size_t StrSize(char *str)
 	return size;
 }
 
+// used if string buffer is modified outside of string to
+// re calculate length.
+// Modifying buffer directly is ofcourse very unsafe and should be
+// done with precautions. But this type has the safeguards OFF.
+// Therefore if you need to modify buffer directly its very important
+// that you make sure to null terminate the string
+
+void String::ReCalc()
+{
+	length = StrSize(buffer);
+}
+
 void String::FindBufferSize(int min)
 {
 	while(min+1 > bufferSize) {

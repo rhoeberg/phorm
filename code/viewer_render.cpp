@@ -12,6 +12,14 @@ void CreateViewerTextureRenderObject()
 	renderObject->VAOHandle = CreateSpriteVAO();
 	renderObject->hasTexture = true;
 	renderObject->indicesCount = 12;
+
+	Pixel white = Pixel(255, 255, 255, 255);
+	glGenTextures(1, &_viewerRenderState.defaultTexture);
+	glBindTexture(GL_TEXTURE_2D, _viewerRenderState.defaultTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 void InitializeViewerRender()
@@ -132,10 +140,16 @@ void UpdateViewerRender()
 		RenderObject *renderObject = GetRenderObject(_viewerRenderState.renderList[i]);
 
 		if(renderObject != NULL) {
+
+			///////////////
+			// TEXTURE
+			glActiveTexture(GL_TEXTURE0);
 			if(renderObject->hasTexture) {
 				// render texture to quad here
-				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
+			}
+			else {
+				glBindTexture(GL_TEXTURE_2D, _viewerRenderState.defaultTexture);
 			}
 
 			glUseProgram(GetTextureShader());
@@ -182,7 +196,6 @@ void UpdateViewerRender()
 			glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
-		break;
 	}
 
 	///////////////////

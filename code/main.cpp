@@ -53,12 +53,14 @@
 #include "node/node_parameter.cpp"
 #include "node/node.cpp"
 #include "node/node_editor.cpp"
+#include "scene_editor.cpp"
 #include "opengl_wrapper.cpp"
 #include "viewer_render.cpp"
 #include "node/texture.cpp"
 #include "node/mesh.cpp"
 #include "node/nodestate.cpp"
 #include "node/save.cpp"
+#include "debug.cpp"
 // #include "video.cpp"
 
 int main(int argc, char *argv[])
@@ -84,6 +86,7 @@ int main(int argc, char *argv[])
 	InitializeNodes();
 	InitializeNodeEditor();
 	InitializeViewerRender();
+	InitializeSceneEditor();
 
 	if(VIEWER_START_MAIN) {
 		SetViewerInMain(true);
@@ -111,7 +114,7 @@ int main(int argc, char *argv[])
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		gui();
+		// gui();
 		// bool show = true;
 		// ImGui::ShowDemoWindow(&show);
 
@@ -122,10 +125,27 @@ int main(int argc, char *argv[])
 		UpdateRender();
 
 		///////////////
-		// NODES
+		// NODE EDITOR
 		///////////////
-		// UpdateNodes();
-		UpdateNodeEditor();
+		static bool nodeEditorOn = true;
+		if(singleKeyPress(GLFW_KEY_V))
+			nodeEditorOn = !nodeEditorOn;
+		if(nodeEditorOn)
+			UpdateNodeEditor();
+		else
+			UpdateSceneEditor();
+
+
+		///////////////
+		// VIEWER RENDERING
+		///////////////
+		UpdateViewerRender();
+
+		///////////////
+		// DEBUG
+		///////////////
+		// TODO (rhoe) should maybe be switched off by compiler macro
+		UpdateDebug();
 
 		///////////////
 		// IMDRAW
@@ -135,11 +155,6 @@ int main(int argc, char *argv[])
 		GetWindowSize(&screenWidth, &screenHeight);
 		glViewport(0, 0, screenWidth, screenHeight);
 		ImDrawRender();
-
-		///////////////
-		// VIEWER RENDERING
-		///////////////
-		UpdateViewerRender();
 
 		///////////////
 		// BUFFER SWAP / IMGUI RENDER
@@ -164,5 +179,6 @@ void cleanup()
 	// CleanupTextureGraph();
 	CleanupNodes();
 	CleanupNodeEditor();
+	CleanupSceneEditor();
 }
 

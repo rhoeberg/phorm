@@ -111,7 +111,7 @@ void NodeGUI()
 			//             maybe we need to use the imgui hidden name id feature
 			//             where we add the id of the object somehow
 			char buffer[128];
-			sprintf(buffer, "%s", &param->name);
+			sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNodeHandle.id);
 
 			switch(node->params[i].type) {
 				case DATA_INT: {
@@ -140,25 +140,13 @@ void NodeGUI()
 					// ImGui::InputText(buffer, buf, ARRAY_SIZE(buf));
 					String *str = GetString(param->dataHandle);
 					if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
+						str->ReCalc();
 						node->changed = true;
 					}
 					break;
 				}
 			}
 		}
-	}
-	ImGui::End();
-
-	ImGui::Begin("LABELS");
-
-	HashMap<NodeHandle> *labels = &_nodeState->labels;
-	HashIter<NodeHandle> iter = HashIter<NodeHandle>(labels);
-
-	HashNode<NodeHandle> *next = iter.Next();
-	while(next) {
-		// we have the next label do something
-		ImGui::Text("key:%s\tvalue:%d", next->key.buffer, next->value.id);
-		next = iter.Next();
 	}
 	ImGui::End();
 }
@@ -480,7 +468,7 @@ void UpdateNodeEditor()
 	}
 
 	//////////////////
-	// VIEWER
+	// SELECT FOR VIEWER
 	if(_nodeEditorState->selectedHandleIsset) {
 		ShowNode(_nodeEditorState->selectedNode);
 	}

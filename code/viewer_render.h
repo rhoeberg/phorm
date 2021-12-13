@@ -8,6 +8,8 @@ struct ViewerRenderState {
 	/* RenderObject textureRenderObject; */
 	bool wireframe;
 
+	GLuint defaultTexture;
+
 	bool dragging;
 	vec2 startDragPos;
 	vec2 lastDragPos;
