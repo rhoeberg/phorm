@@ -39,19 +39,26 @@ void SaveInt(int i, SaveFile *saveFile)
 	fwrite(&i, sizeof(int), 1, saveFile->file);
 }
 
+int LoadInt(SaveFile *saveFile)
+{
+	int result;
+	fread(&result, sizeof(int), 1, saveFile->file);
+	return result;
+}
+
 void SaveString(String str, SaveFile *saveFile)
 {
-	fwrite(&str.length, sizeof(int), 1, saveFile->file);
+	SaveInt(str.length, saveFile);
 	fwrite(str.buffer, str.length, 1, saveFile->file);
 }
 
 String LoadString(SaveFile *saveFile)
 {
-	int length;
-	fread(&length, sizeof(int), 1, saveFile->file);
+	int length = LoadInt(saveFile);
 	char *buffer = (char*)malloc(length + 1);
-	fread(&buffer, length, 1, saveFile->file);
+	fread(buffer, length, 1, saveFile->file);
 	buffer[length] = '\0';
+	free(buffer);
 	return String(buffer); 
 }
 
@@ -73,6 +80,7 @@ void SaveNodes()
 	SaveInt(_nodeState->labelNodes.Count(), &saveFile);
 
 	//strings
+	SaveInt(_nodeState->strings.Count(), &saveFile);
 	for(int i = 0; i < _nodeState->strings.Count(); i++) {
 		SaveString(_nodeState->strings[i], &saveFile);
 	}
@@ -102,8 +110,7 @@ void LoadNodes()
 	// load textures
 	{
 		_nodeState->textures.Clear();
-		int count;
-		fread(&count, sizeof(int), 1, saveFile.file);
+		int count = LoadInt(&saveFile);
 		for(int i = 0; i < count; i++) {
 			_nodeState->textures.InsertNew();
 		}
@@ -112,8 +119,7 @@ void LoadNodes()
 	// load meshes
 	{
 		_nodeState->meshes.Clear();
-		int count;
-		fread(&count, sizeof(int), 1, saveFile.file);
+		int count = LoadInt(&saveFile);
 		for(int i = 0; i < count; i++) {
 			Mesh mesh = {};
 			_nodeState->meshes.Insert(mesh);
@@ -129,8 +135,7 @@ void LoadNodes()
 		// _viewerRenderState.baseTextureObject = AddNewRenderObject();
 		CreateViewerTextureRenderObject();
 
-		int count;
-		fread(&count, sizeof(int), 1, saveFile.file);
+		int count = LoadInt(&saveFile);
 		for(int i = 0; i < count; i++) {
 			AddNewRenderObject();
 		}
@@ -139,8 +144,7 @@ void LoadNodes()
 	// load doubles
 	{
 		_nodeState->doubles.Clear();
-		int count;
-		fread(&count, sizeof(int), 1, saveFile.file);
+		int count = LoadInt(&saveFile);
 		for(int i = 0; i < count; i++) {
 			double value = 0.0;
 			_nodeState->doubles.Insert(value);
@@ -150,8 +154,7 @@ void LoadNodes()
 	// load video nodes
 	{
 		_nodeState->videoNodes.Clear();
-		int count;
-		fread(&count, sizeof(int), 1, saveFile.file);
+		int count = LoadInt(&saveFile);
 		for(int i = 0; i < count; i++) {
 			_nodeState->videoNodes.Insert(VideoNodeState());
 		}
@@ -160,18 +163,20 @@ void LoadNodes()
 	// load label nodes
 	{
 		_nodeState->labelNodes.Clear();
-		int count;
-		fread(&count, sizeof(int), 1, saveFile.file);
+		int count = LoadInt(&saveFile);
 		for(int i = 0; i < count; i++) {
 			_nodeState->labelNodes.Insert(LabelNodeState());
 		}
 	}
 
 	// load Strings
-	_nodeState->strings.Clear();
-	for(int i = 0; i < _nodeState->strings.Count(); i++) {
-		String str = LoadString(&saveFile);
-		_nodeState->strings.Insert(str);
+	{
+		_nodeState->strings.Clear();
+		int count = LoadInt(&saveFile);
+		for(int i = 0; i < count; i++) {
+			String str = LoadString(&saveFile);
+			_nodeState->strings.Insert(str);
+		}
 	}
 
 
