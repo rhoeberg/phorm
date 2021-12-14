@@ -25,29 +25,16 @@ void CreateViewerTextureRenderObject()
 void InitializeViewerRender()
 {
 	CreateViewerTextureRenderObject();
-	// _viewerRenderState.baseTextureObject = AddNewRenderObject();
-	// RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
-
-	// // TODO (rhoe) currently we are wasting a gl id here
-	// //             perhaps we should pass vao as parameter instead of
-	// //             creating a new one
-	// renderObject->VAOHandle = CreateSpriteVAO();
-	// renderObject->hasTexture = true;
-	// renderObject->indicesCount = 12;
-
 	_viewerRenderState.orbitDistance = 5.0f;
 	_viewerRenderState.orbitDragSpeed = 0.006f;
 }
 
-void AddTextureToRenderQueue(DataHandle textureHandle)
+// Takes the handle of texture resource
+void AddTextureToRenderQueue(ObjectHandle handle)
 {
-	if(textureHandle.type != DATA_TEXTURE) {
-		// TODO err
-	}
-	else {
+	Texture *texture = GetTexture(handle);
+	if(texture) {
 		RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
-		Texture *texture = GetTexture(textureHandle);
-
 		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -56,13 +43,12 @@ void AddTextureToRenderQueue(DataHandle textureHandle)
 	}
 }
 
-void AddToRenderQueue(DataHandle objectHandle)
+// Takes the handle of RenderObject resource
+void AddToRenderQueue(ObjectHandle handle)
 {
-	if(objectHandle.type != DATA_RENDEROBJECT) {
-		NOT_IMPLEMENTED
-	}
-	else {
-		_viewerRenderState.renderList.Insert(objectHandle);
+	RenderObject *object = GetRenderObject(handle);
+	if(object) {
+		_viewerRenderState.renderList.Insert(handle);
 	}
 }
 
@@ -183,7 +169,6 @@ void UpdateViewerRender()
 			/////////////////
 			// MODEL
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-			// model = glm::translate(model, glm::vec3(0, 0, 0));
 			model = glm::translate(model, renderObject->pos);
 			GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

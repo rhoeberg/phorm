@@ -63,7 +63,7 @@
 
 struct NodeInput {
 	DataType type;
-	NodeHandle handle;
+	ObjectHandle handle;
 	bool handleIsset;
 
 	NodeInput(DataType _type) {
@@ -106,7 +106,8 @@ struct Node {
 	/* VMArray<NodeParameter> params; */
 	FixedArray<NodeInput> inputs;
 	FixedArray<NodeParameter> params;
-	int extraHandle;
+	/* int extraHandle; */
+	ObjectHandle extraHandle;
 	bool initialized;
 
 	void AddInput(DataType type)
@@ -117,16 +118,16 @@ struct Node {
 		inputs.Insert(input);
 	}
 
-	void SetDataHandle(DataHandle handle) { dataHandle = handle; }
+	void SetDataHandle(ObjectHandle handle) { dataHandle = handle; }
 
-	DataHandle GetDataLast() { return dataHandle; }
-	DataHandle GetData();
+	ObjectHandle GetDataLast() { return dataHandle; }
+	ObjectHandle GetData();
 	void CallOp();
 
 	bool Changed();
 
 private:
-	DataHandle dataHandle;
+	ObjectHandle dataHandle;
 };
 
-NodeHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle = -1);
+ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle(-1));

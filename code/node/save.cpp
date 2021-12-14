@@ -48,27 +48,51 @@ void LoadObjectContainer(ObjectContainer<T> *container, SaveFile *saveFile)
 	LoadNextVMArray<u32>(&container->slotID, saveFile);
 }
 
-void SaveInt(int i, SaveFile *saveFile)
+void SaveBool(bool b, SaveFile *saveFile)
 {
-	fwrite(&i, sizeof(int), 1, saveFile->file);
+	fwrite(&b, sizeof(bool), 1, saveFile->file);
 }
 
-int LoadInt(SaveFile *saveFile)
+void SaveI32(i32 i, SaveFile *saveFile)
+{
+	fwrite(&i, sizeof(i32), 1, saveFile->file);
+}
+
+void SaveU32(u32 u, SaveFile *saveFile)
+{
+	fwrite(&u, sizeof(u32), 1, saveFile->file);
+}
+
+int LoadI32(SaveFile *saveFile)
 {
 	int result;
 	fread(&result, sizeof(int), 1, saveFile->file);
 	return result;
 }
 
+bool LoadBool(SaveFile *saveFile)
+{
+	bool result;
+	fread(&result, sizeof(bool), 1, saveFile->file);
+	return result;
+}
+
+u32 LoadU32(SaveFile *saveFile)
+{
+	u32 result;
+	fread(&result, sizeof(u32), 1, saveFile->file);
+	return result;
+}
+
 void SaveString(String str, SaveFile *saveFile)
 {
-	SaveInt(str.length, saveFile);
+	SaveI32(str.length, saveFile);
 	fwrite(str.buffer, str.length, 1, saveFile->file);
 }
 
 String LoadString(SaveFile *saveFile)
 {
-	int length = LoadInt(saveFile);
+	int length = LoadI32(saveFile);
 	char *buffer = (char*)malloc(length + 1);
 	fread(buffer, length, 1, saveFile->file);
 	buffer[length] = '\0';
@@ -87,17 +111,19 @@ void SaveNodes()
 
 	//////////////
 	// SAVE DATA
-	SaveInt(_nodeState->textures.Count(), &saveFile);
-	SaveInt(_nodeState->meshes.Count(), &saveFile);
-	SaveInt(_nodeState->renderObjects.Count(), &saveFile);
-	SaveInt(_nodeState->doubles.Count(), &saveFile);
-	SaveInt(_nodeState->videoNodes.Count(), &saveFile);
-	SaveInt(_nodeState->labelNodes.Count(), &saveFile);
+	SaveI32(_nodeState->textures.Count(), &saveFile);
+	SaveI32(_nodeState->meshes.Count(), &saveFile);
+	SaveI32(_nodeState->renderObjects.Count(), &saveFile);
+	SaveI32(_nodeState->doubles.Count(), &saveFile);
+	SaveI32(_nodeState->videoNodes.Count(), &saveFile);
+	SaveI32(_nodeState->labelNodes.Count(), &saveFile);
 
 	//strings
-	SaveInt(_nodeState->strings.Count(), &saveFile);
+	SaveI32(_nodeState->strings.Count(), &saveFile);
 	for(int i = 0; i < _nodeState->strings.Count(); i++) {
-		SaveString(_nodeState->strings[i], &saveFile);
+		SaveString(_nodeState->strings.elements[i], &saveFile);
+		SaveBool(_nodeState->strings.isFree[i], &saveFile);
+		SaveU32(_nodeState->strings.slotID[i], &saveFile);
 	}
 
 
@@ -119,7 +145,7 @@ void LoadNodes()
 
 	// mark all nodes as dirty after load so we can regenerate all resources
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = _nodeState->nodes.Get(handle);
 		if(node) {
 			node->changed = true;
@@ -130,7 +156,7 @@ void LoadNodes()
 	// load textures
 	{
 		_nodeState->textures.Clear();
-		int count = LoadInt(&saveFile);
+		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			_nodeState->textures.InsertNew();
 		}
@@ -139,7 +165,7 @@ void LoadNodes()
 	// load meshes
 	{
 		_nodeState->meshes.Clear();
-		int count = LoadInt(&saveFile);
+		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			Mesh mesh = {};
 			_nodeState->meshes.Insert(mesh);
@@ -155,7 +181,7 @@ void LoadNodes()
 		// _viewerRenderState.baseTextureObject = AddNewRenderObject();
 		CreateViewerTextureRenderObject();
 
-		int count = LoadInt(&saveFile);
+		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			AddNewRenderObject();
 		}
@@ -164,7 +190,7 @@ void LoadNodes()
 	// load doubles
 	{
 		_nodeState->doubles.Clear();
-		int count = LoadInt(&saveFile);
+		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			double value = 0.0;
 			_nodeState->doubles.Insert(value);
@@ -174,7 +200,7 @@ void LoadNodes()
 	// load video nodes
 	{
 		_nodeState->videoNodes.Clear();
-		int count = LoadInt(&saveFile);
+		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			_nodeState->videoNodes.Insert(VideoNodeState());
 		}
@@ -183,7 +209,7 @@ void LoadNodes()
 	// load label nodes
 	{
 		_nodeState->labelNodes.Clear();
-		int count = LoadInt(&saveFile);
+		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			_nodeState->labelNodes.Insert(LabelNodeState());
 		}
@@ -192,10 +218,12 @@ void LoadNodes()
 	// load Strings
 	{
 		_nodeState->strings.Clear();
-		int count = LoadInt(&saveFile);
+		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			String str = LoadString(&saveFile);
-			_nodeState->strings.Insert(str);
+			bool free = LoadBool(&saveFile);
+			u32 slotID = LoadU32(&saveFile);
+			_nodeState->strings.InsertRaw(str, free, slotID);
 		}
 	}
 

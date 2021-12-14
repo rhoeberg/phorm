@@ -32,7 +32,7 @@ void RenderObjectOperation(Node *self)
 	output->indicesCount = inputMesh->indices.Count();
 }
 
-NodeHandle AddRenderObject()
+ObjectHandle AddRenderObject()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("pos", vec3(0, 0, 0)),

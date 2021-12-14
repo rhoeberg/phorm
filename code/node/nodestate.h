@@ -26,16 +26,36 @@ struct ObjectContainer {
 	VMArray<bool> isFree;
 	VMArray<u32> slotID;
 
-	ObjectContainer()
+	// TODO put back type here
+	HandleType handleType;
+	DataType dataType;
+
+	ObjectContainer(HandleType _handleType, DataType _dataType = DATA_NONE)
 	{
 		elements = VMArray<T>();
 		isFree = VMArray<bool>();
 		slotID = VMArray<u32>();
+
+		handleType = _handleType;
+		dataType = _dataType;
 	}
 
-	NodeHandle Insert(T e)
+	// Used for serialization
+	ObjectHandle InsertRaw(T e, bool _free, u32 _slotID)
 	{
-		NodeHandle result = {};
+		ObjectHandle result = {};
+		result.id = elements.Insert(e);
+		result.slotID = _slotID;
+		isFree.Insert(_free);
+		slotID.Insert(_slotID);
+		result.handleType = handleType;
+		result.dataType = dataType;
+		return result;
+	}
+
+	ObjectHandle Insert(T e)
+	{
+		ObjectHandle result = {};
 		// check for free slot reuse
 		for(int i = 0; i < isFree.Count(); i++) {
 			if(isFree[i]) {
@@ -45,6 +65,8 @@ struct ObjectContainer {
 
 				result.id = i;
 				result.slotID = slotID[i];
+				result.handleType = handleType;
+				result.dataType = dataType;
 				return result;
 			}
 		}
@@ -54,13 +76,43 @@ struct ObjectContainer {
 		result.slotID = 0;
 		isFree.Insert(false);
 		slotID.Insert(result.slotID);
+		result.handleType = handleType;
+		result.dataType = dataType;
+
+		return result;
+	}
+
+	ObjectHandle InsertNew()
+	{
+		ObjectHandle result = {};
+		// check for free slot reuse
+		for(int i = 0; i < isFree.Count(); i++) {
+			if(isFree[i]) {
+				isFree[i] = false;
+				slotID[i]++;
+
+				result.id = i;
+				result.slotID = slotID[i];
+				result.handleType = handleType;
+				result.dataType = dataType;
+				return result;
+			}
+		}
+
+		// insert new slot
+		result.id = elements.InsertNew();
+		result.slotID = 0;
+		isFree.Insert(false);
+		slotID.Insert(result.slotID);
+		result.handleType = handleType;
+		result.dataType = dataType;
 
 		return result;
 	}
 
 	// we simply set the array slot to free when removing
 	// insert takes care of checking for empty slots to use instead of inserting new
-	void Remove(NodeHandle handle)
+	void Remove(ObjectHandle handle)
 	{
 		// make sure handle exist to avoid removing
 		// wrong slotID or handle with different type
@@ -71,8 +123,14 @@ struct ObjectContainer {
 		isFree[handle.id] = true;
 	}
 
-	bool Exists(NodeHandle handle)
+	bool Exists(ObjectHandle handle)
 	{
+		// wrong type
+		if(handle.handleType != handleType ||
+		   handle.dataType != dataType) {
+			return false;
+		}
+
 		// out of bounds
 		if(handle.id > (elements.Count() - 1) ||
 		   handle.id < 0) {
@@ -92,38 +150,49 @@ struct ObjectContainer {
 		return true;
 	}
 
-	T* Get(NodeHandle handle)
+	T* Get(ObjectHandle handle)
 	{
 		if(!Exists(handle)) {
 			return NULL;
 		}
-		// return &elements[handle.id];
-		return dynamic_cast<T*>(&elements[handle.id]);
+
+		// TODO (rhoe) make sure we have some kind of type validation here
+		return &elements[handle.id];
+		// return dynamic_cast<T*>(&elements[handle.id]);
 	}
 
-	// Used for iterating with requesting a specific handl
-	T* GetAt(int index)
-	{
-		// out of bounds
-		if(handle.id > (elements.Count() - 1) ||
-		   handle.id < 0) {
-			return NULL;
-		}
+	// // Used for iterating with requesting a specific handle
+	// T* GetAt(int index)
+	// {
+	// 	// out of bounds
+	// 	if(handle.id > (elements.Count() - 1) ||
+	// 	   handle.id < 0) {
+	// 		return NULL;
+	// 	}
 
-		return &elements[index];
-	}
+	// 	return &elements[index];
+	// }
 
-	NodeHandle GetHandle(int index)
+	ObjectHandle GetHandle(int index)
 	{
-		NodeHandle handle = {};
+		ObjectHandle handle = {};
 		handle.id = index;
 		handle.slotID = slotID[index];
+		handle.handleType = handleType;
+		handle.dataType = dataType;
 		return handle;
 	}
 
 	int Count()
 	{
 		return elements.Count();
+	}
+
+	void Clear()
+	{
+		elements.Clear();
+		isFree.Clear();
+		slotID.Clear();
 	}
 
 	void Free()
@@ -140,33 +209,33 @@ struct NodeState {
 	ObjectContainer<Node> nodes;
 
 	// data arrays
-	VMArray<Texture> textures;
-	VMArray<Mesh> meshes;
-	VMArray<RenderObject> renderObjects;
-	VMArray<double> doubles;
-	HashMap<NodeHandle> labels;
-	VMArray<VideoNodeState> videoNodes;
-	VMArray<LabelNodeState> labelNodes;
-	VMArray<String> strings;
+	ObjectContainer<Texture> textures;
+	ObjectContainer<Mesh> meshes;
+	ObjectContainer<RenderObject> renderObjects;
+	ObjectContainer<double> doubles;
+	// HashMap<ObjectHandle> labels;
+	ObjectContainer<VideoNodeState> videoNodes;
+	ObjectContainer<LabelNodeState> labelNodes;
+	ObjectContainer<String> strings;
 };
 
 global NodeState *_nodeState;
 
-bool NodeExists(NodeHandle handle);
-Node* GetNode(NodeHandle handle);
-double* GetDouble(DataHandle handle);
-double* GetDoubleOutput(NodeHandle handle);
-Texture* GetTexture(DataHandle handle);
+bool NodeExists(ObjectHandle handle);
+Node* GetNode(ObjectHandle handle);
+double* GetDouble(ObjectHandle handle);
+double* GetDoubleOutput(ObjectHandle handle);
+Texture* GetTexture(ObjectHandle handle);
 Texture* GetTextureInput(NodeInput input);
-RenderObject* GetRenderObject(DataHandle handle);
-Mesh* GetMesh(DataHandle handle);
+RenderObject* GetRenderObject(ObjectHandle handle);
+Mesh* GetMesh(ObjectHandle handle);
 Mesh* GetMeshInput(NodeInput input);
-bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramIndex);
-bool ConnectNodeInput(NodeHandle inHandle, NodeHandle outHandle, int inputIndex);
+bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex);
+bool ConnectNodeInput(ObjectHandle inHandle, ObjectHandle outHandle, int inputIndex);
 RenderObject CreateRenderObject();
-DataHandle AddNewRenderObject();
-DataHandle AddString(char *value);
-String* GetString(DataHandle handle);
+ObjectHandle AddNewRenderObject();
+ObjectHandle AddString(char *value);
+String* GetString(ObjectHandle handle);
 
 
 // TODO (rhoe) function that gets data resource in a generic way

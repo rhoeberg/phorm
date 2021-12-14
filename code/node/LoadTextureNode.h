@@ -16,7 +16,7 @@ void LoadTextureOperation(Node *self)
 	}
 }
 
-NodeHandle AddLoadTextureNode()
+ObjectHandle AddLoadTextureNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("path", ""),

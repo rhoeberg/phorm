@@ -11,7 +11,7 @@ void InitializeNodes()
 	// init function instead of constructor
 
 	// new(&_nodeState->nodes) VMArray<Node>();
-	new(&_nodeState->nodes) ObjectContainer<Node>();
+	new(&_nodeState->nodes) ObjectContainer<Node>(HANDLE_NODE);
 
 	// data containers
 	// _nodeState->textures = VMArray<Texture>();
@@ -21,28 +21,23 @@ void InitializeNodes()
 	// _nodeState->labelNodes = VMArray<LabelNodeState>();
 	// _nodeState->doubles = VMArray<double>();
 
-	new(&_nodeState->textures) VMArray<Texture>();
-	new(&_nodeState->meshes) VMArray<Mesh>();
-	new(&_nodeState->renderObjects) VMArray<RenderObject>();
-	new(&_nodeState->videoNodes) VMArray<VideoNodeState>();
-	new(&_nodeState->labelNodes) VMArray<LabelNodeState>();
-	new(&_nodeState->doubles) VMArray<double>();
+	new(&_nodeState->textures) ObjectContainer<Texture>(HANDLE_DATA, DATA_TEXTURE);
+	new(&_nodeState->meshes) ObjectContainer<Mesh>(HANDLE_DATA, DATA_MESH);
+	new(&_nodeState->renderObjects) ObjectContainer<RenderObject>(HANDLE_DATA, DATA_RENDEROBJECT);
+	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
+	// new(&_nodeState->labelNodes) ObjectContainer<LabelNodeState>();
+	new(&_nodeState->doubles) ObjectContainer<double>(HANDLE_DATA, DATA_DOUBLE);
+	new(&_nodeState->strings) ObjectContainer<String>(HANDLE_DATA, DATA_STRING);
 
-	new(&_nodeState->labels) HashMap<NodeHandle>();
-
-	_nodeState->strings = VMArray<String>();
+	// new(&_nodeState->labels) HashMap<NodeHandle>();
 }
 
-bool NodeExists(NodeHandle handle)
+bool NodeExists(ObjectHandle handle)
 {
-	if(handle.id > _nodeState->nodes.Count() - 1) {
-		return false;
-	}
-
-	return true;
+	return _nodeState->nodes.Exists(handle);
 }
 
-Node* GetNode(NodeHandle handle)
+Node* GetNode(ObjectHandle handle)
 {
 	if(!NodeExists(handle)) {
 		return NULL;
@@ -51,15 +46,12 @@ Node* GetNode(NodeHandle handle)
 	return _nodeState->nodes.Get(handle);
 }
 
-double* GetDouble(DataHandle handle)
+double* GetDouble(ObjectHandle handle)
 {
-	if(handle.type == DATA_DOUBLE)
-		return &_nodeState->doubles[handle.id];
-	else
-		return NULL;
+	return _nodeState->doubles.Get(handle);
 }
 
-double* GetDoubleOutput(NodeHandle handle)
+double* GetDoubleOutput(ObjectHandle handle)
 {
 	Node *node = GetNode(handle);
 	if(!NodeExists(handle) ||
@@ -71,12 +63,9 @@ double* GetDoubleOutput(NodeHandle handle)
 	return GetDouble(node->GetData());
 }
 
-Texture* GetTexture(DataHandle handle)
+Texture* GetTexture(ObjectHandle handle)
 {
-	if(handle.type == DATA_TEXTURE)
-		return &_nodeState->textures[handle.id];
-	else
-		return NULL;
+	return _nodeState->textures.Get(handle);
 }
 
 Texture* GetTextureInput(NodeInput input)
@@ -94,14 +83,9 @@ Texture* GetTextureInput(NodeInput input)
 	return texture;
 }
 
-Mesh* GetMesh(DataHandle handle)
+Mesh* GetMesh(ObjectHandle handle)
 {
-	if(handle.type != DATA_MESH) {
-		// TODO err
-		return NULL;
-	}
-	
-	return &_nodeState->meshes[handle.id];
+	return _nodeState->meshes.Get(handle);
 }
 
 Mesh* GetMeshInput(NodeInput input)
@@ -118,23 +102,21 @@ Mesh* GetMeshInput(NodeInput input)
 	return GetMesh(inputNode->GetData());
 }
 
-RenderObject* GetRenderObject(DataHandle handle)
+RenderObject* GetRenderObject(ObjectHandle handle)
 {
-	if(handle.type != DATA_RENDEROBJECT) {
-		NOT_IMPLEMENTED
-	}
-	
-	return &_nodeState->renderObjects[handle.id];
+	return _nodeState->renderObjects.Get(handle);
 }
 
-bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramIndex)
+bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex)
 {
 	Node *node = GetNode(handle);
 	Node *outputNode = GetNode(outHandle);
 
+	if(!node || !outputNode) {
+		return false;
+	}
+
 	if(handle.id == outHandle.id ||
-	   !NodeExists(handle) ||
-	   !NodeExists(outHandle) ||
 	   node->params[paramIndex].type != outputNode->type) {
 		return false;
 	}
@@ -148,14 +130,16 @@ bool ConnectNodeParameter(NodeHandle handle, NodeHandle outHandle, int paramInde
 	return true;
 }
 
-bool ConnectNodeInput(NodeHandle handle, NodeHandle outHandle, int inputIndex)
+bool ConnectNodeInput(ObjectHandle handle, ObjectHandle outHandle, int inputIndex)
 {
 	Node *inputNode = GetNode(handle);
 	Node *outputNode = GetNode(outHandle);
 
+	if(!inputNode || !outputNode) {
+		return false;
+	}
+
 	if(handle.id == outHandle.id ||
-	   !NodeExists(handle) ||
-	   !NodeExists(outHandle) ||
 	   inputNode->inputs[inputIndex].type != outputNode->type) {
 		return false;
 	}
@@ -181,36 +165,21 @@ RenderObject CreateRenderObject()
 	return result;
 }
 
-DataHandle AddNewRenderObject()
+ObjectHandle AddNewRenderObject()
 {
 	RenderObject renderObject = CreateRenderObject();
-	DataHandle handle = {};
-	handle.type = DATA_RENDEROBJECT;
-	handle.id = _nodeState->renderObjects.Insert(renderObject);
-	return handle;
+	return _nodeState->renderObjects.Insert(renderObject);
 }
 
-DataHandle AddString(char *value)
+ObjectHandle AddString(char *value)
 {
 	String string = value;
-	DataHandle handle = {};
-	handle.type = DATA_STRING;
-
-	// TODO (rhoe) think about how we free the strings
-	handle.id = _nodeState->strings.Insert(string);
-	return handle;
+	return _nodeState->strings.Insert(string);
 }
 
-String* GetString(DataHandle handle)
+String* GetString(ObjectHandle handle)
 {
-	if(handle.type != DATA_STRING ||
-	   handle.id < 0 ||
-	   handle.id > _nodeState->strings.Count()) {
-		return NULL;
-		NOT_IMPLEMENTED
-	}
-
-	return &_nodeState->strings[handle.id];
+	return _nodeState->strings.Get(handle);
 }
 
 void CleanupNodes()
@@ -222,7 +191,9 @@ void CleanupNodes()
 	_nodeState->textures.Free();
 
 	for(int i = 0; i < _nodeState->strings.Count(); i++) {
-		_nodeState->strings[i].Free();
+		ObjectHandle handle = _nodeState->strings.GetHandle(i);
+		String *string = _nodeState->strings.Get(handle);
+		string->Free();
 	}
 	_nodeState->strings.Free();
 

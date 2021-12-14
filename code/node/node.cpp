@@ -1,6 +1,6 @@
 #include "node.h"
 
-DataHandle Node::GetData()
+ObjectHandle Node::GetData()
 {
 	if(Changed()) {
 		changed = false;
@@ -43,7 +43,7 @@ bool Node::Changed()
 	return false;
 }
 
-NodeHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle)
+ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
 {
 	// TODO (rhoe) since similar node type dont change name we could
 	//             store the names in a string array and just refer to the handle
@@ -61,17 +61,17 @@ NodeHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodePa
 	node.op = op;
 	node.extraHandle = extraHandle;
 	// node.drawFunc = drawFunc;
-	DataHandle dataHandle = {};
-	dataHandle.type = type;
+	ObjectHandle dataHandle = {};
+	// dataHandle.type = type;
 
 	switch(node.type) {
 		case DATA_TEXTURE: {
-			dataHandle.id = _nodeState->textures.InsertNew();
+			dataHandle = _nodeState->textures.InsertNew();
 			break;
 		}
 		case DATA_MESH: {
 			Mesh mesh = {};
-			dataHandle.id = _nodeState->meshes.Insert(mesh);
+			dataHandle = _nodeState->meshes.Insert(mesh);
 			break;
 		}
 		case DATA_RENDEROBJECT: {
@@ -80,7 +80,7 @@ NodeHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodePa
 		}
 		case DATA_DOUBLE: {
 			double value = 0.0;
-			dataHandle.id = _nodeState->doubles.Insert(value);
+			dataHandle = _nodeState->doubles.Insert(value);
 			break;
 		}
 	}

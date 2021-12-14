@@ -8,7 +8,13 @@ void BlurOperation(Node *self)
 		return;
 
 	// SELF
-	Texture *output = GetTexture(self->GetDataLast());
+	ObjectHandle handle = self->GetDataLast();
+	Texture *output = GetTexture(handle);
+	if(!output) {
+		return;
+	}
+
+	/* Texture *output = GetTexture(self->GetDataLast()); */
 
 	// OPERATION
 	// int kernel[] = { 1, 2, 1 };
@@ -76,7 +82,7 @@ void BlurOperation(Node *self)
 	}
 }
 
-NodeHandle AddBlurNode()
+ObjectHandle AddBlurNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("amount", 20),

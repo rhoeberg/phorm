@@ -49,7 +49,7 @@ void CubeOperation(Node *self)
 	/* output->vertexAmount = 36; */
 }
 
-NodeHandle AddCubeNode()
+ObjectHandle AddCubeNode()
 {
 	FixedArray<NodeParameter> params = {
 	};

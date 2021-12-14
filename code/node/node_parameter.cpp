@@ -32,9 +32,9 @@ NodeParameter::NodeParameter(const char *_name, char *str)
 	handleIsset = false;
 }
 
-NodeParameter::NodeParameter(const char *_name, DataHandle handle)
+NodeParameter::NodeParameter(const char *_name, ObjectHandle handle)
 {
-	type = handle.type;
+	// type = handle.type;
 	sprintf(name, "%s", _name);
 	dataHandle = handle;
 	handleIsset = false;

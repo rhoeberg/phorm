@@ -26,7 +26,7 @@ void UpdateSceneEditor()
 
 	ImGui::Text("OBJECTS");
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = _nodeState->nodes.Get(handle);
 		if(node) {
 			if(node->type == DATA_RENDEROBJECT) {

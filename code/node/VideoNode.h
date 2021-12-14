@@ -5,7 +5,13 @@ void VideoOperation(Node *self)
 	// SELF
 	Texture *output = GetTexture(self->GetDataLast());
 	double time = self->params[0].Double();
-	VideoNodeState *state = &_nodeState->videoNodes[self->extraHandle];
+
+	VideoNodeState *state = _nodeState->videoNodes.Get(self->extraHandle);
+	if(!state) {
+		return;
+	}
+
+	/* VideoNodeState *state = &_nodeState->videoNodes[self->extraHandle]; */
 
 	if(!self->initialized) {
 		const char *filename = "assets/output.mpg";
@@ -39,7 +45,7 @@ void VideoOperation(Node *self)
 	}
 }
 
-NodeHandle AddVideoNode()
+ObjectHandle AddVideoNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("time", 0.0),
@@ -48,7 +54,7 @@ NodeHandle AddVideoNode()
 	FixedArray<NodeInput> inputs = {
 	};
 
-	int extraHandle = _nodeState->videoNodes.Insert(VideoNodeState());
+	ObjectHandle extraHandle = _nodeState->videoNodes.Insert(VideoNodeState());
 
 	return AddNode("VIDEO", DATA_TEXTURE, OP_TEXTURE_VIDEO, params, inputs, extraHandle);
 }

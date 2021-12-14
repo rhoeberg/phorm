@@ -15,23 +15,30 @@ enum DataType {
 	DATA_INT,
 	DATA_VEC3,
 	DATA_STRING,
+	DATA_VIDEO_STATE,
 	DATA_NONE,
 };
 
-/* enum HandleType { */
-/* 	HANDLE_NODE, */
-/* 	HANDLE_DATA, */
-/* }; */
-
-struct DataHandle {
-	unsigned int id;
-	DataType type;
-	/* int slotID; */
+enum HandleType {
+	HANDLE_NODE,
+	HANDLE_DATA,
 };
 
-struct NodeHandle {
+/* struct DataHandle { */
+/* 	unsigned int id; */
+/* 	DataType type; */
+/* 	/\* int slotID; *\/ */
+/* }; */
+
+struct ObjectHandle {
 	unsigned int id;
-	/* DataType type; */
 	u32 slotID;
-	/* HandleType handleType; */
+	HandleType handleType;
+	DataType dataType; // only used for data handles
+
+	ObjectHandle(int _id) {
+		id = _id;
+	}
+
+	ObjectHandle() {}
 };

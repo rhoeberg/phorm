@@ -83,9 +83,9 @@ void NodeGUI()
 	if(ImGui::Button("add time")) {
 		AddTimeNode();
 	}
-	if(ImGui::Button("add label")) {
-		AddLabelNode();
-	}
+	// if(ImGui::Button("add label")) {
+	// 	AddLabelNode();
+	// }
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
@@ -165,7 +165,7 @@ void NodeGUI()
 // 	return rect;
 // }
 
-Rect GetNodeOutputRect(NodeHandle handle)
+Rect GetNodeOutputRect(ObjectHandle handle)
 {
 	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
@@ -181,7 +181,7 @@ Rect GetNodeOutputRect(NodeHandle handle)
 	return result;
 }
 
-Rect GetNodeInputRect(NodeHandle handle, int inputIndex)
+Rect GetNodeInputRect(ObjectHandle handle, int inputIndex)
 {
 	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
@@ -197,7 +197,7 @@ Rect GetNodeInputRect(NodeHandle handle, int inputIndex)
 	return inputRect;
 }
 
-Rect GetNodeParamRect(NodeHandle handle, int paramIndex)
+Rect GetNodeParamRect(ObjectHandle handle, int paramIndex)
 {
 	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
@@ -213,7 +213,7 @@ Rect GetNodeParamRect(NodeHandle handle, int paramIndex)
 	return paramRect;
 }
 
-void DrawNode(NodeHandle handle)
+void DrawNode(ObjectHandle handle)
 {
 	Node *node = GetNode(handle);
 
@@ -266,7 +266,7 @@ void UpdateHoverState()
 {
 	_nodeEditorState->hoverState.hoveringElement = false;
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = _nodeState->nodes.Get(handle);
 		if(node) {
 
@@ -349,8 +349,8 @@ void UpdateNodeDragging()
 				}
 				case EDITOR_ELEMENT_INPUT: {
 					if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
-						NodeHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
-						NodeHandle inHandle = _nodeEditorState->draggedNodeHandle;
+						ObjectHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
+						ObjectHandle inHandle = _nodeEditorState->draggedNodeHandle;
 						int ctxHandle = _nodeEditorState->draggedCtxHandle;
 						ConnectNodeInput(inHandle, outHandle, ctxHandle);
 					}
@@ -366,8 +366,8 @@ void UpdateNodeDragging()
 				case EDITOR_ELEMENT_PARAM: {
 					if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
 						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
-						NodeHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
-						NodeHandle inHandle = _nodeEditorState->draggedNodeHandle;
+						ObjectHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
+						ObjectHandle inHandle = _nodeEditorState->draggedNodeHandle;
 						int ctxHandle = _nodeEditorState->draggedCtxHandle;
 						node->changed = true;
 						ConnectNodeParameter(inHandle, outHandle, ctxHandle);
@@ -382,8 +382,8 @@ void UpdateNodeDragging()
 				}
 				case EDITOR_ELEMENT_OUTPUT: {
 					if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_INPUT) {
-						NodeHandle outHandle = _nodeEditorState->draggedNodeHandle;
-						NodeHandle inHandle = _nodeEditorState->hoverState.nodeHandle;
+						ObjectHandle outHandle = _nodeEditorState->draggedNodeHandle;
+						ObjectHandle inHandle = _nodeEditorState->hoverState.nodeHandle;
 						int ctxHandle = _nodeEditorState->hoverState.ctxHandle;
 						ConnectNodeInput(inHandle, outHandle, ctxHandle);
 					}
@@ -427,7 +427,7 @@ void UpdateNodeDragging()
 	}
 }
 
-void ShowNode(NodeHandle handle)
+void ShowNode(ObjectHandle handle)
 {
 	Node *node = GetNode(handle);
 	switch(node->type) {
@@ -460,7 +460,7 @@ void UpdateNodeEditor()
 	//////////////////
 	// DRAW NODES
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = _nodeState->nodes.Get(handle);
 		if(node) {
 			DrawNode(handle);

@@ -27,7 +27,7 @@ void CallNodeDrawFunction(Node *self);
 #include "VideoNode.h"
 #include "renderobject_node.h"
 #include "TimeNode.h"
-#include "LabelNode.h"
+/* #include "LabelNode.h" */
 
 void CallNodeOp(Node *self)
 {
@@ -68,11 +68,10 @@ void CallNodeOp(Node *self)
 			break;
 		}
 
-
-		// LABEL OP
-		case OP_LABEL: {
-			LabelOperation(self);
-		}
+		/* // LABEL OP */
+		/* case OP_LABEL: { */
+		/* 	LabelOperation(self); */
+		/* } */
 	}
 }
 
@@ -103,10 +102,10 @@ void CallNodeDrawFunction(Node *self)
 			DrawTimeNode(self);
 			break;
 		}
-		case OP_LABEL: {
-			DrawLabelNode(self);
-			break;
-		}
+		/* case OP_LABEL: { */
+		/* 	DrawLabelNode(self); */
+		/* 	break; */
+		/* } */
 
 		default: {
 			BaseNodeDrawFunction(self);

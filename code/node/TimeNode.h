@@ -24,7 +24,7 @@ void DrawTimeNode(Node *self)
 	ImDrawText(timePos, timeBuf, vec3(0.3, 0, 0));
 }
 
-NodeHandle AddTimeNode()
+ObjectHandle AddTimeNode()
 {
 	FixedArray<NodeParameter> params = {
 	};

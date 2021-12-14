@@ -2,7 +2,7 @@
 
 struct NodeParameter {
 	DataType type;
-	NodeHandle nodeHandle;
+	ObjectHandle nodeHandle;
 	bool handleIsset;
 	char name[128];
 	bool exposed;
@@ -14,7 +14,7 @@ struct NodeParameter {
 
 		// TOOD (rhoe) here we could use a handle to a String type stored somewhere else
 		/* char str[128]; */
-		DataHandle dataHandle;
+		ObjectHandle dataHandle;
 	};
 
 	NodeParameter() {};
@@ -22,6 +22,6 @@ struct NodeParameter {
 	NodeParameter(const char *_name, double _d);
 	NodeParameter(const char *_name, vec3 _v3);
 	NodeParameter(const char *_name, char *str);
-	NodeParameter(const char *_name, DataHandle handle);
+	NodeParameter(const char *_name, ObjectHandle handle);
 	double Double();
 };

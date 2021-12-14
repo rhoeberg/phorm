@@ -29,7 +29,7 @@ void MixTextureOperation(Node *self)
 	}
 }
 
-NodeHandle AddMixTextureNode()
+ObjectHandle AddMixTextureNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("mix", 0.5),

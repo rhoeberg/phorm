@@ -3,8 +3,8 @@
 #define VIEWER_SIZE 600
 
 struct ViewerRenderState {
-	VMArray<DataHandle> renderList;
-	DataHandle baseTextureObject;
+	VMArray<ObjectHandle> renderList;
+	ObjectHandle baseTextureObject;
 	/* RenderObject textureRenderObject; */
 	bool wireframe;
 
@@ -20,7 +20,7 @@ struct ViewerRenderState {
 
 void InitializeViewerRender();
 void UpdateViewerRender();
-void AddToRenderQueue(DataHandle objectHandle);
-void AddTextureToRenderQueue(DataHandle textureHandle);
+void AddToRenderQueue(ObjectHandle objectHandle);
+void AddTextureToRenderQueue(ObjectHandle textureHandle);
 
 global ViewerRenderState _viewerRenderState;
