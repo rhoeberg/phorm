@@ -15,11 +15,21 @@ void UpdateSceneEditor()
 	ImGui::Text("SCENE");
 
 	for(int i = 0; i < state->scene.objects.Count(); i++) {
-		Node *node = GetNode(&state->scene.objects[i]);
-		String *str = GetString(&node->params[1].dataHandle);
-
-		ImGui::Text("%d", i);
-        ImGui::SameLine(300); ImGui::Text("%s", str->buffer);
+		ObjectHandle handleHandle = state->scene.objects.GetHandle(i);
+		ObjectHandle *nodeHandle = state->scene.objects.Get(&handleHandle);
+		if(nodeHandle) {
+			Node *node = GetNode(nodeHandle);
+			if(node) {
+				String *str = GetString(&node->params[1].dataHandle);
+				if(str) {
+					ImGui::Text("%d", i);
+					ImGui::SameLine(300); ImGui::Text("%s", str->buffer);
+				}
+				else {
+					ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
+				}
+			}
+		}
 	}
 
 	ImGui::Spacing();
@@ -53,8 +63,18 @@ void UpdateSceneEditor()
 	ImGui::End();
 
 	for(int i = 0; i < state->scene.objects.Count(); i++) {
-		Node *node = GetNode(&state->scene.objects[i]);
-		AddToRenderQueue(&node->GetData());
+		ObjectHandle handleHandle = state->scene.objects.GetHandle(i);
+		ObjectHandle *nodeHandle = state->scene.objects.Get(&handleHandle);
+		if(nodeHandle) {
+			Node *node = GetNode(nodeHandle);
+			if(node) {
+				AddToRenderQueue(&node->GetData());
+			}
+			else {
+				ObjectHandle handle = state->scene.objects.GetHandle(i);
+				state->scene.objects.Remove(&handle);
+			}
+		}
 	}
 }
 

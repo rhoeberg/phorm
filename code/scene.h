@@ -7,10 +7,12 @@
 
 struct Scene {
 	/* VMArray<String> keys; */
-	VMArray<ObjectHandle> objects;
+	/* VMArray<ObjectHandle> objects; */
+	ObjectContainer<ObjectHandle> objects;
 
 	Scene() {
-		objects = VMArray<ObjectHandle>();
+		/* objects = VMArray<ObjectHandle>(); */
+		/* objects = ObjectContainer<ObjectHandle>(HANDLE_HANDLE); */
 	}
 
 	void Free() {

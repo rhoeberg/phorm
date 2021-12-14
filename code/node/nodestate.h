@@ -30,6 +30,11 @@ struct ObjectContainer {
 	HandleType handleType;
 	DataType dataType;
 
+	ObjectContainer()
+	{
+		handleType = HANDLE_NONE;
+	}
+
 	ObjectContainer(HandleType _handleType, DataType _dataType = DATA_NONE)
 	{
 		elements = VMArray<T>();

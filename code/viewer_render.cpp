@@ -194,3 +194,14 @@ void UpdateViewerRender()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
+
+void UpdateViewerRenderGUI()
+{
+	ImGui::Begin("viewer");
+	ImGui::Checkbox("wireframe", &_viewerRenderState.wireframe);
+	if(ImGui::Button("toggle viewer window")) {
+		ToggleViewer();
+	}
+	ImGui::End();
+
+}

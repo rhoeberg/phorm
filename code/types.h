@@ -20,8 +20,10 @@ enum DataType {
 };
 
 enum HandleType {
+	HANDLE_NONE,
 	HANDLE_NODE,
 	HANDLE_DATA,
+	HANDLE_OBJECTHANDLE,
 };
 
 struct ObjectHandle {
