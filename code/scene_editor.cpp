@@ -26,18 +26,18 @@ void UpdateSceneEditor()
 
 	ImGui::Text("OBJECTS");
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		Node *node = &_nodeState->nodes[i];
-		if(node->type == DATA_RENDEROBJECT) {
-			String *str = GetString(node->params[1].dataHandle);
-			ImGui::Text("%s", str->buffer);
-			ImGui::SameLine();
-			static char buf[32];
-			sprintf(buf, "add##%d", i);
-			if(ImGui::Button(buf)) {
-				NodeHandle handle = {};
-				handle.id = i;
-				handle.type = DATA_RENDEROBJECT;
-				state->scene.objects.Insert(handle);
+		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		Node *node = _nodeState->nodes.Get(handle);
+		if(node) {
+			if(node->type == DATA_RENDEROBJECT) {
+				String *str = GetString(node->params[1].dataHandle);
+				ImGui::Text("%s", str->buffer);
+				ImGui::SameLine();
+				static char buf[32];
+				sprintf(buf, "add##%d", i);
+				if(ImGui::Button(buf)) {
+					state->scene.objects.Insert(handle);
+				}
 			}
 		}
 	}

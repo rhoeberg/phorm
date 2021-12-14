@@ -42,7 +42,7 @@ void DrawLabelNode(Node *self)
 	ImDrawText(labelPos, str->buffer, vec3(0.3, 0, 0));
 }
 
-int AddLabelNode()
+NodeHandle AddLabelNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("label name", "hej"),

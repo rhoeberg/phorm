@@ -266,54 +266,54 @@ void UpdateHoverState()
 {
 	_nodeEditorState->hoverState.hoveringElement = false;
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		Node *node = &_nodeState->nodes[i];
-		NodeHandle handle = {};
-		handle.id = i;
-		handle.type = node->type;
+		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		Node *node = _nodeState->nodes.Get(handle);
+		if(node) {
 
-		// CHECK NODE
-		// Rect nodeRect = GetNodeRect(handle);
-		Rect nodeRect = node->rect;
-		if(PointInsideRect(mouse, nodeRect)) {
-			_nodeEditorState->hoverState.nodeHandle = handle;
-			_nodeEditorState->hoverState.hoveringElement = true;
-			_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_NODE;
-		}
-		else {
-
-			// CHECK INPUTS
-			for(int j = 0; j < node->inputs.Count(); j++) {
-				Rect inputRect = GetNodeInputRect(handle, j);
-				if(PointInsideRect(mouse, inputRect)) {
-					_nodeEditorState->hoverState.nodeHandle = handle;
-					_nodeEditorState->hoverState.hoveringElement = true;
-					_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_INPUT;
-					_nodeEditorState->hoverState.ctxHandle = j;
-					break;
-				}
+			// CHECK NODE
+			// Rect nodeRect = GetNodeRect(handle);
+			Rect nodeRect = node->rect;
+			if(PointInsideRect(mouse, nodeRect)) {
+				_nodeEditorState->hoverState.nodeHandle = handle;
+				_nodeEditorState->hoverState.hoveringElement = true;
+				_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_NODE;
 			}
+			else {
 
-			// CHECK INPUTS PARAM
-			if(!_nodeEditorState->hoverState.hoveringElement) {
-				for(int j = 0; j < node->params.Count(); j++) {
-					Rect paramRect = GetNodeParamRect(handle, j);
-					if(PointInsideRect(mouse, paramRect)) {
+				// CHECK INPUTS
+				for(int j = 0; j < node->inputs.Count(); j++) {
+					Rect inputRect = GetNodeInputRect(handle, j);
+					if(PointInsideRect(mouse, inputRect)) {
 						_nodeEditorState->hoverState.nodeHandle = handle;
 						_nodeEditorState->hoverState.hoveringElement = true;
-						_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_PARAM;
+						_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_INPUT;
 						_nodeEditorState->hoverState.ctxHandle = j;
+						break;
 					}
 				}
-			}
+
+				// CHECK INPUTS PARAM
+				if(!_nodeEditorState->hoverState.hoveringElement) {
+					for(int j = 0; j < node->params.Count(); j++) {
+						Rect paramRect = GetNodeParamRect(handle, j);
+						if(PointInsideRect(mouse, paramRect)) {
+							_nodeEditorState->hoverState.nodeHandle = handle;
+							_nodeEditorState->hoverState.hoveringElement = true;
+							_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_PARAM;
+							_nodeEditorState->hoverState.ctxHandle = j;
+						}
+					}
+				}
 
 
-			// CHECK OUTPUTS
-			if(!_nodeEditorState->hoverState.hoveringElement) {
-				Rect outputRect = GetNodeOutputRect(handle);
-				if(PointInsideRect(mouse, outputRect)) {
-					_nodeEditorState->hoverState.nodeHandle = handle;
-					_nodeEditorState->hoverState.hoveringElement = true;
-					_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_OUTPUT;
+				// CHECK OUTPUTS
+				if(!_nodeEditorState->hoverState.hoveringElement) {
+					Rect outputRect = GetNodeOutputRect(handle);
+					if(PointInsideRect(mouse, outputRect)) {
+						_nodeEditorState->hoverState.nodeHandle = handle;
+						_nodeEditorState->hoverState.hoveringElement = true;
+						_nodeEditorState->hoverState.elementType = EDITOR_ELEMENT_OUTPUT;
+					}
 				}
 			}
 		}
@@ -460,11 +460,11 @@ void UpdateNodeEditor()
 	//////////////////
 	// DRAW NODES
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		Node *node = &_nodeState->nodes[i];
-		NodeHandle handle = {};
-		handle.id = i;
-		handle.type = node->type;
-		DrawNode(handle);
+		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		Node *node = _nodeState->nodes.Get(handle);
+		if(node) {
+			DrawNode(handle);
+		}
 	}
 
 	//////////////////

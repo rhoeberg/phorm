@@ -39,7 +39,7 @@ void VideoOperation(Node *self)
 	}
 }
 
-int AddVideoNode()
+NodeHandle AddVideoNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("time", 0.0),

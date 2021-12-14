@@ -1,7 +1,7 @@
 #pragma once
 
 struct NodeParameter {
-	NodeDataType type;
+	DataType type;
 	NodeHandle nodeHandle;
 	bool handleIsset;
 	char name[128];

@@ -43,7 +43,7 @@ bool Node::Changed()
 	return false;
 }
 
-int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle)
+NodeHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle)
 {
 	// TODO (rhoe) since similar node type dont change name we could
 	//             store the names in a string array and just refer to the handle

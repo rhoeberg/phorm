@@ -62,11 +62,11 @@
 #include "renderobject.h"
 
 struct NodeInput {
-	NodeDataType type;
+	DataType type;
 	NodeHandle handle;
 	bool handleIsset;
 
-	NodeInput(NodeDataType _type) {
+	NodeInput(DataType _type) {
 		type = _type;
 		handleIsset = false;
 	}
@@ -96,7 +96,7 @@ struct Node {
 	/* NodeDrawingFunction drawingFunction; */
 	NodeOp op;
 	NodeDrawFunc drawFunc;
-	NodeDataType type; //defines the return of the node operation
+	DataType type; //defines the return of the node operation
 	Rect rect;
 	bool changed;
 	/* uint8_t changeVer; */
@@ -109,7 +109,7 @@ struct Node {
 	int extraHandle;
 	bool initialized;
 
-	void AddInput(NodeDataType type)
+	void AddInput(DataType type)
 	{
 		NodeInput input = {};
 		input.type = type;
@@ -129,4 +129,4 @@ private:
 	DataHandle dataHandle;
 };
 
-int AddNode(const char *name, NodeDataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle = -1);
+NodeHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, int extraHandle = -1);

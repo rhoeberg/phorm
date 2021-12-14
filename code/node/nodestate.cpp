@@ -10,7 +10,8 @@ void InitializeNodes()
 	// not very pretty syntax maybe we should just use a custom
 	// init function instead of constructor
 
-	new(&_nodeState->nodes) VMArray<Node>();
+	// new(&_nodeState->nodes) VMArray<Node>();
+	new(&_nodeState->nodes) ObjectContainer<Node>();
 
 	// data containers
 	// _nodeState->textures = VMArray<Texture>();
@@ -47,7 +48,7 @@ Node* GetNode(NodeHandle handle)
 		return NULL;
 	}
 
-	return &_nodeState->nodes[handle.id];
+	return _nodeState->nodes.Get(handle);
 }
 
 double* GetDouble(DataHandle handle)

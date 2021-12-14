@@ -3,24 +3,23 @@ struct SaveFile {
 };
 
 template <typename T>
-void SaveVMArray(VMArray<T> array, SaveFile *saveFile)
+void SaveVMArray(VMArray<T> *array, SaveFile *saveFile)
 {
 	// save vertices
-	int count = array.Count();
-	int max = array.Max();
+	int count = array->Count();
+	int max = array->Max();
 
 	fwrite(&count, sizeof(int), 1, saveFile->file);
 	fwrite(&max, sizeof(int), 1, saveFile->file);
-	fwrite(array.Data(), sizeof(T) * count, 1, saveFile->file);
+	fwrite(array->Data(), sizeof(T) * count, 1, saveFile->file);
 }
-
 
 /*
   This function assumes that the next piece of data in the file
   is a VMArray of type T
  */
 template <typename T>
-VMArray<T> LoadNextVMArray(SaveFile *saveFile)
+void LoadNextVMArray(VMArray<T> *array, SaveFile *saveFile)
 {
 	int count;
 	int max;
@@ -29,9 +28,24 @@ VMArray<T> LoadNextVMArray(SaveFile *saveFile)
 	// TODO (rhoe) maybe its possibly to avoid this extra malloc
 	T *data = (T*)malloc(sizeof(T) * count);
 	fread(data, sizeof(T) * count, 1, saveFile->file);
-	VMArray<T> result = VMArray<T>(max, count, data);
+	*array = VMArray<T>(max, count, data);
 	free(data);
-	return result;
+}
+
+template <typename T>
+void SaveObjectContainer(ObjectContainer<T> *container, SaveFile *saveFile)
+{
+	SaveVMArray<T>(&container->elements, saveFile);
+	SaveVMArray<bool>(&container->isFree, saveFile);
+	SaveVMArray<u32>(&container->slotID, saveFile);
+}
+
+template <typename T>
+void LoadObjectContainer(ObjectContainer<T> *container, SaveFile *saveFile)
+{
+	LoadNextVMArray<T>(&container->elements, saveFile);
+	LoadNextVMArray<bool>(&container->isFree, saveFile);
+	LoadNextVMArray<u32>(&container->slotID, saveFile);
 }
 
 void SaveInt(int i, SaveFile *saveFile)
@@ -64,11 +78,12 @@ String LoadString(SaveFile *saveFile)
 
 void SaveNodes()
 {
-	//////////////
-	// SAVE NODES
 	SaveFile saveFile = {};
 	saveFile.file = fopen("testsave.octo", "wb");
-	SaveVMArray<Node>(_nodeState->nodes, &saveFile);
+
+	//////////////
+	// SAVE NODES
+	SaveObjectContainer<Node>(&_nodeState->nodes, &saveFile);
 
 	//////////////
 	// SAVE DATA
@@ -99,12 +114,17 @@ void LoadNodes()
 		return;
 	}
 
-	_nodeState->nodes = LoadNextVMArray<Node>(&saveFile);
+	// _nodeState->nodes = LoadNextVMArray<Node>(&saveFile);
+	LoadObjectContainer<Node>(&_nodeState->nodes, &saveFile);
 
 	// mark all nodes as dirty after load so we can regenerate all resources
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
-		_nodeState->nodes[i].changed = true;
-		_nodeState->nodes[i].initialized = false;
+		NodeHandle handle = _nodeState->nodes.GetHandle(i);
+		Node *node = _nodeState->nodes.Get(handle);
+		if(node) {
+			node->changed = true;
+			node->initialized = false;
+		}
 	}
 
 	// load textures

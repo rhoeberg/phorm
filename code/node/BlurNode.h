@@ -76,7 +76,7 @@ void BlurOperation(Node *self)
 	}
 }
 
-int AddBlurNode()
+NodeHandle AddBlurNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("amount", 20),
