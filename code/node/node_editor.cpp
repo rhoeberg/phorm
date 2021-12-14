@@ -68,6 +68,9 @@ void NodeGUI()
 	if(ImGui::Button("add grid")) {
 		AddGridNode();
 	}
+	if(ImGui::Button("add mesh noise")) {
+		AddMeshNoise();
+	}
 	if(ImGui::Button("add video")) {
 		AddVideoNode();
 	}

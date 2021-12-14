@@ -110,6 +110,31 @@ T& VMArray<T>::operator[](int index)
 	return data[index];
 }
 
+// template <typename T>
+// VMArray<T>& VMArray<T>::operator=(VMArray<T> &other)
+// {
+// 	this->count = other.count;
+// 	this->max = other.max;
+// 	this->data = (T*)calloc(max, sizeof(T));
+// 	memcpy(this->data, other.data, sizeof(T) * this->max);
+
+// 	return *this;
+// }
+
+// template <typename T>
+// VMArray<T>& VMArray<T>::operator=(std::initializer_list<T> init)
+// {
+// 	this->max = ARRAY_START_SIZE;
+// 	this->data = (T*)calloc(max, sizeof(T));
+// 	this->count = 0;
+
+// 	for(const T &t : init) {
+// 		this->Insert(t);
+// 	}
+
+// 	return *this;
+// }
+
 template <typename T>
 void VMArray<T>::Free()
 {

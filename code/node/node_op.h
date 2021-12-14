@@ -10,6 +10,7 @@ enum NodeOp {
 	OP_TEXTURE_VIDEO,
 	OP_MESH_CUBE,
 	OP_MESH_GRID,
+	OP_MESH_NOISE,
 	OP_RENDEROBJECT,
 	OP_LABEL,
 };
@@ -28,6 +29,7 @@ void CallNodeDrawFunction(Node *self);
 #include "MixTextureNode.h"
 #include "CubeNode.h"
 #include "GridNode.h"
+#include "MeshNoise.h"
 #include "VideoNode.h"
 #include "renderobject_node.h"
 #include "TimeNode.h"
@@ -67,6 +69,10 @@ void CallNodeOp(Node *self)
 		}
 		case OP_MESH_GRID: {
 			GridOperation(self);
+			break;
+		}
+		case OP_MESH_NOISE: {
+			MeshNoiseOperation(self);
 			break;
 		}
 

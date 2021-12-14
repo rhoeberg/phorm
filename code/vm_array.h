@@ -24,4 +24,6 @@ class VMArray {
 	void Clear();
 
 	T& operator[](int index);
+	// VMArray<T>& operator=(VMArray<T> &other);
+	// VMArray<T>& operator=(std::initializer_list<T> init);
 };

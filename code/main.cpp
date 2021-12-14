@@ -44,6 +44,7 @@
 #include "util.cpp"
 #include "gui.cpp"
 #include "glfw_wrapper.cpp"
+#include "simplexnoise1234.cpp"
 #include "math.cpp"
 #include "render.cpp"
 #include "vm_array.cpp"
