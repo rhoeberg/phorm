@@ -9,7 +9,7 @@ void BlurOperation(Node *self)
 
 	// SELF
 	ObjectHandle handle = self->GetDataLast();
-	Texture *output = GetTexture(handle);
+	Texture *output = GetTexture(&handle);
 	if(!output) {
 		return;
 	}

@@ -32,12 +32,12 @@ void InitializeNodes()
 	// new(&_nodeState->labels) HashMap<NodeHandle>();
 }
 
-bool NodeExists(ObjectHandle handle)
+bool NodeExists(ObjectHandle *handle)
 {
 	return _nodeState->nodes.Exists(handle);
 }
 
-Node* GetNode(ObjectHandle handle)
+Node* GetNode(ObjectHandle *handle)
 {
 	if(!NodeExists(handle)) {
 		return NULL;
@@ -46,12 +46,17 @@ Node* GetNode(ObjectHandle handle)
 	return _nodeState->nodes.Get(handle);
 }
 
-double* GetDouble(ObjectHandle handle)
+void DeleteNode(ObjectHandle *handle)
+{
+	_nodeState->nodes.Remove(handle);
+}
+
+double* GetDouble(ObjectHandle *handle)
 {
 	return _nodeState->doubles.Get(handle);
 }
 
-double* GetDoubleOutput(ObjectHandle handle)
+double* GetDoubleOutput(ObjectHandle *handle)
 {
 	Node *node = GetNode(handle);
 	if(!NodeExists(handle) ||
@@ -60,17 +65,17 @@ double* GetDoubleOutput(ObjectHandle handle)
 		return NULL;
 	}
 
-	return GetDouble(node->GetData());
+	return GetDouble(&node->GetData());
 }
 
-Texture* GetTexture(ObjectHandle handle)
+Texture* GetTexture(ObjectHandle *handle)
 {
 	return _nodeState->textures.Get(handle);
 }
 
 Texture* GetTextureInput(NodeInput input)
 {
-	Node *inputNode = GetNode(input.handle);
+	Node *inputNode = GetNode(&input.handle);
 
 	if(inputNode == NULL ||
 	   input.type != DATA_TEXTURE ||
@@ -79,18 +84,18 @@ Texture* GetTextureInput(NodeInput input)
 		return NULL;
 	}
 
-	Texture *texture = GetTexture(inputNode->GetData());
+	Texture *texture = GetTexture(&inputNode->GetData());
 	return texture;
 }
 
-Mesh* GetMesh(ObjectHandle handle)
+Mesh* GetMesh(ObjectHandle *handle)
 {
 	return _nodeState->meshes.Get(handle);
 }
 
 Mesh* GetMeshInput(NodeInput input)
 {
-	Node *inputNode = GetNode(input.handle);
+	Node *inputNode = GetNode(&input.handle);
 
 	if(inputNode == NULL ||
 	   input.type != DATA_MESH ||
@@ -99,15 +104,15 @@ Mesh* GetMeshInput(NodeInput input)
 		return NULL;
 	}
 	   
-	return GetMesh(inputNode->GetData());
+	return GetMesh(&inputNode->GetData());
 }
 
-RenderObject* GetRenderObject(ObjectHandle handle)
+RenderObject* GetRenderObject(ObjectHandle *handle)
 {
 	return _nodeState->renderObjects.Get(handle);
 }
 
-bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex)
+bool ConnectNodeParameter(ObjectHandle *handle, ObjectHandle *outHandle, int paramIndex)
 {
 	Node *node = GetNode(handle);
 	Node *outputNode = GetNode(outHandle);
@@ -116,21 +121,20 @@ bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int param
 		return false;
 	}
 
-	if(handle.id == outHandle.id ||
+	if(handle->id == outHandle->id ||
 	   node->params[paramIndex].type != outputNode->type) {
 		return false;
 	}
 
 	if(node != NULL) {
 		node->changed = true;
-		node->params[paramIndex].nodeHandle = outHandle;
-		node->params[paramIndex].handleIsset = true;
+		node->params[paramIndex].nodeHandle = *outHandle;
 	}
 
 	return true;
 }
 
-bool ConnectNodeInput(ObjectHandle handle, ObjectHandle outHandle, int inputIndex)
+bool ConnectNodeInput(ObjectHandle *handle, ObjectHandle *outHandle, int inputIndex)
 {
 	Node *inputNode = GetNode(handle);
 	Node *outputNode = GetNode(outHandle);
@@ -139,15 +143,14 @@ bool ConnectNodeInput(ObjectHandle handle, ObjectHandle outHandle, int inputInde
 		return false;
 	}
 
-	if(handle.id == outHandle.id ||
+	if(handle->id == outHandle->id ||
 	   inputNode->inputs[inputIndex].type != outputNode->type) {
 		return false;
 	}
 
 	if(inputNode != NULL) {
 		inputNode->changed = true;
-		inputNode->inputs[inputIndex].handle = outHandle;
-		inputNode->inputs[inputIndex].handleIsset = true;
+		inputNode->inputs[inputIndex].handle = *outHandle;
 	}
 
 	return true;
@@ -177,7 +180,7 @@ ObjectHandle AddString(char *value)
 	return _nodeState->strings.Insert(string);
 }
 
-String* GetString(ObjectHandle handle)
+String* GetString(ObjectHandle *handle)
 {
 	return _nodeState->strings.Get(handle);
 }
@@ -192,7 +195,7 @@ void CleanupNodes()
 
 	for(int i = 0; i < _nodeState->strings.Count(); i++) {
 		ObjectHandle handle = _nodeState->strings.GetHandle(i);
-		String *string = _nodeState->strings.Get(handle);
+		String *string = _nodeState->strings.Get(&handle);
 		string->Free();
 	}
 	_nodeState->strings.Free();

@@ -19,8 +19,7 @@ struct NodeEditorState {
 
 	// create seperate dragstate struct
 	bool isDragging;
-	ObjectHandle draggedNodeHandle;
-	bool draggedHandleIsset;
+	ObjectHandle draggedNode;
 	int draggedCtxHandle;
 	vec2 dragOffset;
 	NodeEditorElementType draggedType;
@@ -33,7 +32,6 @@ struct NodeEditorState {
 	GLuint viewerShader;
 	int viewerWidth, viewerHeight;
 	ObjectHandle selectedNode;
-	bool selectedHandleIsset;
 };
 
 /* void NodeEditorSetWindowSize(int width, int height); */

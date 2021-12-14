@@ -116,7 +116,7 @@ void SaveNodes()
 	SaveI32(_nodeState->renderObjects.Count(), &saveFile);
 	SaveI32(_nodeState->doubles.Count(), &saveFile);
 	SaveI32(_nodeState->videoNodes.Count(), &saveFile);
-	SaveI32(_nodeState->labelNodes.Count(), &saveFile);
+	// SaveI32(_nodeState->labelNodes.Count(), &saveFile);
 
 	//strings
 	SaveI32(_nodeState->strings.Count(), &saveFile);
@@ -146,7 +146,7 @@ void LoadNodes()
 	// mark all nodes as dirty after load so we can regenerate all resources
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(handle);
+		Node *node = _nodeState->nodes.Get(&handle);
 		if(node) {
 			node->changed = true;
 			node->initialized = false;
@@ -206,14 +206,14 @@ void LoadNodes()
 		}
 	}
 
-	// load label nodes
-	{
-		_nodeState->labelNodes.Clear();
-		int count = LoadI32(&saveFile);
-		for(int i = 0; i < count; i++) {
-			_nodeState->labelNodes.Insert(LabelNodeState());
-		}
-	}
+	// // load label nodes
+	// {
+	// 	_nodeState->labelNodes.Clear();
+	// 	int count = LoadI32(&saveFile);
+	// 	for(int i = 0; i < count; i++) {
+	// 		_nodeState->labelNodes.Insert(LabelNodeState());
+	// 	}
+	// }
 
 	// load Strings
 	{

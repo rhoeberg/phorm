@@ -21,16 +21,14 @@
 void InitializeNodeEditor()
 {
 	_nodeEditorState = (NodeEditorState*)malloc(sizeof(NodeEditorState));
-	_nodeEditorState->draggedNodeHandle = {};
+	_nodeEditorState->draggedNode = {};
 	_nodeEditorState->isDragging = false;
-	_nodeEditorState->draggedHandleIsset = false;
 	_nodeEditorState->hoverState.hoveringElement = false;
 
 	_nodeEditorState->viewerWidth = VIEWER_SIZE;
 	_nodeEditorState->viewerHeight = VIEWER_SIZE;
 
 	_nodeEditorState->selectedNode = {};
-	_nodeEditorState->selectedHandleIsset = false;
 
 	// create fbo + fbo texture
 	// glGenTextures(1, &_nodeEditorState->fboTexture);
@@ -89,61 +87,63 @@ void NodeGUI()
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
-	if(_nodeEditorState->draggedHandleIsset) {
-		Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+	if(_nodeEditorState->draggedNode.isset) {
+		Node *node = GetNode(&_nodeEditorState->draggedNode);
+		if(node) {
 
-		ImGui::Text("%s", node->name);
+			ImGui::Text("%s", node->name);
 
-		if(ImGui::Button("OP")) {
-			node->CallOp();
-		}
+			if(ImGui::Button("OP")) {
+				node->CallOp();
+			}
 
-		for(int i = 0; i < node->params.Count(); i++) {
+			for(int i = 0; i < node->params.Count(); i++) {
 
-			NodeParameter *param = &node->params[i];
+				NodeParameter *param = &node->params[i];
 
-			// EXPOSE
-			ImGui::Checkbox("##exposed", &param->exposed);
-			ImGui::SameLine();
+				// EXPOSE
+				ImGui::Checkbox("##exposed", &param->exposed);
+				ImGui::SameLine();
 
-			// TODO (rhoe) be carefull about imgui widget names
-			//             they are used as id's and have to be unique
-			//             maybe we need to use the imgui hidden name id feature
-			//             where we add the id of the object somehow
-			char buffer[128];
-			sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNodeHandle.id);
+				// TODO (rhoe) be carefull about imgui widget names
+				//             they are used as id's and have to be unique
+				//             maybe we need to use the imgui hidden name id feature
+				//             where we add the id of the object somehow
+				char buffer[128];
+				sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNode.id);
 
-			switch(node->params[i].type) {
-				case DATA_INT: {
-					if(ImGui::InputInt(buffer, &param->i)) {
-						node->changed = true;
+				switch(node->params[i].type) {
+					case DATA_INT: {
+						if(ImGui::InputInt(buffer, &param->i)) {
+							node->changed = true;
+						}
+						break;
 					}
-					break;
-				}
-				case DATA_DOUBLE: {
-					if(ImGui::InputDouble(buffer, &node->params[i].d)) {
-						node->changed = true;
-					}
-					// if(ImGui::SliderScalar(buffer, ImGuiDataType_Double, &param->d, &param->d_min, &param->d_max)) {
+					case DATA_DOUBLE: {
+						if(ImGui::InputDouble(buffer, &node->params[i].d)) {
+							node->changed = true;
+						}
+						// if(ImGui::SliderScalar(buffer, ImGuiDataType_Double, &param->d, &param->d_min, &param->d_max)) {
 						// node->changed = true;
-					// }
-					break;
-				}
-				case DATA_VEC3: {
-					if(ImGui::InputFloat3(buffer, glm::value_ptr(param->v3))) {
-						node->changed = true;
+						// }
+						break;
 					}
-					break;
-				}
-				case DATA_STRING: {
-					// static char buf[128];
-					// ImGui::InputText(buffer, buf, ARRAY_SIZE(buf));
-					String *str = GetString(param->dataHandle);
-					if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
-						str->ReCalc();
-						node->changed = true;
+					case DATA_VEC3: {
+						if(ImGui::InputFloat3(buffer, glm::value_ptr(param->v3))) {
+							node->changed = true;
+						}
+						break;
 					}
-					break;
+					case DATA_STRING: {
+						// static char buf[128];
+						// ImGui::InputText(buffer, buf, ARRAY_SIZE(buf));
+						String *str = GetString(&param->dataHandle);
+						if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
+							str->ReCalc();
+							node->changed = true;
+						}
+						break;
+					}
 				}
 			}
 		}
@@ -165,7 +165,7 @@ void NodeGUI()
 // 	return rect;
 // }
 
-Rect GetNodeOutputRect(ObjectHandle handle)
+Rect GetNodeOutputRect(ObjectHandle *handle)
 {
 	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
@@ -181,7 +181,7 @@ Rect GetNodeOutputRect(ObjectHandle handle)
 	return result;
 }
 
-Rect GetNodeInputRect(ObjectHandle handle, int inputIndex)
+Rect GetNodeInputRect(ObjectHandle *handle, int inputIndex)
 {
 	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
@@ -197,7 +197,7 @@ Rect GetNodeInputRect(ObjectHandle handle, int inputIndex)
 	return inputRect;
 }
 
-Rect GetNodeParamRect(ObjectHandle handle, int paramIndex)
+Rect GetNodeParamRect(ObjectHandle *handle, int paramIndex)
 {
 	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
@@ -213,7 +213,7 @@ Rect GetNodeParamRect(ObjectHandle handle, int paramIndex)
 	return paramRect;
 }
 
-void DrawNode(ObjectHandle handle)
+void DrawNode(ObjectHandle *handle)
 {
 	Node *node = GetNode(handle);
 
@@ -233,8 +233,8 @@ void DrawNode(ObjectHandle handle)
 		ImDrawRect(inputRect);
 
 		// TODO (rhoe) make it more clean / safe to see if a node input is set
-		if(node->inputs[i].handleIsset) {
-			Rect outputRect = GetNodeOutputRect(node->inputs[i].handle);
+		if(node->inputs[i].handle.isset && NodeExists(&node->inputs[i].handle)) {
+			Rect outputRect = GetNodeOutputRect(&node->inputs[i].handle);
 			vec2 outputPos = GetRectCenter(outputRect);
 			vec2 inputPos = GetRectCenter(inputRect);
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
@@ -251,8 +251,8 @@ void DrawNode(ObjectHandle handle)
 			ImDrawRect(paramRect);
 			visibleParamsCount++;
 
-			if(node->params[i].handleIsset) {
-				Rect outputRect = GetNodeOutputRect(node->params[i].nodeHandle);
+			if(node->params[i].nodeHandle.isset && NodeExists(&node->params[i].nodeHandle)) {
+				Rect outputRect = GetNodeOutputRect(&node->params[i].nodeHandle);
 				vec2 outputPos = GetRectCenter(outputRect);
 				vec2 paramPos = GetRectCenter(paramRect);
 				ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
@@ -267,7 +267,7 @@ void UpdateHoverState()
 	_nodeEditorState->hoverState.hoveringElement = false;
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(handle);
+		Node *node = _nodeState->nodes.Get(&handle);
 		if(node) {
 
 			// CHECK NODE
@@ -282,7 +282,7 @@ void UpdateHoverState()
 
 				// CHECK INPUTS
 				for(int j = 0; j < node->inputs.Count(); j++) {
-					Rect inputRect = GetNodeInputRect(handle, j);
+					Rect inputRect = GetNodeInputRect(&handle, j);
 					if(PointInsideRect(mouse, inputRect)) {
 						_nodeEditorState->hoverState.nodeHandle = handle;
 						_nodeEditorState->hoverState.hoveringElement = true;
@@ -295,7 +295,7 @@ void UpdateHoverState()
 				// CHECK INPUTS PARAM
 				if(!_nodeEditorState->hoverState.hoveringElement) {
 					for(int j = 0; j < node->params.Count(); j++) {
-						Rect paramRect = GetNodeParamRect(handle, j);
+						Rect paramRect = GetNodeParamRect(&handle, j);
 						if(PointInsideRect(mouse, paramRect)) {
 							_nodeEditorState->hoverState.nodeHandle = handle;
 							_nodeEditorState->hoverState.hoveringElement = true;
@@ -308,7 +308,7 @@ void UpdateHoverState()
 
 				// CHECK OUTPUTS
 				if(!_nodeEditorState->hoverState.hoveringElement) {
-					Rect outputRect = GetNodeOutputRect(handle);
+					Rect outputRect = GetNodeOutputRect(&handle);
 					if(PointInsideRect(mouse, outputRect)) {
 						_nodeEditorState->hoverState.nodeHandle = handle;
 						_nodeEditorState->hoverState.hoveringElement = true;
@@ -325,13 +325,12 @@ void UpdateNodeDragging()
 	// START DRAGGING
 	if(_nodeEditorState->hoverState.hoveringElement) {
 		if(!mouseInViewer && mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !_nodeEditorState->isDragging) {
-			_nodeEditorState->draggedNodeHandle = _nodeEditorState->hoverState.nodeHandle;
+			_nodeEditorState->draggedNode = _nodeEditorState->hoverState.nodeHandle;
 			_nodeEditorState->isDragging = true;
-			_nodeEditorState->draggedHandleIsset = true;
 			_nodeEditorState->draggedType = _nodeEditorState->hoverState.elementType;
 			_nodeEditorState->draggedCtxHandle = _nodeEditorState->hoverState.ctxHandle;
 
-			Node *node = GetNode(_nodeEditorState->hoverState.nodeHandle);
+			Node *node = GetNode(&_nodeEditorState->hoverState.nodeHandle);
 			_nodeEditorState->dragOffset = node->rect.pos - mouse;
 		}
 	}
@@ -349,41 +348,47 @@ void UpdateNodeDragging()
 				}
 				case EDITOR_ELEMENT_INPUT: {
 					if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
-						ObjectHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
-						ObjectHandle inHandle = _nodeEditorState->draggedNodeHandle;
+						ObjectHandle *outHandle = &_nodeEditorState->hoverState.nodeHandle;
+						ObjectHandle *inHandle = &_nodeEditorState->draggedNode;
 						int ctxHandle = _nodeEditorState->draggedCtxHandle;
 						ConnectNodeInput(inHandle, outHandle, ctxHandle);
 					}
 					else {
-						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
-						int ctxHandle = _nodeEditorState->draggedCtxHandle;
-						node->changed = true;
-						node->inputs[ctxHandle].handleIsset = false;
+						Node *node = GetNode(&_nodeEditorState->draggedNode);
+						if(node) {
+							int ctxHandle = _nodeEditorState->draggedCtxHandle;
+							node->changed = true;
+							node->inputs[ctxHandle].handle.isset = false;
+						}
 
 					}
 					break;
 				}
 				case EDITOR_ELEMENT_PARAM: {
 					if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
-						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
-						ObjectHandle outHandle = _nodeEditorState->hoverState.nodeHandle;
-						ObjectHandle inHandle = _nodeEditorState->draggedNodeHandle;
-						int ctxHandle = _nodeEditorState->draggedCtxHandle;
-						node->changed = true;
-						ConnectNodeParameter(inHandle, outHandle, ctxHandle);
+						Node *node = GetNode(&_nodeEditorState->draggedNode);
+						if(node) {
+							ObjectHandle *outHandle = &_nodeEditorState->hoverState.nodeHandle;
+							ObjectHandle *inHandle = &_nodeEditorState->draggedNode;
+							int ctxHandle = _nodeEditorState->draggedCtxHandle;
+							node->changed = true;
+							ConnectNodeParameter(inHandle, outHandle, ctxHandle);
+						}
 					}
 					else {
-						Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
-						int ctxHandle = _nodeEditorState->draggedCtxHandle;
-						node->changed = true;
-						node->params[ctxHandle].handleIsset = false;
+						Node *node = GetNode(&_nodeEditorState->draggedNode);
+						if(node) {
+							int ctxHandle = _nodeEditorState->draggedCtxHandle;
+							node->changed = true;
+							node->params[ctxHandle].nodeHandle.isset = false;
+						}
 					}
 					break;
 				}
 				case EDITOR_ELEMENT_OUTPUT: {
 					if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_INPUT) {
-						ObjectHandle outHandle = _nodeEditorState->draggedNodeHandle;
-						ObjectHandle inHandle = _nodeEditorState->hoverState.nodeHandle;
+						ObjectHandle *outHandle = &_nodeEditorState->draggedNode;
+						ObjectHandle *inHandle = &_nodeEditorState->hoverState.nodeHandle;
 						int ctxHandle = _nodeEditorState->hoverState.ctxHandle;
 						ConnectNodeInput(inHandle, outHandle, ctxHandle);
 					}
@@ -395,12 +400,12 @@ void UpdateNodeDragging()
 			// HANDLE CONTINUE DRAGGING
 			switch(_nodeEditorState->draggedType) {
 				case EDITOR_ELEMENT_NODE: {
-					Node *node = GetNode(_nodeEditorState->draggedNodeHandle);
+					Node *node = GetNode(&_nodeEditorState->draggedNode);
 					node->rect.pos = mouse + _nodeEditorState->dragOffset;
 					break;
 				}
 				case EDITOR_ELEMENT_INPUT: {
-					Rect inputRect = GetNodeInputRect(_nodeEditorState->draggedNodeHandle,
+					Rect inputRect = GetNodeInputRect(&_nodeEditorState->draggedNode,
 													  _nodeEditorState->draggedCtxHandle);
 					vec2 inputPos = GetRectCenter(inputRect);
 					ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
@@ -408,7 +413,7 @@ void UpdateNodeDragging()
 					break;
 				}
 				case EDITOR_ELEMENT_PARAM: {
-					Rect paramRect = GetNodeParamRect(_nodeEditorState->draggedNodeHandle,
+					Rect paramRect = GetNodeParamRect(&_nodeEditorState->draggedNode,
 													  _nodeEditorState->draggedCtxHandle);
 					vec2 paramPos = GetRectCenter(paramRect);
 					ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
@@ -416,7 +421,7 @@ void UpdateNodeDragging()
 					break;
 				}
 				case EDITOR_ELEMENT_OUTPUT: {
-					Rect outputRect = GetNodeOutputRect(_nodeEditorState->draggedNodeHandle);
+					Rect outputRect = GetNodeOutputRect(&_nodeEditorState->draggedNode);
 					vec2 outputPos = GetRectCenter(outputRect);
 					ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 					ImDrawLine(mouse, outputPos);
@@ -427,16 +432,16 @@ void UpdateNodeDragging()
 	}
 }
 
-void ShowNode(ObjectHandle handle)
+void ShowNode(ObjectHandle *handle)
 {
 	Node *node = GetNode(handle);
 	switch(node->type) {
 		case DATA_TEXTURE: {
-			AddTextureToRenderQueue(node->GetData());
+			AddTextureToRenderQueue(&node->GetData());
 			break;
 		}
 		case DATA_RENDEROBJECT: {
-			AddToRenderQueue(node->GetData());
+			AddToRenderQueue(&node->GetData());
 			break;
 		}
 	}
@@ -451,26 +456,28 @@ void UpdateNodeEditor()
 	UpdateNodeDragging();
 
 	if(keys[GLFW_KEY_SPACE]) {
-		if(_nodeEditorState->draggedHandleIsset) {
-			_nodeEditorState->selectedNode = _nodeEditorState->draggedNodeHandle;
-			_nodeEditorState->selectedHandleIsset = true;
+		if(_nodeEditorState->draggedNode.isset && NodeExists(&_nodeEditorState->draggedNode)) {
+			_nodeEditorState->selectedNode = _nodeEditorState->draggedNode;
 		}
+	}
+	if(keys[GLFW_KEY_DELETE]) {
+		DeleteNode(&_nodeEditorState->draggedNode);
 	}
 
 	//////////////////
 	// DRAW NODES
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(handle);
+		Node *node = _nodeState->nodes.Get(&handle);
 		if(node) {
-			DrawNode(handle);
+			DrawNode(&handle);
 		}
 	}
 
 	//////////////////
 	// SELECT FOR VIEWER
-	if(_nodeEditorState->selectedHandleIsset) {
-		ShowNode(_nodeEditorState->selectedNode);
+	if(_nodeEditorState->selectedNode.isset && NodeExists(&_nodeEditorState->selectedNode)) {
+		ShowNode(&_nodeEditorState->selectedNode);
 	}
 
 	///////////////////

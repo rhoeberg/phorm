@@ -20,7 +20,7 @@ struct ViewerRenderState {
 
 void InitializeViewerRender();
 void UpdateViewerRender();
-void AddToRenderQueue(ObjectHandle objectHandle);
-void AddTextureToRenderQueue(ObjectHandle textureHandle);
+void AddToRenderQueue(ObjectHandle *objectHandle);
+void AddTextureToRenderQueue(ObjectHandle *textureHandle);
 
 global ViewerRenderState _viewerRenderState;

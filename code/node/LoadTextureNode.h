@@ -7,7 +7,7 @@ void LoadTextureOperation(Node *self)
 	int nrChannels;
 	unsigned char *data = stbi_load("assets/pica.png", &width, &height, &nrChannels, STBI_rgb_alpha);
 	if(data) {
-		Texture *output = GetTexture(self->GetDataLast());
+		Texture *output = GetTexture(&self->GetDataLast());
 		printf("width:%d\n", width);
 		printf("height:%d\n", height);
 		printf("nrChannels:%d\n", nrChannels);

@@ -4,7 +4,7 @@
 void CreateViewerTextureRenderObject()
 {
 	_viewerRenderState.baseTextureObject = AddNewRenderObject();
-	RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
+	RenderObject *renderObject = GetRenderObject(&_viewerRenderState.baseTextureObject);
 
 	// TODO (rhoe) currently we are wasting a gl id here
 	//             perhaps we should pass vao as parameter instead of
@@ -30,25 +30,25 @@ void InitializeViewerRender()
 }
 
 // Takes the handle of texture resource
-void AddTextureToRenderQueue(ObjectHandle handle)
+void AddTextureToRenderQueue(ObjectHandle *handle)
 {
 	Texture *texture = GetTexture(handle);
 	if(texture) {
-		RenderObject *renderObject = GetRenderObject(_viewerRenderState.baseTextureObject);
+		RenderObject *renderObject = GetRenderObject(&_viewerRenderState.baseTextureObject);
 		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		AddToRenderQueue(_viewerRenderState.baseTextureObject);
+		AddToRenderQueue(&_viewerRenderState.baseTextureObject);
 	}
 }
 
 // Takes the handle of RenderObject resource
-void AddToRenderQueue(ObjectHandle handle)
+void AddToRenderQueue(ObjectHandle *handle)
 {
 	RenderObject *object = GetRenderObject(handle);
 	if(object) {
-		_viewerRenderState.renderList.Insert(handle);
+		_viewerRenderState.renderList.Insert(*handle);
 	}
 }
 
@@ -123,7 +123,7 @@ void UpdateViewerRender()
 	///////////////////
 	// RENDER OBJECTS
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
-		RenderObject *renderObject = GetRenderObject(_viewerRenderState.renderList[i]);
+		RenderObject *renderObject = GetRenderObject(&_viewerRenderState.renderList[i]);
 
 		if(renderObject != NULL) {
 

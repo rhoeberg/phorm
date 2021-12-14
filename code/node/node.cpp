@@ -20,18 +20,28 @@ bool Node::Changed()
 {
 	bool inputChanged = false;
 	for(int i = 0; i < inputs.Count(); i++) {
-		if(inputs[i].handleIsset) {
-			Node *inputNode = GetNode(inputs[i].handle);
-			if(inputNode->Changed())
+		if(inputs[i].handle.isset) {
+			Node *inputNode = GetNode(&inputs[i].handle);
+			if(!inputNode) {
 				inputChanged = true;
+			}
+			else {
+				if(inputNode->Changed())
+					inputChanged = true;
+			}
 		}
 	}
 
 	for(int i = 0; i < params.Count(); i++) {
-		if(params[i].handleIsset) {
-			Node *paramNode = GetNode(params[i].nodeHandle);
-			if(paramNode->changed) {
+		if(params[i].nodeHandle.isset) {
+			Node *paramNode = GetNode(&params[i].nodeHandle);
+			if(!paramNode) {
 				inputChanged = true;
+			}
+			else {
+				if(paramNode->changed) {
+					inputChanged = true;
+				}
 			}
 		}
 	}

@@ -3,10 +3,10 @@
 void VideoOperation(Node *self)
 {
 	// SELF
-	Texture *output = GetTexture(self->GetDataLast());
+	Texture *output = GetTexture(&self->GetDataLast());
 	double time = self->params[0].Double();
 
-	VideoNodeState *state = _nodeState->videoNodes.Get(self->extraHandle);
+	VideoNodeState *state = _nodeState->videoNodes.Get(&self->extraHandle);
 	if(!state) {
 		return;
 	}

@@ -64,49 +64,27 @@
 struct NodeInput {
 	DataType type;
 	ObjectHandle handle;
-	bool handleIsset;
 
 	NodeInput(DataType _type) {
 		type = _type;
-		handleIsset = false;
+		handle.isset = false;
 	}
 
 	NodeInput() {}
 };
 
-/* enum NodeParameterType { */
-/* 	PARAM_INT, */
-/* 	PARAM_DOUBLE, */
-/* 	PARAM_VEC3, */
-/* 	PARAM_STRING, */
-/* }; */
-
-/* struct Node; */
-/* typedef void(*NodeOperation)(Node *self); */
-/* typedef void(*NodeDrawingFunction)(Node *self); */
 enum NodeOp;
 enum NodeDrawFunc;
 
-/* struct ParamList { */
-	/* NodeParameter params[MAX_PARAMETERS]; */
-/* }; */
-
 struct Node {
-	/* NodeOperation op; */
-	/* NodeDrawingFunction drawingFunction; */
 	NodeOp op;
 	NodeDrawFunc drawFunc;
 	DataType type; //defines the return of the node operation
 	Rect rect;
 	bool changed;
-	/* uint8_t changeVer; */
-	/* uint8_t lastChangeVer; */
 	char name[128];
-	/* VMArray<NodeInput> inputs; */
-	/* VMArray<NodeParameter> params; */
 	FixedArray<NodeInput> inputs;
 	FixedArray<NodeParameter> params;
-	/* int extraHandle; */
 	ObjectHandle extraHandle;
 	bool initialized;
 
@@ -130,4 +108,4 @@ private:
 	ObjectHandle dataHandle;
 };
 
-ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle(-1));
+ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle());

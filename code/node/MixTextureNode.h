@@ -12,7 +12,7 @@ void MixTextureOperation(Node *self)
 	// TODO (rhoe) make cleaner way to get parameters
 	/* double mix = self->params[0].d; */
 	double mix = self->params[0].Double();
-	Texture *output = GetTexture(self->GetDataLast());
+	Texture *output = GetTexture(&self->GetDataLast());
 
 	// OPERATION
 	float inputMul1 = 1.0f - mix;

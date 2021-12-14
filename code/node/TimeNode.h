@@ -2,7 +2,7 @@
 
 void TimeOperation(Node *self)
 {
-	double *output = GetDouble(self->GetDataLast());
+	double *output = GetDouble(&self->GetDataLast());
 	*output = glfwGetTime();
 	self->changed = true;
 }
@@ -20,7 +20,7 @@ void DrawTimeNode(Node *self)
 
 	vec2 timePos = namePos + vec2(70, 0);
 	char timeBuf[32];
-	sprintf(timeBuf, "%.2f", *GetDouble(self->GetData()));
+	sprintf(timeBuf, "%.2f", *GetDouble(&self->GetData()));
 	ImDrawText(timePos, timeBuf, vec3(0.3, 0, 0));
 }
 

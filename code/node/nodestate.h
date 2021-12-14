@@ -112,7 +112,7 @@ struct ObjectContainer {
 
 	// we simply set the array slot to free when removing
 	// insert takes care of checking for empty slots to use instead of inserting new
-	void Remove(ObjectHandle handle)
+	void Remove(ObjectHandle *handle)
 	{
 		// make sure handle exist to avoid removing
 		// wrong slotID or handle with different type
@@ -120,45 +120,45 @@ struct ObjectContainer {
 			return;
 		}
 
-		isFree[handle.id] = true;
+		isFree[handle->id] = true;
 	}
 
-	bool Exists(ObjectHandle handle)
+	bool Exists(ObjectHandle *handle)
 	{
 		// wrong type
-		if(handle.handleType != handleType ||
-		   handle.dataType != dataType) {
+		if(handle->handleType != handleType ||
+		   handle->dataType != dataType) {
 			return false;
 		}
 
 		// out of bounds
-		if(handle.id > (elements.Count() - 1) ||
-		   handle.id < 0) {
+		if(handle->id > (elements.Count() - 1) ||
+		   handle->id < 0) {
 			return false;
 		}
 
 		// slot is empty
-		if(isFree[handle.id]) {
+		if(isFree[handle->id]) {
 			return false;
 		}
 
 		// wrong slot id
-		if(slotID[handle.id] != handle.slotID) {
+		if(slotID[handle->id] != handle->slotID) {
 			return false;
 		}
 
 		return true;
 	}
 
-	T* Get(ObjectHandle handle)
+	T* Get(ObjectHandle *handle)
 	{
 		if(!Exists(handle)) {
+			handle->isset = false;
 			return NULL;
 		}
 
 		// TODO (rhoe) make sure we have some kind of type validation here
-		return &elements[handle.id];
-		// return dynamic_cast<T*>(&elements[handle.id]);
+		return &elements[handle->id];
 	}
 
 	// // Used for iterating with requesting a specific handle
@@ -180,6 +180,11 @@ struct ObjectContainer {
 		handle.slotID = slotID[index];
 		handle.handleType = handleType;
 		handle.dataType = dataType;
+
+		if(Exists(&handle)) {
+			handle.isset = true;
+		}
+
 		return handle;
 	}
 
@@ -215,27 +220,28 @@ struct NodeState {
 	ObjectContainer<double> doubles;
 	// HashMap<ObjectHandle> labels;
 	ObjectContainer<VideoNodeState> videoNodes;
-	ObjectContainer<LabelNodeState> labelNodes;
+	// ObjectContainer<LabelNodeState> labelNodes;
 	ObjectContainer<String> strings;
 };
 
 global NodeState *_nodeState;
 
-bool NodeExists(ObjectHandle handle);
-Node* GetNode(ObjectHandle handle);
-double* GetDouble(ObjectHandle handle);
-double* GetDoubleOutput(ObjectHandle handle);
-Texture* GetTexture(ObjectHandle handle);
+bool NodeExists(ObjectHandle *handle);
+Node* GetNode(ObjectHandle *handle);
+void DeleteNode(ObjectHandle *handle);
+double* GetDouble(ObjectHandle *handle);
+double* GetDoubleOutput(ObjectHandle *handle);
+Texture* GetTexture(ObjectHandle *handle);
 Texture* GetTextureInput(NodeInput input);
-RenderObject* GetRenderObject(ObjectHandle handle);
-Mesh* GetMesh(ObjectHandle handle);
+RenderObject* GetRenderObject(ObjectHandle *handle);
+Mesh* GetMesh(ObjectHandle *handle);
 Mesh* GetMeshInput(NodeInput input);
-bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex);
-bool ConnectNodeInput(ObjectHandle inHandle, ObjectHandle outHandle, int inputIndex);
+bool ConnectNodeParameter(ObjectHandle *handle, ObjectHandle *outHandle, int paramIndex);
+bool ConnectNodeInput(ObjectHandle *inHandle, ObjectHandle *outHandle, int inputIndex);
 RenderObject CreateRenderObject();
 ObjectHandle AddNewRenderObject();
 ObjectHandle AddString(char *value);
-String* GetString(ObjectHandle handle);
+String* GetString(ObjectHandle *handle);
 
 
 // TODO (rhoe) function that gets data resource in a generic way

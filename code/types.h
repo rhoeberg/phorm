@@ -24,21 +24,14 @@ enum HandleType {
 	HANDLE_DATA,
 };
 
-/* struct DataHandle { */
-/* 	unsigned int id; */
-/* 	DataType type; */
-/* 	/\* int slotID; *\/ */
-/* }; */
-
 struct ObjectHandle {
 	unsigned int id;
 	u32 slotID;
 	HandleType handleType;
 	DataType dataType; // only used for data handles
+	bool isset;
 
-	ObjectHandle(int _id) {
-		id = _id;
+	ObjectHandle() {
+		isset = false;
 	}
-
-	ObjectHandle() {}
 };

@@ -2,7 +2,7 @@
 
 void RenderObjectOperation(Node *self)
 {
-	RenderObject *output = GetRenderObject(self->GetDataLast());
+	RenderObject *output = GetRenderObject(&self->GetDataLast());
 
 	output->pos = self->params[0].v3;
 

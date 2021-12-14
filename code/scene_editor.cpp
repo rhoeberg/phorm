@@ -15,8 +15,8 @@ void UpdateSceneEditor()
 	ImGui::Text("SCENE");
 
 	for(int i = 0; i < state->scene.objects.Count(); i++) {
-		Node *node = GetNode(state->scene.objects[i]);
-		String *str = GetString(node->params[1].dataHandle);
+		Node *node = GetNode(&state->scene.objects[i]);
+		String *str = GetString(&node->params[1].dataHandle);
 
 		ImGui::Text("%d", i);
         ImGui::SameLine(300); ImGui::Text("%s", str->buffer);
@@ -27,16 +27,21 @@ void UpdateSceneEditor()
 	ImGui::Text("OBJECTS");
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(handle);
+		Node *node = _nodeState->nodes.Get(&handle);
 		if(node) {
 			if(node->type == DATA_RENDEROBJECT) {
-				String *str = GetString(node->params[1].dataHandle);
-				ImGui::Text("%s", str->buffer);
-				ImGui::SameLine();
-				static char buf[32];
-				sprintf(buf, "add##%d", i);
-				if(ImGui::Button(buf)) {
-					state->scene.objects.Insert(handle);
+				String *str = GetString(&node->params[1].dataHandle);
+				if(str) {
+					ImGui::Text("%s", str->buffer);
+					ImGui::SameLine();
+					static char buf[32];
+					sprintf(buf, "add##%d", i);
+					if(ImGui::Button(buf)) {
+						state->scene.objects.Insert(handle);
+					}
+				}
+				else {
+					ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
 				}
 			}
 		}
@@ -48,8 +53,8 @@ void UpdateSceneEditor()
 	ImGui::End();
 
 	for(int i = 0; i < state->scene.objects.Count(); i++) {
-		Node *node = GetNode(state->scene.objects[i]);
-		AddToRenderQueue(node->GetData());
+		Node *node = GetNode(&state->scene.objects[i]);
+		AddToRenderQueue(&node->GetData());
 	}
 }
 

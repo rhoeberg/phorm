@@ -3,7 +3,6 @@
 struct NodeParameter {
 	DataType type;
 	ObjectHandle nodeHandle;
-	bool handleIsset;
 	char name[128];
 	bool exposed;
 
