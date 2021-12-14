@@ -5,7 +5,7 @@ struct VideoNodeState {
 };
 
 struct LabelNodeState {
-	String key;
+	String key; // add this to strings so we can serialize easily
 };
 
 // NEXT deletion of nodes

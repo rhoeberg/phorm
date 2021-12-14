@@ -39,6 +39,22 @@ void SaveInt(int i, SaveFile *saveFile)
 	fwrite(&i, sizeof(int), 1, saveFile->file);
 }
 
+void SaveString(String str, SaveFile *saveFile)
+{
+	fwrite(&str.length, sizeof(int), 1, saveFile->file);
+	fwrite(str.buffer, str.length, 1, saveFile->file);
+}
+
+String LoadString(SaveFile *saveFile)
+{
+	int length;
+	fread(&length, sizeof(int), 1, saveFile->file);
+	char *buffer = (char*)malloc(length + 1);
+	fread(&buffer, length, 1, saveFile->file);
+	buffer[length] = '\0';
+	return String(buffer); 
+}
+
 void SaveNodes()
 {
 	//////////////
@@ -54,6 +70,12 @@ void SaveNodes()
 	SaveInt(_nodeState->renderObjects.Count(), &saveFile);
 	SaveInt(_nodeState->doubles.Count(), &saveFile);
 	SaveInt(_nodeState->videoNodes.Count(), &saveFile);
+	SaveInt(_nodeState->labelNodes.Count(), &saveFile);
+
+	//strings
+	for(int i = 0; i < _nodeState->strings.Count(); i++) {
+		SaveString(_nodeState->strings[i], &saveFile);
+	}
 
 
 	fclose(saveFile.file);
@@ -134,4 +156,23 @@ void LoadNodes()
 			_nodeState->videoNodes.Insert(VideoNodeState());
 		}
 	}
+
+	// load label nodes
+	{
+		_nodeState->labelNodes.Clear();
+		int count;
+		fread(&count, sizeof(int), 1, saveFile.file);
+		for(int i = 0; i < count; i++) {
+			_nodeState->labelNodes.Insert(LabelNodeState());
+		}
+	}
+
+	// load Strings
+	_nodeState->strings.Clear();
+	for(int i = 0; i < _nodeState->strings.Count(); i++) {
+		String str = LoadString(&saveFile);
+		_nodeState->strings.Insert(str);
+	}
+
+
 }
