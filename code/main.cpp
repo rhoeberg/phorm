@@ -54,6 +54,7 @@
 #include "node/node.cpp"
 #include "node/node_editor.cpp"
 #include "scene_editor.cpp"
+#include "global_editor.cpp"
 #include "opengl_wrapper.cpp"
 #include "viewer_render.cpp"
 #include "node/texture.cpp"
@@ -140,6 +141,12 @@ int main(int argc, char *argv[])
 		// VIEWER RENDERING
 		///////////////
 		UpdateViewerRender();
+		UpdateViewerRenderGUI();
+
+		///////////////
+		// GLOBAL EDITOR
+		///////////////
+		UpdateGlobalEditor();
 
 		///////////////
 		// DEBUG

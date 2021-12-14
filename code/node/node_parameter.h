@@ -17,7 +17,7 @@ struct NodeParameter {
 	};
 
 	NodeParameter() {};
-	NodeParameter(const char *_name, int _i);
+	NodeParameter(const char *_name, i32 _i);
 	NodeParameter(const char *_name, double _d);
 	NodeParameter(const char *_name, vec3 _v3);
 	NodeParameter(const char *_name, char *str);

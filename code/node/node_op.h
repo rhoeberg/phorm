@@ -1,5 +1,7 @@
 #pragma once
 
+
+// TODO (rhoe) how do we add new operations without breaking save files?
 enum NodeOp {
 	OP_DOUBLE_TIME,
 	OP_TEXTURE_LOAD,
@@ -7,6 +9,7 @@ enum NodeOp {
 	OP_TEXTURE_MIX,
 	OP_TEXTURE_VIDEO,
 	OP_MESH_CUBE,
+	OP_MESH_GRID,
 	OP_RENDEROBJECT,
 	OP_LABEL,
 };
@@ -24,6 +27,7 @@ void CallNodeDrawFunction(Node *self);
 #include "LoadTextureNode.h"
 #include "MixTextureNode.h"
 #include "CubeNode.h"
+#include "GridNode.h"
 #include "VideoNode.h"
 #include "renderobject_node.h"
 #include "TimeNode.h"
@@ -59,6 +63,10 @@ void CallNodeOp(Node *self)
 		// MESH OPS
 		case OP_MESH_CUBE: {
 			CubeOperation(self);
+			break;
+		}
+		case OP_MESH_GRID: {
+			GridOperation(self);
 			break;
 		}
 

@@ -42,6 +42,7 @@ global double scrollOffset;
 #include "node/nodestate.h"
 #include "node/node_op.h"
 #include "node/node_editor.h"
+#include "global_editor.h"
 #include "scene.h"
 #include "scene_editor.h"
 #include "viewer_render.h"

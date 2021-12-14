@@ -52,13 +52,6 @@ void InitializeNodeEditor()
 
 void NodeGUI()
 {
-	ImGui::Begin("viewer");
-	ImGui::Checkbox("wireframe", &_viewerRenderState.wireframe);
-	if(ImGui::Button("toggle viewer window")) {
-		ToggleViewer();
-	}
-	ImGui::End();
-
 	ImGui::Begin("nodes");
 	if(ImGui::Button("add blur")) {
 		AddBlurNode();
@@ -72,6 +65,9 @@ void NodeGUI()
 	if(ImGui::Button("add cube")) {
 		AddCubeNode();
 	}
+	if(ImGui::Button("add grid")) {
+		AddGridNode();
+	}
 	if(ImGui::Button("add video")) {
 		AddVideoNode();
 	}
@@ -84,70 +80,6 @@ void NodeGUI()
 	// if(ImGui::Button("add label")) {
 	// 	AddLabelNode();
 	// }
-	ImGui::End();
-
-	ImGui::Begin("Inspector");
-	if(_nodeEditorState->draggedNode.isset) {
-		Node *node = GetNode(&_nodeEditorState->draggedNode);
-		if(node) {
-
-			ImGui::Text("%s", node->name);
-
-			if(ImGui::Button("OP")) {
-				node->CallOp();
-			}
-
-			for(int i = 0; i < node->params.Count(); i++) {
-
-				NodeParameter *param = &node->params[i];
-
-				// EXPOSE
-				ImGui::Checkbox("##exposed", &param->exposed);
-				ImGui::SameLine();
-
-				// TODO (rhoe) be carefull about imgui widget names
-				//             they are used as id's and have to be unique
-				//             maybe we need to use the imgui hidden name id feature
-				//             where we add the id of the object somehow
-				char buffer[128];
-				sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNode.id);
-
-				switch(node->params[i].type) {
-					case DATA_INT: {
-						if(ImGui::InputInt(buffer, &param->i)) {
-							node->changed = true;
-						}
-						break;
-					}
-					case DATA_DOUBLE: {
-						if(ImGui::InputDouble(buffer, &node->params[i].d)) {
-							node->changed = true;
-						}
-						// if(ImGui::SliderScalar(buffer, ImGuiDataType_Double, &param->d, &param->d_min, &param->d_max)) {
-						// node->changed = true;
-						// }
-						break;
-					}
-					case DATA_VEC3: {
-						if(ImGui::InputFloat3(buffer, glm::value_ptr(param->v3))) {
-							node->changed = true;
-						}
-						break;
-					}
-					case DATA_STRING: {
-						// static char buf[128];
-						// ImGui::InputText(buffer, buf, ARRAY_SIZE(buf));
-						String *str = GetString(&param->dataHandle);
-						if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
-							str->ReCalc();
-							node->changed = true;
-						}
-						break;
-					}
-				}
-			}
-		}
-	}
 	ImGui::End();
 }
 
@@ -391,6 +323,12 @@ void UpdateNodeDragging()
 						ObjectHandle *inHandle = &_nodeEditorState->hoverState.nodeHandle;
 						int ctxHandle = _nodeEditorState->hoverState.ctxHandle;
 						ConnectNodeInput(inHandle, outHandle, ctxHandle);
+					}
+					else if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_PARAM) {
+						ObjectHandle *outHandle = &_nodeEditorState->draggedNode;
+						ObjectHandle *inHandle = &_nodeEditorState->hoverState.nodeHandle;
+						int ctxHandle = _nodeEditorState->draggedCtxHandle;
+						ConnectNodeParameter(inHandle, outHandle, ctxHandle);
 					}
 					break;
 				}
