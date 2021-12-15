@@ -80,6 +80,9 @@ void NodeGUI()
 	if(ImGui::Button("add time")) {
 		AddTimeNode();
 	}
+	if(ImGui::Button("add sin")) {
+		AddSinNode();
+	}
 	// if(ImGui::Button("add label")) {
 	// 	AddLabelNode();
 	// }

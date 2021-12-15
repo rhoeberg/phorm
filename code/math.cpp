@@ -1,3 +1,10 @@
+#include <math.h>
+
+double Sin(double d)
+{
+	return sin(d);
+}
+
 bool PointInsideRect(vec2 point, Rect rect)
 {
 	if(point.x > rect.pos.x && point.x < rect.pos.x + rect.width &&

@@ -6,6 +6,7 @@ struct Rect {
 	float height;
 };
 
+double Sin(double d);
 bool PointInsideRect(vec2 point, Rect rect);
 vec2 GetRectCenter(Rect rect);
 float Noise2D(float x, float y, i32 octaves, double persistance, double frequency);

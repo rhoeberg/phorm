@@ -4,6 +4,7 @@
 // TODO (rhoe) how do we add new operations without breaking save files?
 enum NodeOp {
 	OP_DOUBLE_TIME,
+	OP_DOUBLE_SIN,
 	OP_TEXTURE_LOAD,
 	OP_TEXTURE_BLUR,
 	OP_TEXTURE_MIX,
@@ -33,6 +34,7 @@ void CallNodeDrawFunction(Node *self);
 #include "VideoNode.h"
 #include "renderobject_node.h"
 #include "TimeNode.h"
+#include "SinNode.h"
 /* #include "LabelNode.h" */
 
 void CallNodeOp(Node *self)
@@ -41,6 +43,10 @@ void CallNodeOp(Node *self)
 		// DOUBLE OP
 		case OP_DOUBLE_TIME: {
 			TimeOperation(self);
+			break;
+		}		
+		case OP_DOUBLE_SIN: {
+			SinOperation(self);
 			break;
 		}		
 
