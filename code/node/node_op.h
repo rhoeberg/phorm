@@ -154,11 +154,6 @@ VMArray<String> NamesBeginningWith(String typed)
 	return results;
 }
 
-#define PARAM_WIDTH 40
-#define PARAM_HEIGHT 20
-#define NODE_HEIGHT 30
-#define NODE_BASE_WIDTH 100
-
 void BaseNodeDrawFunction(Node *node)
 {
 	// Rect rect = GetNodeRect(handle);
@@ -170,6 +165,6 @@ void BaseNodeDrawFunction(Node *node)
 	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 	ImDrawRect(node->rect);
 
-	vec2 namePos = node->rect.pos + vec2(10.0f, node->rect.height - 10.0f);
+	vec2 namePos = node->rect.pos + vec2(8.0f, node->rect.height - 8.0f);
 	ImDrawText(namePos, node->name);
 }

@@ -20,19 +20,24 @@
 
 void InitializeNodeEditor()
 {
+
 	_nodeEditorState = (NodeEditorState*)malloc(sizeof(NodeEditorState));
-	_nodeEditorState->draggedNode = {};
-	_nodeEditorState->isDragging = false;
-	_nodeEditorState->hoverState.hoveringElement = false;
+
+	NodeEditorState *editor = _nodeEditorState;
+	editor->draggedNode = {};
+	editor->isDragging = false;
+	editor->hoverState.hoveringElement = false;
 
 	// _nodeEditorState->viewerWidth = VIEWER_SIZE;
 	// _nodeEditorState->viewerHeight = VIEWER_SIZE;
 
-	_nodeEditorState->selectedNode = {};
+	editor->selectedNode = {};
 
-	_nodeEditorState->promptOpen = false;
-	_nodeEditorState->promptSetFocus = false;
-	new (&_nodeEditorState->promptCandidates) VMArray<String>();
+	editor->promptOpen = false;
+	editor->promptSetFocus = false;
+	new (&editor->promptCandidates) VMArray<String>();
+
+	int promptCandidateFocus;
 
 	// int winWidth, winHeight;
 	// GetWindowSize(&winWidth, &winHeight);
@@ -41,6 +46,8 @@ void InitializeNodeEditor()
 
 void NodeGUI()
 {
+	NodeEditorState *editor = _nodeEditorState;
+
 	ImGui::Begin("nodes");
 	for(i32 i = 0; i < nodeNames.Count(); i++) {
 		if(ImGui::Button(nodeNames[i].buffer)) {
@@ -51,46 +58,64 @@ void NodeGUI()
 	ImGui::End();
 
 	if(singleKeyPress(GLFW_KEY_N)) {
-		if(!_nodeEditorState->promptOpen) {
-			_nodeEditorState->promptOpen = true;
-			_nodeEditorState->promptSetFocus = true;
-			sprintf(_nodeEditorState->promptBuffer, "");
+		if(!editor->promptOpen) {
+			editor->promptOpen = true;
+			editor->promptSetFocus = true;
+			sprintf(editor->promptBuffer, "");
 			ImGui::SetNextWindowPos(ImVec2(mouse.x, mouse.y));
 			SetPromptActive(true);
-			_nodeEditorState->promptCandidates.Clear();
+			editor->promptCandidates.Clear();
+			editor->promptCandidateSelected = 0;
 		}
 	}
 	if(singleKeyPress(GLFW_KEY_ESCAPE)) {
-		_nodeEditorState->promptOpen = false;
+		editor->promptOpen = false;
 		SetPromptActive(false);
 	}
-	if(_nodeEditorState->promptOpen) {
+	if(editor->promptOpen) {
+		if(singleKeyPress(GLFW_KEY_DOWN)) {
+			editor->promptCandidateSelected = (++editor->promptCandidateSelected % editor->promptCandidates.Count());
+		}
+		else if(singleKeyPress(GLFW_KEY_UP)) {
+			editor->promptCandidateSelected = (--editor->promptCandidateSelected % editor->promptCandidates.Count());
+			if(editor->promptCandidateSelected < 0)
+				editor->promptCandidateSelected = editor->promptCandidates.Count() + editor->promptCandidateSelected;
+		}
+
 		i32 windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
 		bool show = true;
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1, 1, 1, 1));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1));
 		ImGui::Begin("add prompt", &show, windowFlags);
-		if(_nodeEditorState->promptSetFocus) {
+		if(editor->promptSetFocus) {
 			ImGui::SetKeyboardFocusHere();
-			_nodeEditorState->promptSetFocus = false;
+			editor->promptSetFocus = false;
 		}
-		if(ImGui::InputText("##newname", _nodeEditorState->promptBuffer, ARRAY_SIZE(_nodeEditorState->promptBuffer))) {
-			_nodeEditorState->promptCandidates = NamesBeginningWith(_nodeEditorState->promptBuffer);
+		if(ImGui::InputText("##newname", editor->promptBuffer, ARRAY_SIZE(editor->promptBuffer))) {
+			editor->promptCandidates = NamesBeginningWith(editor->promptBuffer);
+			editor->promptCandidateSelected = 0;
 		}
-		for(i32 i = 0; i < _nodeEditorState->promptCandidates.Count(); i++) {
+		for(i32 i = 0; i < editor->promptCandidates.Count(); i++) {
 			bool clickedOption = false;
-			if(ImGui::Button(_nodeEditorState->promptCandidates[i].buffer)) {
+
+			if(editor->promptCandidateSelected == i) {
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7, 0.7, 0.7, 1));
+				if(singleKeyPress(GLFW_KEY_ENTER)) {
+					clickedOption = true;
+				}
+			}
+			if(ImGui::Button(editor->promptCandidates[i].buffer)) {
 				clickedOption = true;
 			}
-			if(_nodeEditorState->promptCandidates.Count() == 1 && singleKeyPress(GLFW_KEY_ENTER)) {
-				clickedOption = true;
+			if(editor->promptCandidateSelected == i) {
+				ImGui::PopStyleColor();
 			}
 
 			if(clickedOption) {
 				SetNextConstructPos(mouse);
-				NodeConstructor *nodeConstructor = nodeConstructors.Get(_nodeEditorState->promptCandidates[i]);
-				ConstructNode(_nodeEditorState->promptCandidates[i].buffer, nodeConstructor);
-				_nodeEditorState->promptOpen = false;
+				NodeConstructor *nodeConstructor = nodeConstructors.Get(editor->promptCandidates[i]);
+				ConstructNode(editor->promptCandidates[i].buffer, nodeConstructor);
+				editor->promptOpen = false;
 				SetPromptActive(false);
 			}
 		}
@@ -107,8 +132,8 @@ Rect GetNodeOutputRect(ObjectHandle *handle)
 
 	// DRAW OUTPUT
 	Rect result = {};
-	float outputOffsetX = (nodeRect.width / 2.0f) - PARAM_WIDTH / 2.0f;
-	result.pos = nodeRect.pos + vec2(outputOffsetX, nodeRect.height);
+	// float outputOffsetX = (nodeRect.width / 2.0f) - PARAM_WIDTH / 2.0f;
+	result.pos = nodeRect.pos + vec2(0.0f, nodeRect.height);
 	result.width = PARAM_WIDTH;
 	result.height = PARAM_HEIGHT;
 

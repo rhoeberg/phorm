@@ -39,6 +39,7 @@ GLuint textShader;
 
 #include "vm_array.h"
 
+#define FONT_SIZE 18.0
 #define MAX_TEXT_SIZE 512
 #define IMDRAW_VBO_BUFFER_SIZE 1024
 
@@ -114,7 +115,7 @@ void ImDrawInitialize()
 		printf("font file not found\n");
 	}
 	fread(ttf_buffer, 1, 1<<20, file);
-	stbtt_BakeFontBitmap(ttf_buffer,0, 20.0, temp_bitmap,512,512, 32,96, cdata); // no guarantee this fits!
+	stbtt_BakeFontBitmap(ttf_buffer,0, FONT_SIZE, temp_bitmap,512,512, 32,96, cdata); // no guarantee this fits!
 	// can free ttf_buffer at this point
 
 	glGenTextures(1, &ftex);

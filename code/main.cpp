@@ -67,13 +67,6 @@
 
 int main(int argc, char *argv[])
 {
-
-	// VMArray<String> candidates = NamesBeginningWith("ME");
-	// for(int i = 0; i < candidates.Count(); i++) {
-	// 	printf("%s\n", candidates[i].buffer);
-	// }
-	// ASSERT(false);
-
 	GLFWwindow *win = initGlfw();
 
 	// initialize graphics
@@ -136,18 +129,6 @@ int main(int argc, char *argv[])
 		UpdateRender();
 
 		///////////////
-		// NODE EDITOR
-		///////////////
-		// static bool nodeEditorOn = true;
-		// if(singleKeyPress(GLFW_KEY_V))
-		// 	nodeEditorOn = !nodeEditorOn;
-		// if(nodeEditorOn)
-		// 	UpdateNodeEditor();
-		// else
-		// 	UpdateSceneEditor();
-
-
-		///////////////
 		// VIEWER RENDERING
 		///////////////
 		UpdateViewerRender();
@@ -188,8 +169,6 @@ int main(int argc, char *argv[])
 
 void cleanup()
 {
-	printf("CLEANING UP\n");
-
     audioClose();
     Pa_Terminate();
     imDrawClean();
