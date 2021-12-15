@@ -67,6 +67,13 @@
 
 int main(int argc, char *argv[])
 {
+
+	// VMArray<String> candidates = NamesBeginningWith("ME");
+	// for(int i = 0; i < candidates.Count(); i++) {
+	// 	printf("%s\n", candidates[i].buffer);
+	// }
+	// ASSERT(false);
+
 	GLFWwindow *win = initGlfw();
 
 	// initialize graphics
@@ -86,6 +93,7 @@ int main(int argc, char *argv[])
 
 	InitializeOpenglWrapper();
 	InitializeNodes();
+	AddNodeConstructors();
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();

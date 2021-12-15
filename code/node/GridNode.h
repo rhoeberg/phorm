@@ -51,15 +51,15 @@ void GridOperation(Node *self)
 	}
 }
 
-ObjectHandle AddGridNode()
-{
-	FixedArray<NodeParameter> params = {
-		NodeParameter("width", 100),
-		NodeParameter("height", 100),
-	};
+/* ObjectHandle AddGridNode() */
+/* { */
+/* 	FixedArray<NodeParameter> params = { */
+/* 		NodeParameter("width", 100), */
+/* 		NodeParameter("height", 100), */
+/* 	}; */
 
-	FixedArray<NodeInput> inputs = {
-	};
+/* 	FixedArray<NodeInput> inputs = { */
+/* 	}; */
 
-	return AddNode("GRID", DATA_MESH, OP_MESH_GRID, params, inputs);
-}
+/* 	return AddNode("GRID", DATA_MESH, OP_MESH_GRID, params, inputs); */
+/* } */

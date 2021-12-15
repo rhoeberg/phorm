@@ -16,14 +16,14 @@ void LoadTextureOperation(Node *self)
 	}
 }
 
-ObjectHandle AddLoadTextureNode()
-{
-	FixedArray<NodeParameter> params = {
-		NodeParameter("path", ""),
-	};
+/* ObjectHandle AddLoadTextureNode() */
+/* { */
+/* 	FixedArray<NodeParameter> params = { */
+/* 		NodeParameter("path", ""), */
+/* 	}; */
 
-	FixedArray<NodeInput> inputs = {
-	};
+/* 	FixedArray<NodeInput> inputs = { */
+/* 	}; */
 
-	return AddNode("LOAD_TEXTURE", DATA_TEXTURE, OP_TEXTURE_LOAD, params, inputs);
-}
+/* 	return AddNode("LOAD_TEXTURE", DATA_TEXTURE, OP_TEXTURE_LOAD, params, inputs); */
+/* } */

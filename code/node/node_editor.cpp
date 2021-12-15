@@ -53,36 +53,44 @@ void InitializeNodeEditor()
 void NodeGUI()
 {
 	ImGui::Begin("nodes");
-	if(ImGui::Button("add blur")) {
-		AddBlurNode();
+
+	for(i32 i = 0; i < nodeNames.Count(); i++) {
+		if(ImGui::Button(nodeNames[i].buffer)) {
+			NodeConstructor *nodeConstructor = nodeConstructors.Get(nodeNames[i]);
+			ConstructNode(nodeNames[i], nodeConstructor);
+		}
 	}
-	if(ImGui::Button("add mix")) {
-		AddMixTextureNode();
-	}
-	if(ImGui::Button("add load")) {
-		AddLoadTextureNode();
-	}
-	if(ImGui::Button("add cube")) {
-		AddCubeNode();
-	}
-	if(ImGui::Button("add grid")) {
-		AddGridNode();
-	}
-	if(ImGui::Button("add mesh noise")) {
-		AddMeshNoise();
-	}
-	if(ImGui::Button("add video")) {
-		AddVideoNode();
-	}
-	if(ImGui::Button("add renderobject")) {
-		AddRenderObject();
-	}
-	if(ImGui::Button("add time")) {
-		AddTimeNode();
-	}
-	if(ImGui::Button("add sin")) {
-		AddSinNode();
-	}
+
+	// if(ImGui::Button("add blur")) {
+	// 	AddBlurNode();
+	// }
+	// if(ImGui::Button("add mix")) {
+	// 	AddMixTextureNode();
+	// }
+	// if(ImGui::Button("add load")) {
+	// 	AddLoadTextureNode();
+	// }
+	// if(ImGui::Button("add cube")) {
+	// 	AddCubeNode();
+	// }
+	// if(ImGui::Button("add grid")) {
+	// 	AddGridNode();
+	// }
+	// if(ImGui::Button("add mesh noise")) {
+	// 	AddMeshNoise();
+	// }
+	// if(ImGui::Button("add video")) {
+	// 	AddVideoNode();
+	// }
+	// if(ImGui::Button("add renderobject")) {
+	// 	AddRenderObject();
+	// }
+	// if(ImGui::Button("add time")) {
+	// 	AddTimeNode();
+	// }
+	// if(ImGui::Button("add sin")) {
+	// 	AddSinNode();
+	// }
 	// if(ImGui::Button("add label")) {
 	// 	AddLabelNode();
 	// }
@@ -154,8 +162,8 @@ Rect GetNodeParamRect(ObjectHandle *handle, int paramIndex)
 void DrawNode(ObjectHandle *handle)
 {
 	Node *node = GetNode(handle);
-
-	CallNodeDrawFunction(node);
+	node->CallDraw();
+	// CallNodeDrawFunction(node);
 
 	if(node->type != DATA_NONE) {
 		Rect outputRect = GetNodeOutputRect(handle);

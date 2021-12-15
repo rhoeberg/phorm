@@ -45,16 +45,7 @@ void VideoOperation(Node *self)
 	}
 }
 
-ObjectHandle AddVideoNode()
+ObjectHandle SetupVideoNode()
 {
-	FixedArray<NodeParameter> params = {
-		NodeParameter("time", 0.0),
-	};
-
-	FixedArray<NodeInput> inputs = {
-	};
-
-	ObjectHandle extraHandle = _nodeState->videoNodes.Insert(VideoNodeState());
-
-	return AddNode("VIDEO", DATA_TEXTURE, OP_TEXTURE_VIDEO, params, inputs, extraHandle);
+	return _nodeState->videoNodes.Insert(VideoNodeState());
 }

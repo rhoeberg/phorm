@@ -143,6 +143,21 @@ void LoadNodes()
 	// _nodeState->nodes = LoadNextVMArray<Node>(&saveFile);
 	LoadObjectContainer<Node>(&_nodeState->nodes, &saveFile);
 
+	// hook up node function pointers
+	// this is needed because we cannot serialize function pointers since they might change
+	for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
+		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
+		Node *node = _nodeState->nodes.Get(&handle);
+		if(node) {
+			String name = String(node->name);
+			NodeConstructor *nodeConstructor = nodeConstructors.Get(name);
+			if(nodeConstructor) {
+				node->op = nodeConstructor->op;
+				node->drawFunc = nodeConstructor->drawFunc;
+			}
+		}
+	}
+
 	// mark all nodes as dirty after load so we can regenerate all resources
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);

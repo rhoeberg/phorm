@@ -13,13 +13,13 @@ void SinOperation(Node *self)
 	*output = Sin(*input);
 }
 
-ObjectHandle AddSinNode()
-{
-	FixedArray<NodeParameter> params = {
-	};
-	FixedArray<NodeInput> inputs = {
-		NodeInput(DATA_DOUBLE),
-	};
+/* ObjectHandle AddSinNode() */
+/* { */
+/* 	FixedArray<NodeParameter> params = { */
+/* 	}; */
+/* 	FixedArray<NodeInput> inputs = { */
+/* 		NodeInput(DATA_DOUBLE), */
+/* 	}; */
 
-	return AddNode("SIN", DATA_DOUBLE, OP_DOUBLE_SIN, params, inputs);
-}
+/* 	return AddNode("SIN", DATA_DOUBLE, OP_DOUBLE_SIN, params, inputs); */
+/* } */

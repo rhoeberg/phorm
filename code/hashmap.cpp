@@ -22,7 +22,7 @@ HashMap<T>::HashMap()
 template <typename T>
 HashMap<T>::HashMap(int _max)
 {
-	elements = (HashNode<T>*)calloc(1, sizeof(T) * _max);
+	elements = (HashNode<T>*)calloc(1, sizeof(HashNode<T>) * _max);
 	max = _max;
 	salt = 0;
 

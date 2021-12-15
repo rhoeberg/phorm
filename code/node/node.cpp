@@ -5,7 +5,8 @@ ObjectHandle Node::GetData()
 	if(Changed()) {
 		changed = false;
 		// op(this);
-		CallNodeOp(this);
+		CallOp();
+		// CallNodeOp(this);
 	}
 
 	return dataHandle;
@@ -13,7 +14,12 @@ ObjectHandle Node::GetData()
 
 void Node::CallOp()
 {
-	CallNodeOp(this);
+	op(this);
+}
+
+void Node::CallDraw()
+{
+	drawFunc(this);
 }
 
 bool Node::Changed()
@@ -53,7 +59,8 @@ bool Node::Changed()
 	return false;
 }
 
-ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
+// ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
+ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
 {
 	// TODO (rhoe) since similar node type dont change name we could
 	//             store the names in a string array and just refer to the handle
@@ -69,8 +76,8 @@ ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<Node
 	node.params = params;
 	node.inputs = inputs;
 	node.op = op;
+	node.drawFunc = drawFunc;
 	node.extraHandle = extraHandle;
-	// node.drawFunc = drawFunc;
 	ObjectHandle dataHandle = {};
 	// dataHandle.type = type;
 

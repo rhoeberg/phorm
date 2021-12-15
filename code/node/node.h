@@ -73,8 +73,11 @@ struct NodeInput {
 	NodeInput() {}
 };
 
-enum NodeOp;
-enum NodeDrawFunc;
+/* enum NodeOp; */
+/* enum NodeDrawFunc; */
+struct Node;
+typedef void (*NodeOp)(Node *self);
+typedef void (*NodeDrawFunc)(Node *self);
 
 struct Node {
 	NodeOp op;
@@ -101,6 +104,7 @@ struct Node {
 	ObjectHandle GetDataLast() { return dataHandle; }
 	ObjectHandle GetData();
 	void CallOp();
+	void CallDraw();
 
 	bool Changed();
 
@@ -108,4 +112,5 @@ private:
 	ObjectHandle dataHandle;
 };
 
-ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle());
+/* ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle()); */
+ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle());

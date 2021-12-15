@@ -49,14 +49,14 @@ void CubeOperation(Node *self)
 	/* output->vertexAmount = 36; */
 }
 
-ObjectHandle AddCubeNode()
-{
-	FixedArray<NodeParameter> params = {
-	};
+/* ObjectHandle AddCubeNode() */
+/* { */
+/* 	FixedArray<NodeParameter> params = { */
+/* 	}; */
 
-	FixedArray<NodeInput> inputs = {
-	};
+/* 	FixedArray<NodeInput> inputs = { */
+/* 	}; */
 
-	return AddNode("CUBE", DATA_MESH, OP_MESH_CUBE, params, inputs);
-}
+/* 	return AddNode("CUBE", DATA_MESH, OP_MESH_CUBE, params, inputs); */
+/* } */
 
