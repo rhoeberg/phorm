@@ -1,5 +1,20 @@
 #include "global_editor.h"
 
+void InitializeGlobalEditor()
+{
+	_globalEditorState = (GlobalEditorState*)malloc(sizeof(GlobalEditorState));
+}
+
+bool IsPromptActive()
+{
+	return _globalEditorState->promptActive;
+}
+
+void SetPromptActive(bool value)
+{
+	_globalEditorState->promptActive = value;
+}
+
 void UpdateGlobalEditor()
 {
 	ImGui::Begin("Inspector");
@@ -65,4 +80,9 @@ void UpdateGlobalEditor()
 		}
 	}
 	ImGui::End();
+}
+
+void CleanupGlobalEditor()
+{
+	free(_globalEditorState);
 }

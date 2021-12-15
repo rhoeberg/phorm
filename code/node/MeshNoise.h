@@ -32,19 +32,3 @@ void MeshNoiseOperation(Node *self)
 		output->vertices[i+2] = z;
 	}
 }
-
-/* ObjectHandle AddMeshNoise() */
-/* { */
-/* 	FixedArray<NodeParameter> params = { */
-/* 		NodeParameter("amount", 1.0), */
-/* 		NodeParameter("octaves", 1), */
-/* 		NodeParameter("persistance", 1.0), */
-/* 		NodeParameter("freq", 1.0), */
-/* 	}; */
-
-/* 	FixedArray<NodeInput> inputs = { */
-/* 		NodeInput(DATA_MESH), */
-/* 	}; */
-
-/* 	return AddNode("MESH NOISE", DATA_MESH, OP_MESH_NOISE, params, inputs); */
-/* } */

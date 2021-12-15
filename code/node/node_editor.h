@@ -23,15 +23,13 @@ struct NodeEditorState {
 	int draggedCtxHandle;
 	vec2 dragOffset;
 	NodeEditorElementType draggedType;
-
-	// VIEWER STATE
-	GLuint textureID;
-	GLuint viewerQuad;
-	GLuint fboTexture;
-	GLuint fbo;
-	GLuint viewerShader;
-	int viewerWidth, viewerHeight;
 	ObjectHandle selectedNode;
+
+	// ADD NODE PROMPT
+	bool promptOpen;
+	bool promptSetFocus;
+	char promptBuffer[128];
+	VMArray<String> promptCandidates;
 };
 
 /* void NodeEditorSetWindowSize(int width, int height); */

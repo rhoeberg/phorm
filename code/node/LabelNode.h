@@ -42,18 +42,7 @@ void DrawLabelNode(Node *self)
 	ImDrawText(labelPos, str->buffer, vec3(0.3, 0, 0));
 }
 
-NodeHandle AddLabelNode()
+ObjectHandle SetupLabelNode()
 {
-	FixedArray<NodeParameter> params = {
-		NodeParameter("label name", "hej"),
-	};
-
-	FixedArray<NodeInput> inputs = {
-		// TOOD (rhoe) add any type to allow to take any input
-		NodeInput(DATA_RENDEROBJECT),
-	};
-
-	int extraHandle = _nodeState->labelNodes.Insert(LabelNodeState());
-
-	return AddNode("LABEL", DATA_NONE, OP_LABEL, params, inputs, extraHandle);
+	return _nodeState->labelNodes.Insert(LabelNodeState());
 }

@@ -15,15 +15,3 @@ void LoadTextureOperation(Node *self)
 		free(data);
 	}
 }
-
-/* ObjectHandle AddLoadTextureNode() */
-/* { */
-/* 	FixedArray<NodeParameter> params = { */
-/* 		NodeParameter("path", ""), */
-/* 	}; */
-
-/* 	FixedArray<NodeInput> inputs = { */
-/* 	}; */
-
-/* 	return AddNode("LOAD_TEXTURE", DATA_TEXTURE, OP_TEXTURE_LOAD, params, inputs); */
-/* } */

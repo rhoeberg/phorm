@@ -25,25 +25,14 @@ void InitializeNodeEditor()
 	_nodeEditorState->isDragging = false;
 	_nodeEditorState->hoverState.hoveringElement = false;
 
-	_nodeEditorState->viewerWidth = VIEWER_SIZE;
-	_nodeEditorState->viewerHeight = VIEWER_SIZE;
+	// _nodeEditorState->viewerWidth = VIEWER_SIZE;
+	// _nodeEditorState->viewerHeight = VIEWER_SIZE;
 
 	_nodeEditorState->selectedNode = {};
 
-	// create fbo + fbo texture
-	// glGenTextures(1, &_nodeEditorState->fboTexture);
-	// glBindTexture(GL_TEXTURE_2D, _nodeEditorState->fboTexture);
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, VIEWER_SIZE, VIEWER_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	// glBindTexture(GL_TEXTURE_2D, 0);
-	// glGenFramebuffers(1, &_nodeEditorState->fbo);
-	// glBindFramebuffer(GL_FRAMEBUFFER, _nodeEditorState->fbo);
-	// glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _nodeEditorState->fboTexture, 0);  
-	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// create viewer shader
-	// _nodeEditorState->viewerShader = createShaderProgram("assets/viewer.vert", "assets/viewer.frag");
-
+	_nodeEditorState->promptOpen = false;
+	_nodeEditorState->promptSetFocus = false;
+	new (&_nodeEditorState->promptCandidates) VMArray<String>();
 
 	// int winWidth, winHeight;
 	// GetWindowSize(&winWidth, &winHeight);
@@ -53,67 +42,56 @@ void InitializeNodeEditor()
 void NodeGUI()
 {
 	ImGui::Begin("nodes");
-
 	for(i32 i = 0; i < nodeNames.Count(); i++) {
 		if(ImGui::Button(nodeNames[i].buffer)) {
 			NodeConstructor *nodeConstructor = nodeConstructors.Get(nodeNames[i]);
 			ConstructNode(nodeNames[i], nodeConstructor);
 		}
 	}
-
-	// if(ImGui::Button("add blur")) {
-	// 	AddBlurNode();
-	// }
-	// if(ImGui::Button("add mix")) {
-	// 	AddMixTextureNode();
-	// }
-	// if(ImGui::Button("add load")) {
-	// 	AddLoadTextureNode();
-	// }
-	// if(ImGui::Button("add cube")) {
-	// 	AddCubeNode();
-	// }
-	// if(ImGui::Button("add grid")) {
-	// 	AddGridNode();
-	// }
-	// if(ImGui::Button("add mesh noise")) {
-	// 	AddMeshNoise();
-	// }
-	// if(ImGui::Button("add video")) {
-	// 	AddVideoNode();
-	// }
-	// if(ImGui::Button("add renderobject")) {
-	// 	AddRenderObject();
-	// }
-	// if(ImGui::Button("add time")) {
-	// 	AddTimeNode();
-	// }
-	// if(ImGui::Button("add sin")) {
-	// 	AddSinNode();
-	// }
-	// if(ImGui::Button("add label")) {
-	// 	AddLabelNode();
-	// }
 	ImGui::End();
+
+	if(singleKeyPress(GLFW_KEY_N)) {
+		if(!_nodeEditorState->promptOpen) {
+			_nodeEditorState->promptOpen = true;
+			_nodeEditorState->promptSetFocus = true;
+			sprintf(_nodeEditorState->promptBuffer, "");
+			ImGui::SetNextWindowPos(ImVec2(mouse.x, mouse.y));
+		}
+	}
+	if(singleKeyPress(GLFW_KEY_ESCAPE)) {
+		_nodeEditorState->promptOpen = false;
+	}
+	if(_nodeEditorState->promptOpen) {
+		ImGui::Begin("add prompt");
+		if(_nodeEditorState->promptSetFocus) {
+			ImGui::SetKeyboardFocusHere();
+			_nodeEditorState->promptSetFocus = false;
+		}
+		if(ImGui::InputText("##newname", _nodeEditorState->promptBuffer, ARRAY_SIZE(_nodeEditorState->promptBuffer))) {
+			_nodeEditorState->promptCandidates = NamesBeginningWith(_nodeEditorState->promptBuffer);
+		}
+		for(i32 i = 0; i < _nodeEditorState->promptCandidates.Count(); i++) {
+			bool clickedOption = false;
+			if(ImGui::Button(_nodeEditorState->promptCandidates[i].buffer)) {
+				clickedOption = true;
+			}
+			if(_nodeEditorState->promptCandidates.Count() == 1 && singleKeyPress(GLFW_KEY_ENTER)) {
+				clickedOption = true;
+			}
+
+			if(clickedOption) {
+				SetNextConstructPos(mouse);
+				NodeConstructor *nodeConstructor = nodeConstructors.Get(_nodeEditorState->promptCandidates[i]);
+				ConstructNode(_nodeEditorState->promptCandidates[i].buffer, nodeConstructor);
+				_nodeEditorState->promptOpen = false;
+			}
+		}
+		ImGui::End();
+	}
 }
-
-// Rect GetNodeRect(NodeHandle handle)
-// {
-// 	Node *node = GetNode(handle);
-
-// 	Rect rect = {};
-// 	rect.pos = node->pos;
-// 	rect.width = NODE_BASE_WIDTH;
-// 	rect.width += node->params.Count() * PARAM_WIDTH;
-// 	rect.width += node->inputs.Count() * PARAM_WIDTH;
-// 	rect.height = NODE_HEIGHT;
-
-// 	return rect;
-// }
 
 Rect GetNodeOutputRect(ObjectHandle *handle)
 {
-	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
 	Rect nodeRect = node->rect;
 
@@ -129,7 +107,6 @@ Rect GetNodeOutputRect(ObjectHandle *handle)
 
 Rect GetNodeInputRect(ObjectHandle *handle, int inputIndex)
 {
-	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
 	Rect nodeRect = node->rect;
 
@@ -145,7 +122,6 @@ Rect GetNodeInputRect(ObjectHandle *handle, int inputIndex)
 
 Rect GetNodeParamRect(ObjectHandle *handle, int paramIndex)
 {
-	// Rect nodeRect = GetNodeRect(handle);
 	Node *node = GetNode(handle);
 	Rect nodeRect = node->rect;
 

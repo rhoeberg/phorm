@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();
+	InitializeGlobalEditor();
 
 	if(VIEWER_START_MAIN) {
 		SetViewerInMain(true);
@@ -187,6 +188,8 @@ int main(int argc, char *argv[])
 
 void cleanup()
 {
+	printf("CLEANING UP\n");
+
     audioClose();
     Pa_Terminate();
     imDrawClean();
@@ -196,5 +199,6 @@ void cleanup()
 	CleanupNodes();
 	CleanupNodeEditor();
 	CleanupSceneEditor();
+	CleanupGlobalEditor();
 }
 

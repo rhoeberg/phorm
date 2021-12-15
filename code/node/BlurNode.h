@@ -81,16 +81,3 @@ void BlurOperation(Node *self)
 		}
 	}
 }
-
-/* ObjectHandle AddBlurNode() */
-/* { */
-/* 	FixedArray<NodeParameter> params = { */
-/* 		NodeParameter("amount", 20), */
-/* 	}; */
-
-/* 	FixedArray<NodeInput> inputs = { */
-/* 		NodeInput(DATA_TEXTURE), */
-/* 	}; */
-
-/* 	return AddNode("BLUR", DATA_TEXTURE, OP_TEXTURE_BLUR, params, inputs); */
-/* } */
