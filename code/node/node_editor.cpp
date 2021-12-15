@@ -56,13 +56,20 @@ void NodeGUI()
 			_nodeEditorState->promptSetFocus = true;
 			sprintf(_nodeEditorState->promptBuffer, "");
 			ImGui::SetNextWindowPos(ImVec2(mouse.x, mouse.y));
+			SetPromptActive(true);
+			_nodeEditorState->promptCandidates.Clear();
 		}
 	}
 	if(singleKeyPress(GLFW_KEY_ESCAPE)) {
 		_nodeEditorState->promptOpen = false;
+		SetPromptActive(false);
 	}
 	if(_nodeEditorState->promptOpen) {
-		ImGui::Begin("add prompt");
+		i32 windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
+		bool show = true;
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1, 1, 1, 1));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1));
+		ImGui::Begin("add prompt", &show, windowFlags);
 		if(_nodeEditorState->promptSetFocus) {
 			ImGui::SetKeyboardFocusHere();
 			_nodeEditorState->promptSetFocus = false;
@@ -84,9 +91,12 @@ void NodeGUI()
 				NodeConstructor *nodeConstructor = nodeConstructors.Get(_nodeEditorState->promptCandidates[i]);
 				ConstructNode(_nodeEditorState->promptCandidates[i].buffer, nodeConstructor);
 				_nodeEditorState->promptOpen = false;
+				SetPromptActive(false);
 			}
 		}
 		ImGui::End();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
 	}
 }
 

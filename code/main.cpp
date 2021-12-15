@@ -138,13 +138,13 @@ int main(int argc, char *argv[])
 		///////////////
 		// NODE EDITOR
 		///////////////
-		static bool nodeEditorOn = true;
-		if(singleKeyPress(GLFW_KEY_V))
-			nodeEditorOn = !nodeEditorOn;
-		if(nodeEditorOn)
-			UpdateNodeEditor();
-		else
-			UpdateSceneEditor();
+		// static bool nodeEditorOn = true;
+		// if(singleKeyPress(GLFW_KEY_V))
+		// 	nodeEditorOn = !nodeEditorOn;
+		// if(nodeEditorOn)
+		// 	UpdateNodeEditor();
+		// else
+		// 	UpdateSceneEditor();
 
 
 		///////////////

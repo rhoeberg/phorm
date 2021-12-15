@@ -3,6 +3,8 @@
 void InitializeGlobalEditor()
 {
 	_globalEditorState = (GlobalEditorState*)malloc(sizeof(GlobalEditorState));
+	_globalEditorState->nodeEditorOn = true;
+	_globalEditorState->promptActive = false;
 }
 
 bool IsPromptActive()
@@ -17,6 +19,17 @@ void SetPromptActive(bool value)
 
 void UpdateGlobalEditor()
 {
+	// GLOBAL HOTKEYS
+	if(!_globalEditorState->promptActive && singleKeyPress(GLFW_KEY_V))
+		_globalEditorState->nodeEditorOn = !_globalEditorState->nodeEditorOn;
+
+	if(_globalEditorState->nodeEditorOn) {
+		UpdateNodeEditor();
+	}
+	else {
+		UpdateSceneEditor();
+	}
+
 	ImGui::Begin("Inspector");
 	if(_nodeEditorState->draggedNode.isset) {
 		Node *node = GetNode(&_nodeEditorState->draggedNode);
