@@ -3,7 +3,7 @@
 void TimeOperation(Node *self)
 {
 	double *output = GetDouble(&self->GetDataLast());
-	*output = glfwGetTime();
+	*output = GetTime();
 	self->changed = true;
 }
 

@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
 	}
 
     double lastFrame = glfwGetTime();
+	double startTime = 0.0;
     while(!glfwWindowShouldClose(win)) {
 
 		///////////////

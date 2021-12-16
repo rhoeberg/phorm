@@ -114,8 +114,19 @@ void HideViewerOtherWindow()
 	glfwHideWindow(_viewerWindow);
 }
 
+double GetTime()
+{
+	return glfwGetTime() - startTime;
+}
+
+void ResetTime()
+{
+	startTime = glfwGetTime();
+}
+
 GLFWwindow* initGlfw()
 {
+	startTime = 0.0;
 	// GLFWwindow *win;
 
     glfwSetErrorCallback(errorCallback);

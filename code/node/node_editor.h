@@ -1,8 +1,8 @@
 #pragma once
 
 #define PARAM_WIDTH 30
-#define PARAM_HEIGHT 17
-#define NODE_HEIGHT 28
+#define PARAM_HEIGHT 10
+#define NODE_HEIGHT 30
 #define NODE_BASE_WIDTH 100
 
 enum NodeEditorElementType {

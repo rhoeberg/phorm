@@ -12,12 +12,19 @@ void UpdateDebug()
 	// }
 	// ImGui::End();
 
-	ImGui::Begin("save load");
+	ImGui::Begin("debug");
 	if(ImGui::Button("save")) {
 		SaveNodes();
 	}
 	if(ImGui::Button("load")) {
 		LoadNodes();
 	}
+
+	ImGui::Spacing();
+
+	if(ImGui::Button("reset time")) {
+		ResetTime();
+	}
     ImGui::End();
+
 }
