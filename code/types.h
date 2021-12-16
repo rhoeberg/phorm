@@ -36,4 +36,15 @@ struct ObjectHandle {
 	ObjectHandle() {
 		isset = false;
 	}
+
+	// TODO (rhoe) this is not testet
+	bool operator==(const ObjectHandle &other) {
+		if(slotID == other.slotID &&
+		   id == other.id &&
+		   handleType == other.handleType &&
+		   dataType == other.dataType)
+			return true;
+
+		return false;
+	}
 };

@@ -97,6 +97,21 @@ int VMArray<T>::Max()
 	return max;
 }
 
+// TODO (rhoe) this function is not testet
+template <typename T>
+bool VMArray<T>::Contains(const T &e)
+{
+	bool result = false;
+	for(int i = 0; i < count; i++) {
+		if(data[i] == e) {
+			result = true;
+			break;
+		}
+	}
+
+	return result;
+}
+
 template <typename T>
 T* VMArray<T>::Data()
 {

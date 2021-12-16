@@ -66,7 +66,6 @@ void UpdateViewerRender()
 	viewerRect.height = VIEWER_SIZE;
 	viewerRect.pos = vec2(width - VIEWER_SIZE, 0);
 
-
 	if((!ViewerInMain()) || (PointInsideRect(mouse, viewerRect))) {
 		if(scrollReady) {
 			_viewerRenderState.orbitDistance += scrollOffset;

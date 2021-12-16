@@ -5,6 +5,16 @@ double Sin(double d)
 	return sin(d);
 }
 
+float Min(float a, float b)
+{
+	return (a < b) ? a : b;
+}
+
+float Max(float a, float b)
+{
+	return (a > b) ? a : b;
+}
+
 bool PointInsideRect(vec2 point, Rect rect)
 {
 	if(point.x > rect.pos.x && point.x < rect.pos.x + rect.width &&

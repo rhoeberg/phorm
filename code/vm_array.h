@@ -19,6 +19,7 @@ class VMArray {
 	int InsertNew();
 	int Count();
 	int Max();
+	bool Contains(const T &e);
 	T* Data();
 	void Free();
 	void Clear();

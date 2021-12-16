@@ -14,6 +14,37 @@
               (WIDTH, HEIGHT)
 
 			  
+  LAYERING:
+  currently we are drawing one mesh for all the basic shapes and a single mesh pr font
+  character. If want to be able to control layer order we need to do it differently.
+  we need to draw our shapes in the order we want to layer them back to front.
+  this means that we need to keep a list of shapes and rearrange the order whenever we
+  add new shapes.
+
+  - simple solution with layers
+  Simplest would be to just add draw data as we do now (just call ImDrawRect whenever you want to
+  etc), and then add extra layer data to the call. 
+  every frame we can then sort through all the draw data and make sure we draw in the right order.
+  this is super simple to implement but is obviously very slow.
+  
+  - even more simple solution (just 2 or 3 layers)
+  even more simple would be to keep the basic drawing functionality as it is now, the only thing
+  we change is just to add different vertex data lists for each layer and just add a limited 
+  amount of layers. When you do a draw call you just specify which layer you want to draw to.
+  this means that two objects on the same layer wont blend nicely but at least objects on differnt
+  layers should be fine.
+  this might be enough for us right now.
+  
+  - more complete solution:
+  alternativly we need to somehow keep track of objects and make sure only to add them once which
+  either makes the library much more inconvienient for the user (the user has to manage their
+  drawing objects themselves) or we need to do some kind of id's for the objects which the drawing
+  library keeps track of.
+  
+  
+
+
+			  
   TODO:
   
   - buffer data every frame
@@ -24,6 +55,8 @@
   
   - dependency on glfw_wrapper
      we should make sure there is no dependency on the glfw_wrapper
+	 
+
 
  */
 
@@ -49,11 +82,19 @@ struct TextCommand {
 	vec3 color;
 };
 
-global VMArray<GLfloat> imDrawVertices;
+#define IMDRAW_LAYER_AMOUNT 3
+
+struct ImDrawLayer {
+	VMArray<GLfloat> vertices;
+};
+
+global ImDrawLayer imDrawLayers[IMDRAW_LAYER_AMOUNT];
+// global VMArray<GLfloat> imDrawVertices;
 global GLuint imDrawVAO;
 global GLuint imDrawVBO;
 global GLuint imDrawShader;
-global vec3 imDrawColor;
+global vec4 imDrawColor;
+global int imDrawNextLayer;
 global VMArray<TextCommand> imTextCommands;
 // global size_t imVBOSize;
 
@@ -67,12 +108,16 @@ void ImDrawSetWindowSize(int width, int height)
     projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
 	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     model = glm::translate(model, glm::vec3(0,0,0));
+	glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    view = glm::translate(view, glm::vec3(0,0,-3.0f));
 
     glUseProgram(imDrawShader);
     GLuint projectionLoc = glGetUniformLocation(imDrawShader, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     GLuint modelLoc = glGetUniformLocation(imDrawShader, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    GLuint viewLoc = glGetUniformLocation(imDrawShader, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 	glUseProgram(textShader);
     projectionLoc = glGetUniformLocation(textShader, "projection");
@@ -97,8 +142,8 @@ void ImDrawInitialize()
 	// imVBOSize = sizeof(GLfloat) * IMDRAW_VBO_BUFFER_SIZE;
 	// glBufferData(GL_ARRAY_BUFFER, imVBOSize, NULL, GL_DYNAMIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glBindVertexArray(0);
@@ -107,6 +152,11 @@ void ImDrawInitialize()
 	GetWindowSize(&width, &height);
 	ImDrawSetWindowSize(width, height);
 
+	// initialize layers
+	imDrawNextLayer = 2;
+	for(int i = 0; i < ARRAY_SIZE(imDrawLayers); i++) {
+		imDrawLayers[i].vertices = VMArray<GLfloat>();
+	}
 
 	/////////////////////////
 	// INITIALIZE FONT DRAWING
@@ -135,20 +185,39 @@ void ImDrawInitialize()
 	glBindVertexArray(0);
 }
 
+void ImDrawSetNextLayer(int layer)
+{
+	if(layer < 0 || layer > ARRAY_SIZE(imDrawLayers))
+		return;
+
+	imDrawNextLayer = layer;
+}
+
 void ImDrawSetColor(vec3 color)
 {
-	// GLuint colorLoc = glGetUniformLocation(ImDrawShader, "color");
-	// glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+	imDrawColor = vec4(color, 1.0f);
+}
+
+void ImDrawSetColor(vec4 color)
+{
 	imDrawColor = color;
 }
 
 void ImDrawAddVertex(vec2 v)
 {
-	imDrawVertices.Insert(v.x);
-	imDrawVertices.Insert(v.y);
-	imDrawVertices.Insert(imDrawColor.r);
-	imDrawVertices.Insert(imDrawColor.g);
-	imDrawVertices.Insert(imDrawColor.b);
+	// imDrawVertices.Insert(v.x);
+	// imDrawVertices.Insert(v.y);
+	// imDrawVertices.Insert(imDrawColor.r);
+	// imDrawVertices.Insert(imDrawColor.g);
+	// imDrawVertices.Insert(imDrawColor.b);
+	// imDrawVertices.Insert(imDrawColor.a);
+
+	imDrawLayers[imDrawNextLayer].vertices.Insert(v.x);
+	imDrawLayers[imDrawNextLayer].vertices.Insert(v.y);
+	imDrawLayers[imDrawNextLayer].vertices.Insert(imDrawColor.r);
+	imDrawLayers[imDrawNextLayer].vertices.Insert(imDrawColor.g);
+	imDrawLayers[imDrawNextLayer].vertices.Insert(imDrawColor.b);
+	imDrawLayers[imDrawNextLayer].vertices.Insert(imDrawColor.a);
 }
 
 void ImDrawPushQuad(vec2 p1, vec2 p2, vec2 p3, vec2 p4)
@@ -181,7 +250,7 @@ void ImDrawPoint(vec2 p, float size)
 }
 
 
-void ImDrawLine(vec2 a, vec2 b,float size = 1.0f)
+void ImDrawLine(vec2 a, vec2 b, float size)
 {
 	vec2 dir = a - b;
 	vec2 angle = glm::normalize(vec2(dir.y, -dir.x));
@@ -189,6 +258,21 @@ void ImDrawLine(vec2 a, vec2 b,float size = 1.0f)
 	vec2 bb = b + (angle * size);
 
 	ImDrawPushQuad(a, b, bb, aa);
+}
+
+void ImDrawRectOutline(Rect rect, float size)
+{
+	// top
+	ImDrawLine(rect.pos, rect.pos + vec2(rect.width, 0.0f), size);
+
+	// right
+	ImDrawLine(rect.pos + vec2(rect.width, 0.0f), rect.pos + vec2(rect.width, rect.height), size);
+
+	// bottom
+	ImDrawLine(rect.pos + vec2(0.0f, rect.height), rect.pos + vec2(rect.width, rect.height), size);
+
+	// left
+	ImDrawLine(rect.pos, rect.pos + vec2(0.0f, rect.height), size);
 }
 
 void ImDrawRect(Rect rect)
@@ -268,23 +352,55 @@ void _ImDrawText(float x, float y, char *text, vec3 color)
 
 void ImDrawRender()
 {
-	glDisable(GL_DEPTH_TEST);
-    if(imDrawVertices.Count() > 0) {
-		glUseProgram(imDrawShader);
-		glBindVertexArray(imDrawVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
+	// glEnable(GL_BLEND);
+	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawVertices.Count(), imDrawVertices.Data(), GL_DYNAMIC_DRAW);
-		glBindVertexArray(0);
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_STENCIL_TEST);
+    glEnable(GL_SCISSOR_TEST);
 
-		glBindVertexArray(imDrawVAO);
-		glDrawArrays(GL_TRIANGLES, 0, imDrawVertices.Count() / 5);
-		glBindVertexArray(0);
+	glUseProgram(imDrawShader);
+	for(int i = 0; i < ARRAY_SIZE(imDrawLayers); i++) {
 
-		imDrawVertices.Clear();
-		glUseProgram(0);
-    }
-	glEnable(GL_DEPTH_TEST);
+		// if(imDrawVertices.Count() > 0) {
+		// 	glUseProgram(imDrawShader);
+		// 	glBindVertexArray(imDrawVAO);
+		// 	glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
+
+		// 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawVertices.Count(), imDrawVertices.Data(), GL_DYNAMIC_DRAW);
+		// 	glBindVertexArray(0);
+
+		// 	glBindVertexArray(imDrawVAO);
+		// 	glDrawArrays(GL_TRIANGLES, 0, imDrawVertices.Count() / 6);
+		// 	glBindVertexArray(0);
+
+		// 	imDrawVertices.Clear();
+		// 	glUseProgram(0);
+		// }
+
+		if(imDrawLayers[i].vertices.Count() > 0) {
+			glBindVertexArray(imDrawVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
+
+			glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawLayers[i].vertices.Count(), imDrawLayers[i].vertices.Data(), GL_DYNAMIC_DRAW);
+			glBindVertexArray(0);
+
+			glBindVertexArray(imDrawVAO);
+			glDrawArrays(GL_TRIANGLES, 0, imDrawLayers[i].vertices.Count() / 6);
+			glBindVertexArray(0);
+
+			imDrawLayers[i].vertices.Clear();
+		}
+	}
+	glUseProgram(0);
+
+	// glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_CULL_FACE);
+	// glDepthMask(false);
 
 	for(int i = 0; i < imTextCommands.Count(); i++) {
 		TextCommand *command = &imTextCommands[i];

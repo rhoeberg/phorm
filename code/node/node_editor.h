@@ -19,6 +19,11 @@ struct NodeHoverState {
 	int ctxHandle;
 };
 
+/* struct SelectedNodeState { */
+/* 	ObjectHandel handle; */
+/* 	vec2 offset; */
+/* }; */
+
 struct NodeEditorState {
 	NodeHoverState hoverState;
 
@@ -29,6 +34,16 @@ struct NodeEditorState {
 	vec2 dragOffset;
 	NodeEditorElementType draggedType;
 	ObjectHandle selectedNode;
+	/* SelectedNodeState selectedNode; */
+
+	// select dragging
+	bool nodeMultiSelect;
+	bool selectDragging;
+	vec2 selectDragStart;
+	/* VMArray<SelectedNodeState> selectedNodes; */
+	VMArray<ObjectHandle> selectedNodes;
+
+
 
 	// ADD NODE PROMPT
 	bool promptOpen;

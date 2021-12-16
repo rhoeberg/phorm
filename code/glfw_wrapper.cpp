@@ -8,12 +8,15 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
     // if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     	// glfwSetWindowShouldClose(window, GL_TRUE);
 
-    if(action == GLFW_PRESS) {
-        keys[key] = true;
-    }
-    else if(action == GLFW_RELEASE) {
-        keys[key] = false;
-    }
+	ImGuiIO& io = ImGui::GetIO();
+	if(!io.WantCaptureKeyboard) {
+		if(action == GLFW_PRESS) {
+			keys[key] = true;
+		}
+		else if(action == GLFW_RELEASE) {
+			keys[key] = false;
+		}
+	}
 }  
 
 void SetMouse(double x, double y)
@@ -24,8 +27,11 @@ void SetMouse(double x, double y)
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	mouseInViewer = false;
-	SetMouse(xpos, ypos);
+	ImGuiIO& io = ImGui::GetIO();
+	if(!io.WantCaptureMouse) {
+		mouseInViewer = false;
+		SetMouse(xpos, ypos);
+	}
 }
 
 void mouseCallbackViewerWin(GLFWwindow* window, double xpos, double ypos)
@@ -38,12 +44,16 @@ void mouseCallbackViewerWin(GLFWwindow* window, double xpos, double ypos)
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
-    if(action == GLFW_PRESS) {
-		mouse_buttons[button] = true;
-    }
-    else if(action == GLFW_RELEASE) {
-		mouse_buttons[button] = false;
-    }
+	ImGuiIO& io = ImGui::GetIO();
+	if(!io.WantCaptureMouse) {
+
+		if(action == GLFW_PRESS) {
+			mouse_buttons[button] = true;
+		}
+		else if(action == GLFW_RELEASE) {
+			mouse_buttons[button] = false;
+		}
+	}
 }
 
 void MouseScrollCallback(GLFWwindow *window, double xoffset, double yoffset)

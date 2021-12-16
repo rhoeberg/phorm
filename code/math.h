@@ -23,6 +23,8 @@ struct Rect {
 };
 
 double Sin(double d);
+float Min(float a, float b);
+float Max(float a, float b);
 bool PointInsideRect(vec2 point, Rect rect);
 vec2 GetRectCenter(Rect rect);
 float Noise2D(float x, float y, i32 octaves, double persistance, double frequency);
