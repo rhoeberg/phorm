@@ -234,7 +234,6 @@ void DrawNode(ObjectHandle *handle)
 void UpdateHoverState()
 {
 	NodeEditorState *editor = _nodeEditorState;
-	// _nodeEditorState->hoverState.hoveringElement = false;
 	editor->hoverState.elementType = EDITOR_ELEMENT_NONE;
 
 	bool foundElement = false;
@@ -249,7 +248,6 @@ void UpdateHoverState()
 				if(PointInsideRect(mouse, inputRect)) {
 					foundElement = true;
 					editor->hoverState.nodeHandle = handle;
-					// _nodeEditorState->hoverState.hoveringElement = true;
 					editor->hoverState.elementType = EDITOR_ELEMENT_INPUT;
 					editor->hoverState.ctxHandle = j;
 					break;
@@ -263,7 +261,6 @@ void UpdateHoverState()
 					if(PointInsideRect(mouse, paramRect)) {
 						foundElement = true;
 						editor->hoverState.nodeHandle = handle;
-						// _nodeEditorState->hoverState.hoveringElement = true;
 						editor->hoverState.elementType = EDITOR_ELEMENT_PARAM;
 						editor->hoverState.ctxHandle = j;
 					}
@@ -276,7 +273,6 @@ void UpdateHoverState()
 				if(PointInsideRect(mouse, outputRect)) {
 					foundElement = true;
 					editor->hoverState.nodeHandle = handle;
-					// _nodeEditorState->hoverState.hoveringElement = true;
 					editor->hoverState.elementType = EDITOR_ELEMENT_OUTPUT;
 				}
 			}
@@ -287,9 +283,190 @@ void UpdateHoverState()
 				if(PointInsideRect(mouse, nodeRect)) {
 					foundElement = true;
 					editor->hoverState.nodeHandle = handle;
-					// _nodeEditorState->hoverState.hoveringElement = true;
 					editor->hoverState.elementType = EDITOR_ELEMENT_NODE;
 				}
+			}
+		}
+	}
+}
+
+void UpdateNodeStartDragging()
+{
+	NodeEditorState *editor = _nodeEditorState;
+
+	// start dragging something
+	// if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !editor->isDragging) {
+	editor->isDragging = true;
+	editor->draggedType = editor->hoverState.elementType;
+
+	// hovering element
+	if(editor->hoverState.elementType != EDITOR_ELEMENT_NONE) {
+		editor->draggedNode = editor->hoverState.nodeHandle;
+		editor->draggedCtxHandle = editor->hoverState.ctxHandle;
+		Node *node = GetNode(&editor->hoverState.nodeHandle);
+		editor->dragOffset = node->rect.pos - mouse;
+	}
+	else {
+		// start box selecting
+		editor->selectDragStart = mouse;
+		editor->nodeMultiSelect = false;
+		editor->selectedNodes.Clear();
+	}
+	// }
+}
+
+void UpdateNodeContinueDragging()
+{
+	NodeEditorState *editor = _nodeEditorState;
+
+	// HANDLE CONTINUE DRAGGING
+	switch(editor->draggedType) {
+		case EDITOR_ELEMENT_NODE: {
+			Node *node = GetNode(&editor->draggedNode);
+
+			if(editor->nodeMultiSelect) {
+				for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
+					Node *multiNode = GetNode(&editor->selectedNodes[i]);
+					if(multiNode && multiNode != node) {
+						vec2 offset = multiNode->rect.pos - node->rect.pos;
+						multiNode->rect.pos = mouse + editor->dragOffset + offset;
+					}
+				}
+			}
+
+			node->rect.pos = mouse + editor->dragOffset;
+			break;
+		}
+		case EDITOR_ELEMENT_INPUT: {
+			Rect inputRect = GetNodeInputRect(&editor->draggedNode,
+											  editor->draggedCtxHandle);
+			vec2 inputPos = GetRectCenter(inputRect);
+			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+			ImDrawLine(mouse, inputPos);
+			break;
+		}
+		case EDITOR_ELEMENT_PARAM: {
+			Rect paramRect = GetNodeParamRect(&editor->draggedNode,
+											  editor->draggedCtxHandle);
+			vec2 paramPos = GetRectCenter(paramRect);
+			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+			ImDrawLine(mouse, paramPos);
+			break;
+		}
+		case EDITOR_ELEMENT_OUTPUT: {
+			Rect outputRect = GetNodeOutputRect(&editor->draggedNode);
+			vec2 outputPos = GetRectCenter(outputRect);
+			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+			ImDrawLine(mouse, outputPos);
+			break;
+		}
+		case EDITOR_ELEMENT_NONE: {
+			// continue multi selecting
+			vec2 a, b;
+			a.x = Min(editor->selectDragStart.x, mouse.x);
+			a.y = Min(editor->selectDragStart.y, mouse.y);
+			b.x = Max(editor->selectDragStart.x, mouse.x);
+			b.y = Max(editor->selectDragStart.y, mouse.y);
+
+			Rect rect = Rect(a, b);
+			ImDrawSetColor(vec4(0.0f, 0.0f, 1.0f, 0.3f));
+			ImDrawSetNextLayer(1);
+			ImDrawRect(rect);
+			ImDrawSetNextLayer(0);
+		}
+	}
+}
+
+void UpdateNodeStopDragging()
+{
+	NodeEditorState *editor = _nodeEditorState;
+
+	// handle stopped dragging
+	editor->isDragging = false;
+	switch(editor->draggedType) {
+		case EDITOR_ELEMENT_NODE: {
+			break;
+		}
+		case EDITOR_ELEMENT_INPUT: {
+			if(editor->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
+				ObjectHandle *outHandle = &editor->hoverState.nodeHandle;
+				ObjectHandle *inHandle = &editor->draggedNode;
+				int ctxHandle = editor->draggedCtxHandle;
+				ConnectNodeInput(inHandle, outHandle, ctxHandle);
+			}
+			else {
+				Node *node = GetNode(&editor->draggedNode);
+				if(node) {
+					int ctxHandle = editor->draggedCtxHandle;
+					node->changed = true;
+					node->inputs[ctxHandle].handle.isset = false;
+				}
+
+			}
+			break;
+		}
+		case EDITOR_ELEMENT_PARAM: {
+			if(editor->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
+				Node *node = GetNode(&editor->draggedNode);
+				if(node) {
+					ObjectHandle *outHandle = &editor->hoverState.nodeHandle;
+					ObjectHandle *inHandle = &editor->draggedNode;
+					int ctxHandle = editor->draggedCtxHandle;
+					node->changed = true;
+					ConnectNodeParameter(inHandle, outHandle, ctxHandle);
+				}
+			}
+			else {
+				Node *node = GetNode(&editor->draggedNode);
+				if(node) {
+					int ctxHandle = editor->draggedCtxHandle;
+					node->changed = true;
+					node->params[ctxHandle].nodeHandle.isset = false;
+				}
+			}
+			break;
+		}
+		case EDITOR_ELEMENT_OUTPUT: {
+			if(editor->hoverState.elementType == EDITOR_ELEMENT_INPUT) {
+				ObjectHandle *outHandle = &editor->draggedNode;
+				ObjectHandle *inHandle = &editor->hoverState.nodeHandle;
+				int ctxHandle = editor->hoverState.ctxHandle;
+				ConnectNodeInput(inHandle, outHandle, ctxHandle);
+			}
+			else if(editor->hoverState.elementType == EDITOR_ELEMENT_PARAM) {
+				ObjectHandle *outHandle = &editor->draggedNode;
+				ObjectHandle *inHandle = &editor->hoverState.nodeHandle;
+				int ctxHandle = editor->draggedCtxHandle;
+				ConnectNodeParameter(inHandle, outHandle, ctxHandle);
+			}
+			break;
+		}
+		case EDITOR_ELEMENT_NONE: {
+			// stop multi selecting
+
+			vec2 a, b;
+			a.x = Min(editor->selectDragStart.x, mouse.x);
+			a.y = Min(editor->selectDragStart.y, mouse.y);
+			b.x = Max(editor->selectDragStart.x, mouse.x);
+			b.y = Max(editor->selectDragStart.y, mouse.y);
+
+			for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
+				ObjectHandle handle = _nodeState->nodes.GetHandle(i);
+				Node *node = _nodeState->nodes.Get(&handle);
+				if(node) {
+					vec2 center = GetRectCenter(node->rect);
+					if(center.x > a.x && center.x < b.x &&
+					   center.y > a.y && center.y < b.y) {
+						editor->selectedNodes.Insert(handle);
+					}
+				}
+			}
+
+			if(editor->selectedNodes.Count() > 1) {
+				editor->nodeMultiSelect = true;
+			}
+			else if(editor->selectedNodes.Count() == 1) {
+				editor->selectedNode = editor->selectedNodes[0];
 			}
 		}
 	}
@@ -302,173 +479,14 @@ void UpdateNodeDragging()
 	if(!mouseInViewer) {
 		// start dragging something
 		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !editor->isDragging) {
-			editor->isDragging = true;
-			editor->draggedType = editor->hoverState.elementType;
-
-			// hovering element
-			if(editor->hoverState.elementType != EDITOR_ELEMENT_NONE) {
-				editor->draggedNode = editor->hoverState.nodeHandle;
-				editor->draggedCtxHandle = editor->hoverState.ctxHandle;
-				Node *node = GetNode(&editor->hoverState.nodeHandle);
-				editor->dragOffset = node->rect.pos - mouse;
-			}
-			else {
-				// start box selecting
-				editor->selectDragStart = mouse;
-				editor->nodeMultiSelect = false;
-				editor->selectedNodes.Clear();
-			}
+			UpdateNodeStartDragging();
 		}
 		else if(editor->isDragging) {
-			// HANDLE STOP DRAGGING
 			if(!mouse_buttons[GLFW_MOUSE_BUTTON_LEFT]) {
-				// handle stopped dragging
-				editor->isDragging = false;
-				switch(editor->draggedType) {
-					case EDITOR_ELEMENT_NODE: {
-						break;
-					}
-					case EDITOR_ELEMENT_INPUT: {
-						if(editor->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
-							ObjectHandle *outHandle = &editor->hoverState.nodeHandle;
-							ObjectHandle *inHandle = &editor->draggedNode;
-							int ctxHandle = editor->draggedCtxHandle;
-							ConnectNodeInput(inHandle, outHandle, ctxHandle);
-						}
-						else {
-							Node *node = GetNode(&editor->draggedNode);
-							if(node) {
-								int ctxHandle = editor->draggedCtxHandle;
-								node->changed = true;
-								node->inputs[ctxHandle].handle.isset = false;
-							}
-
-						}
-						break;
-					}
-					case EDITOR_ELEMENT_PARAM: {
-						if(editor->hoverState.elementType == EDITOR_ELEMENT_OUTPUT) {
-							Node *node = GetNode(&editor->draggedNode);
-							if(node) {
-								ObjectHandle *outHandle = &editor->hoverState.nodeHandle;
-								ObjectHandle *inHandle = &editor->draggedNode;
-								int ctxHandle = editor->draggedCtxHandle;
-								node->changed = true;
-								ConnectNodeParameter(inHandle, outHandle, ctxHandle);
-							}
-						}
-						else {
-							Node *node = GetNode(&editor->draggedNode);
-							if(node) {
-								int ctxHandle = editor->draggedCtxHandle;
-								node->changed = true;
-								node->params[ctxHandle].nodeHandle.isset = false;
-							}
-						}
-						break;
-					}
-					case EDITOR_ELEMENT_OUTPUT: {
-						if(editor->hoverState.elementType == EDITOR_ELEMENT_INPUT) {
-							ObjectHandle *outHandle = &editor->draggedNode;
-							ObjectHandle *inHandle = &editor->hoverState.nodeHandle;
-							int ctxHandle = editor->hoverState.ctxHandle;
-							ConnectNodeInput(inHandle, outHandle, ctxHandle);
-						}
-						else if(editor->hoverState.elementType == EDITOR_ELEMENT_PARAM) {
-							ObjectHandle *outHandle = &editor->draggedNode;
-							ObjectHandle *inHandle = &editor->hoverState.nodeHandle;
-							int ctxHandle = editor->draggedCtxHandle;
-							ConnectNodeParameter(inHandle, outHandle, ctxHandle);
-						}
-						break;
-					}
-					case EDITOR_ELEMENT_NONE: {
-						// stop multi selecting
-
-						vec2 a, b;
-						a.x = Min(editor->selectDragStart.x, mouse.x);
-						a.y = Min(editor->selectDragStart.y, mouse.y);
-						b.x = Max(editor->selectDragStart.x, mouse.x);
-						b.y = Max(editor->selectDragStart.y, mouse.y);
-
-						for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
-							ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-							Node *node = _nodeState->nodes.Get(&handle);
-							if(node) {
-								vec2 center = GetRectCenter(node->rect);
-								if(center.x > a.x && center.x < b.x &&
-								   center.y > a.y && center.y < b.y) {
-									editor->selectedNodes.Insert(handle);
-								}
-							}
-						}
-
-						if(editor->selectedNodes.Count() > 1) {
-							editor->nodeMultiSelect = true;
-						}
-						else if(editor->selectedNodes.Count() == 1) {
-							editor->selectedNode = editor->selectedNodes[0];
-						}
-					}
-				}
+				UpdateNodeStopDragging();
 			}
 			else {
-				// HANDLE CONTINUE DRAGGING
-				switch(editor->draggedType) {
-					case EDITOR_ELEMENT_NODE: {
-						Node *node = GetNode(&editor->draggedNode);
-
-						if(editor->nodeMultiSelect) {
-							for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
-								Node *multiNode = GetNode(&editor->selectedNodes[i]);
-								if(multiNode && multiNode != node) {
-									vec2 offset = multiNode->rect.pos - node->rect.pos;
-									multiNode->rect.pos = mouse + editor->dragOffset + offset;
-								}
-							}
-						}
-
-						node->rect.pos = mouse + editor->dragOffset;
-						break;
-					}
-					case EDITOR_ELEMENT_INPUT: {
-						Rect inputRect = GetNodeInputRect(&editor->draggedNode,
-														  editor->draggedCtxHandle);
-						vec2 inputPos = GetRectCenter(inputRect);
-						ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-						ImDrawLine(mouse, inputPos);
-						break;
-					}
-					case EDITOR_ELEMENT_PARAM: {
-						Rect paramRect = GetNodeParamRect(&editor->draggedNode,
-														  editor->draggedCtxHandle);
-						vec2 paramPos = GetRectCenter(paramRect);
-						ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-						ImDrawLine(mouse, paramPos);
-						break;
-					}
-					case EDITOR_ELEMENT_OUTPUT: {
-						Rect outputRect = GetNodeOutputRect(&editor->draggedNode);
-						vec2 outputPos = GetRectCenter(outputRect);
-						ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-						ImDrawLine(mouse, outputPos);
-						break;
-					}
-					case EDITOR_ELEMENT_NONE: {
-						// continue multi selecting
-						vec2 a, b;
-						a.x = Min(editor->selectDragStart.x, mouse.x);
-						a.y = Min(editor->selectDragStart.y, mouse.y);
-						b.x = Max(editor->selectDragStart.x, mouse.x);
-						b.y = Max(editor->selectDragStart.y, mouse.y);
-
-						Rect rect = Rect(a, b);
-						ImDrawSetColor(vec4(0.0f, 0.0f, 1.0f, 0.3f));
-						ImDrawSetNextLayer(1);
-						ImDrawRect(rect);
-						ImDrawSetNextLayer(0);
-					}
-				}
+				UpdateNodeContinueDragging();
 			}
 		}
 	}
