@@ -1,21 +1,16 @@
 global GLFWwindow *_win;
 global GLFWwindow *_viewerWindow;
 
-
-
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    // if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    	// glfwSetWindowShouldClose(window, GL_TRUE);
-
 	ImGuiIO& io = ImGui::GetIO();
-	if(!io.WantCaptureKeyboard) {
-		if(action == GLFW_PRESS) {
-			keys[key] = true;
-		}
-		else if(action == GLFW_RELEASE) {
-			keys[key] = false;
-		}
+	imguiWantsKeyboard = io.WantCaptureKeyboard;
+
+	if(action == GLFW_PRESS) {
+		keys[key] = true;
+	}
+	else if(action == GLFW_RELEASE) {
+		keys[key] = false;
 	}
 }  
 
@@ -28,10 +23,9 @@ void SetMouse(double x, double y)
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	ImGuiIO& io = ImGui::GetIO();
-	if(!io.WantCaptureMouse) {
-		mouseInViewer = false;
-		SetMouse(xpos, ypos);
-	}
+	imguiWantsMouse = io.WantCaptureMouse;
+	mouseInViewer = false;
+	SetMouse(xpos, ypos);
 }
 
 void mouseCallbackViewerWin(GLFWwindow* window, double xpos, double ypos)

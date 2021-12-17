@@ -10,41 +10,34 @@ enum NodeEditorElementType {
 	EDITOR_ELEMENT_INPUT,
 	EDITOR_ELEMENT_PARAM,
 	EDITOR_ELEMENT_OUTPUT,
+	EDITOR_ELEMENT_NONE,
 };
 
 struct NodeHoverState {
 	ObjectHandle nodeHandle;
-	bool hoveringElement;
 	NodeEditorElementType elementType;
 	int ctxHandle;
 };
 
-/* struct SelectedNodeState { */
-/* 	ObjectHandel handle; */
-/* 	vec2 offset; */
-/* }; */
-
 struct NodeEditorState {
 	NodeHoverState hoverState;
+	ObjectHandle selectedNode;
 
-	// create seperate dragstate struct
+	////////////////
+	// DRAG STATE
 	bool isDragging;
 	ObjectHandle draggedNode;
 	int draggedCtxHandle;
 	vec2 dragOffset;
 	NodeEditorElementType draggedType;
-	ObjectHandle selectedNode;
-	/* SelectedNodeState selectedNode; */
 
-	// select dragging
+	////////////////
+	// SELECT DRAGGING
 	bool nodeMultiSelect;
-	bool selectDragging;
 	vec2 selectDragStart;
-	/* VMArray<SelectedNodeState> selectedNodes; */
 	VMArray<ObjectHandle> selectedNodes;
 
-
-
+	////////////////
 	// ADD NODE PROMPT
 	bool promptOpen;
 	bool promptSetFocus;

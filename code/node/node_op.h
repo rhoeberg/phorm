@@ -124,6 +124,7 @@ void AddNodeConstructors()
 	AddNodeConstructor(String("renderobject"), DATA_RENDEROBJECT, RenderObjectOperation,
 					   FixedArray<NodeParameter> {
 						   NodeParameter("pos", vec3(0, 0, 0)),
+						   NodeParameter("scale", vec3(1.0f, 1.0f, 1.0f)),
 						   NodeParameter("label", "")},
 					   FixedArray<NodeInput> {
 						   NodeInput(DATA_MESH),

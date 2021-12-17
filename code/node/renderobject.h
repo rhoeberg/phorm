@@ -8,4 +8,5 @@ struct RenderObject {
 	int indicesCount;
 
 	vec3 pos;
+	vec3 scale;
 };

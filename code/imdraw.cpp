@@ -13,40 +13,37 @@
   -----------------
               (WIDTH, HEIGHT)
 
+  USAGE:
+  initialize ImDraw before your game loop with:
+  ImDrawInitialize();
+  and cleanup in the your cleanup phase with:
+  ImDrawClean();
+  To use imdraw simply call the drawing function you need.
+  Fx: 
+  ImDrawRect(myRect);
+  and you will have a rect on screen.
+
+  if you want to change color of the draw then set the color before drawing with:
+  ImDrawSetColor(vec3 col);
+  you can also use colors with transparency
+  ImDrawSetColor(vec4 colWithAlpha);
+  
 			  
   LAYERING:
-  currently we are drawing one mesh for all the basic shapes and a single mesh pr font
-  character. If want to be able to control layer order we need to do it differently.
-  we need to draw our shapes in the order we want to layer them back to front.
-  this means that we need to keep a list of shapes and rearrange the order whenever we
-  add new shapes.
+  Each layer is drawn in a seperate draw call. To define which layer you want to draw to
+  you need to first call ImDrawSetNextLayer(0 - 2). Right now we are using 3 layers where
+  layer 0 is behind and layer 2 is in front. We can easily extend this to more layers.
 
-  - simple solution with layers
-  Simplest would be to just add draw data as we do now (just call ImDrawRect whenever you want to
-  etc), and then add extra layer data to the call. 
-  every frame we can then sort through all the draw data and make sure we draw in the right order.
-  this is super simple to implement but is obviously very slow.
   
-  - even more simple solution (just 2 or 3 layers)
-  even more simple would be to keep the basic drawing functionality as it is now, the only thing
-  we change is just to add different vertex data lists for each layer and just add a limited 
-  amount of layers. When you do a draw call you just specify which layer you want to draw to.
-  this means that two objects on the same layer wont blend nicely but at least objects on differnt
-  layers should be fine.
-  this might be enough for us right now.
-  
-  - more complete solution:
-  alternativly we need to somehow keep track of objects and make sure only to add them once which
-  either makes the library much more inconvienient for the user (the user has to manage their
-  drawing objects themselves) or we need to do some kind of id's for the objects which the drawing
-  library keeps track of.
-  
+  DEPENDENCIES:
+  - opengl
+  - stb_truetype.h
+  - vm_array.h (my own dynamic array class)
+  - glfw_wrapper (my own glfw wrapper, this dependency needs to be removed)
+
   
 
-
-			  
   TODO:
-  
   - buffer data every frame
      currently we buffer data every frame, which technically should 
      by allocating every frame. It doesnt seems to have an effect on performance
@@ -352,36 +349,15 @@ void _ImDrawText(float x, float y, char *text, vec3 color)
 
 void ImDrawRender()
 {
-	// glEnable(GL_BLEND);
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
-    glEnable(GL_SCISSOR_TEST);
 
 	glUseProgram(imDrawShader);
 	for(int i = 0; i < ARRAY_SIZE(imDrawLayers); i++) {
-
-		// if(imDrawVertices.Count() > 0) {
-		// 	glUseProgram(imDrawShader);
-		// 	glBindVertexArray(imDrawVAO);
-		// 	glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
-
-		// 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * imDrawVertices.Count(), imDrawVertices.Data(), GL_DYNAMIC_DRAW);
-		// 	glBindVertexArray(0);
-
-		// 	glBindVertexArray(imDrawVAO);
-		// 	glDrawArrays(GL_TRIANGLES, 0, imDrawVertices.Count() / 6);
-		// 	glBindVertexArray(0);
-
-		// 	imDrawVertices.Clear();
-		// 	glUseProgram(0);
-		// }
-
 		if(imDrawLayers[i].vertices.Count() > 0) {
 			glBindVertexArray(imDrawVAO);
 			glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
@@ -398,15 +374,16 @@ void ImDrawRender()
 	}
 	glUseProgram(0);
 
-	// glEnable(GL_DEPTH_TEST);
-	// glEnable(GL_CULL_FACE);
-	// glDepthMask(false);
-
 	for(int i = 0; i < imTextCommands.Count(); i++) {
 		TextCommand *command = &imTextCommands[i];
 		_ImDrawText(command->pos.x, command->pos.y, command->text, command->color);
 	}
 	imTextCommands.Clear();
+
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
+
 }
 
 void imDrawClean()

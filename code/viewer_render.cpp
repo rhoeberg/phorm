@@ -169,6 +169,7 @@ void UpdateViewerRender()
 			// MODEL
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 			model = glm::translate(model, renderObject->pos);
+			model = glm::scale(model, renderObject->scale);
 			GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 

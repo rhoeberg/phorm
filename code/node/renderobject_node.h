@@ -5,6 +5,7 @@ void RenderObjectOperation(Node *self)
 	RenderObject *output = GetRenderObject(&self->GetDataLast());
 
 	output->pos = self->params[0].v3;
+	output->scale = self->params[1].v3;
 
 	Mesh *inputMesh = GetMeshInput(self->inputs[0]);
 	if(!inputMesh)

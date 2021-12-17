@@ -24,6 +24,8 @@ global bool mouse_buttons[32];
 global bool mouseInViewer;
 global bool scrollReady;
 global double scrollOffset;
+global bool imguiWantsKeyboard;
+global bool imguiWantsMouse;
 
 #include "audio.h"
 #include "opengl.h"
