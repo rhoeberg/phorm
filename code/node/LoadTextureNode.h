@@ -15,3 +15,16 @@ void LoadTextureOperation(Node *self)
 		free(data);
 	}
 }
+
+ObjectHandle CreateLoadTexture(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+{
+	FixedArray<NodeParameter> params = {
+		NodeParameter("path", ""),
+	};
+
+	FixedArray<NodeInput> inputs = {
+		NodeInput(DATA_TEXTURE),
+	};
+
+	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+}

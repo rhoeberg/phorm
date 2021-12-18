@@ -4,6 +4,7 @@
 
 struct ViewerRenderState {
 	VMArray<ObjectHandle> renderList;
+	VMArray<ObjectHandle> renderPointLights;
 	ObjectHandle baseTextureObject;
 	/* RenderObject textureRenderObject; */
 	bool wireframe;
@@ -22,5 +23,6 @@ void InitializeViewerRender();
 void UpdateViewerRender();
 void AddToRenderQueue(ObjectHandle *objectHandle);
 void AddTextureToRenderQueue(ObjectHandle *textureHandle);
+void AddToRenderPointLightQueue(ObjectHandle *handle);
 
 global ViewerRenderState _viewerRenderState;

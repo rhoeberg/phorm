@@ -45,7 +45,7 @@ bool Node::Changed()
 				inputChanged = true;
 			}
 			else {
-				if(paramNode->changed) {
+				if(paramNode->Changed()) {
 					inputChanged = true;
 				}
 			}
@@ -96,9 +96,19 @@ ObjectHandle AddNode(const char *name, vec2 pos, DataType type, NodeOp op, NodeD
 			dataHandle = AddNewRenderObject();
 			break;
 		}
+		case DATA_POINTLIGHT: {
+			PointLight light = {};
+			dataHandle = _nodeState->pointLights.Insert(light);
+			break;
+		}
 		case DATA_DOUBLE: {
 			double value = 0.0;
 			dataHandle = _nodeState->doubles.Insert(value);
+			break;
+		}
+		case DATA_VEC3: {
+			vec3 v3 = {};
+			dataHandle = _nodeState->vec3s.Insert(v3);
 			break;
 		}
 	}

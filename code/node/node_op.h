@@ -12,9 +12,15 @@ void BaseNodeDrawFunction(Node *node);
 #include "renderobject_node.h"
 #include "TimeNode.h"
 #include "SinNode.h"
+#include "PointLightNode.h"
+#include "Vec3Node.h"
+#include "MulNode.h"
+#include "DoubleNode.h"
+#include "AddNode.h"
 /* #include "LabelNode.h" */
 
-typedef ObjectHandle (*NodeCreateExtraHandleFunc)();
+/* typedef ObjectHandle (*NodeCreateExtraHandleFunc)(); */
+typedef ObjectHandle (*NodeCreateFunc)(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc);
 
 struct NodeConstructor
 {
@@ -22,9 +28,11 @@ struct NodeConstructor
 	NodeDrawFunc drawFunc;
 	DataType dataType;
 
+	NodeCreateFunc createFunc;
+
 	// TODO (rhoe) maybe we can come up with something prettier than this function pointer
 	// just for adding a extraHandle to the node?
-	NodeCreateExtraHandleFunc createExtraHandleFunc;
+	/* NodeCreateExtraHandleFunc createExtraHandleFunc; */
 
 	vec2 pos;
 
@@ -43,15 +51,16 @@ void SetNextConstructPos(vec2 pos)
 
 void ConstructNode(String name, NodeConstructor *nodeConstructor)
 {
-	ObjectHandle extraHandle = ObjectHandle();
-	if(nodeConstructor->createExtraHandleFunc) {
-		extraHandle = nodeConstructor->createExtraHandleFunc();
-	}
+	/* ObjectHandle extraHandle = ObjectHandle(); */
+	/* if(nodeConstructor->createExtraHandleFunc) { */
+		/* extraHandle = nodeConstructor->createExtraHandleFunc(); */
+	/* } */
 
-	AddNode(name.buffer, nextConstructPos, nodeConstructor->dataType, nodeConstructor->op, nodeConstructor->drawFunc, nodeConstructor->params, nodeConstructor->inputs, extraHandle);
+	nodeConstructor->createFunc(name, nextConstructPos, nodeConstructor->dataType, nodeConstructor->op, nodeConstructor->drawFunc);
+	/* AddNode(name.buffer, nextConstructPos, nodeConstructor->dataType, nodeConstructor->op, nodeConstructor->drawFunc, nodeConstructor->params, nodeConstructor->inputs, extraHandle); */
 }
 
-void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, NodeCreateExtraHandleFunc createExtraHandleFunc = NULL)
+void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc, NodeCreateFunc createFunc)
 {
 
 	nodeNames.Insert(name);
@@ -59,78 +68,36 @@ void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeDrawFunc 
 	constructor.dataType = dataType;
 	constructor.op = op;
 	constructor.drawFunc = drawFunc;
-	constructor.params = params;
-	constructor.inputs = inputs;
-	constructor.createExtraHandleFunc = createExtraHandleFunc;
+	constructor.createFunc = createFunc;
+	/* constructor.params = params; */
+	/* constructor.inputs = inputs; */
+	/* constructor.createExtraHandleFunc = createExtraHandleFunc; */
 	nodeConstructors.Insert(name, constructor);
 }
 
-void AddNodeConstructor(String name, DataType dataType, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, NodeCreateExtraHandleFunc createExtraHandleFunc = NULL)
+void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeCreateFunc createFunc)
 {
-	AddNodeConstructor(name, dataType, op, BaseNodeDrawFunction, params, inputs, createExtraHandleFunc);
+	AddNodeConstructor(name, dataType, op, BaseNodeDrawFunction, createFunc);
 }
 
 void AddNodeConstructors()
 {
 	nextConstructPos = vec2(0, 0);
-
-	AddNodeConstructor(String("blur texture"), DATA_TEXTURE, BlurOperation,
-					   FixedArray<NodeParameter> {NodeParameter("amount", 20)},
-					   FixedArray<NodeInput> {NodeInput(DATA_TEXTURE)});
-
-	AddNodeConstructor(String("mix texture"), DATA_TEXTURE, MixTextureOperation,
-					   FixedArray<NodeParameter> {NodeParameter("mix", 0.5)},
-					   FixedArray<NodeInput> {
-						   NodeInput(DATA_TEXTURE),
-						   NodeInput(DATA_TEXTURE)});
-
-	AddNodeConstructor(String("load texture"), DATA_TEXTURE, LoadTextureOperation,
-					   FixedArray<NodeParameter> {NodeParameter("path", ""),},
-					   FixedArray<NodeInput> {});
-
-	
-	{
-		ObjectHandle extraHandle = _nodeState->videoNodes.Insert(VideoNodeState());
-		AddNodeConstructor(String("video"), DATA_TEXTURE, VideoOperation,
-						   FixedArray<NodeParameter> {NodeParameter("time", 0.0),},
-						   FixedArray<NodeInput> {}, SetupVideoNode);
-	}
-
-	AddNodeConstructor(String("cube mesh"), DATA_MESH, CubeOperation,
-					   FixedArray<NodeParameter>(), FixedArray<NodeInput>());
-
-	AddNodeConstructor(String("grid mesh"), DATA_MESH, GridOperation,
-					   FixedArray<NodeParameter>{
-						   NodeParameter("width", 100),
-						   NodeParameter("height", 100),
-					   }, FixedArray<NodeInput>());
-
-	AddNodeConstructor(String("noise mesh"), DATA_MESH, MeshNoiseOperation,
-					   FixedArray<NodeParameter>{
-						   NodeParameter("amount", 1.0),
-						   NodeParameter("octaves", 1),
-						   NodeParameter("persistance", 1.0),
-						   NodeParameter("freq", 1.0),
-					   }, FixedArray<NodeInput> {NodeInput(DATA_MESH)});
-
-	AddNodeConstructor(String("sin"), DATA_DOUBLE, SinOperation,
-					  FixedArray<NodeParameter>(),
-					  FixedArray<NodeInput> { NodeInput(DATA_DOUBLE) });
-
-	AddNodeConstructor(String("time"), DATA_DOUBLE, TimeOperation, DrawTimeNode,
-					  FixedArray<NodeParameter>(),
-					  FixedArray<NodeInput>());
-
-	AddNodeConstructor(String("renderobject"), DATA_RENDEROBJECT, RenderObjectOperation,
-					   FixedArray<NodeParameter> {
-						   NodeParameter("pos", vec3(0, 0, 0)),
-						   NodeParameter("scale", vec3(1.0f, 1.0f, 1.0f)),
-						   NodeParameter("label", "")},
-					   FixedArray<NodeInput> {
-						   NodeInput(DATA_MESH),
-						   NodeInput(DATA_TEXTURE),
-					   });
-
+	AddNodeConstructor(String("blur texture"), DATA_TEXTURE, BlurOperation, CreateBlurTexture);
+	AddNodeConstructor(String("mix texture"), DATA_TEXTURE, MixTextureOperation, CreateMixTexture);
+	AddNodeConstructor(String("load texture"), DATA_TEXTURE, LoadTextureOperation, CreateLoadTexture);
+	AddNodeConstructor(String("video"), DATA_TEXTURE, VideoOperation, CreateVideoNode);
+	AddNodeConstructor(String("cube mesh"), DATA_MESH, CubeOperation, CreateCubeNode);
+	AddNodeConstructor(String("grid mesh"), DATA_MESH, GridOperation, CreateGridNode);
+	AddNodeConstructor(String("noise mesh"), DATA_MESH, MeshNoiseOperation, CreateMeshNoise);
+	AddNodeConstructor(String("double"), DATA_DOUBLE, DoubleOperation, CreateDoubleNode);
+	AddNodeConstructor(String("sin"), DATA_DOUBLE, SinOperation, CreateSinNode);
+	AddNodeConstructor(String("mul"), DATA_DOUBLE, MulOperation, CreateMulNode);
+	AddNodeConstructor(String("add"), DATA_DOUBLE, AddOperation, CreateAddNode);
+	AddNodeConstructor(String("time"), DATA_DOUBLE, TimeOperation, DrawTimeNode, CreateTimeNode);
+	AddNodeConstructor(String("renderobject"), DATA_RENDEROBJECT, RenderObjectOperation, CreateRenderObjectNode);
+	AddNodeConstructor(String("pointlight"), DATA_POINTLIGHT, PointLightOperation, CreatePointLightNode);
+	AddNodeConstructor(String("vec3"), DATA_VEC3, Vec3NodeOperation, CreateVec3Node);
 }
 
 VMArray<String> NamesBeginningWith(String typed)

@@ -41,6 +41,7 @@ global bool imguiWantsMouse;
 #include "hashmap.h"
 #include "glfw_wrapper.h"
 #include "opengl_wrapper.h"
+#include "light.h"
 #include "node/node_parameter.h"
 #include "node/node.h"
 #include "node/nodestate.h"

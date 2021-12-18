@@ -10,24 +10,17 @@ void InitializeNodes()
 	// not very pretty syntax maybe we should just use a custom
 	// init function instead of constructor
 
-	// new(&_nodeState->nodes) VMArray<Node>();
 	new(&_nodeState->nodes) ObjectContainer<Node>(HANDLE_NODE);
 
 	// data containers
-	// _nodeState->textures = VMArray<Texture>();
-	// _nodeState->meshes = VMArray<Mesh>();
-	// _nodeState->renderObjects = VMArray<RenderObject>();
-	// _nodeState->videoNodes = VMArray<VideoNodeState>();
-	// _nodeState->labelNodes = VMArray<LabelNodeState>();
-	// _nodeState->doubles = VMArray<double>();
-
 	new(&_nodeState->textures) ObjectContainer<Texture>(HANDLE_DATA, DATA_TEXTURE);
 	new(&_nodeState->meshes) ObjectContainer<Mesh>(HANDLE_DATA, DATA_MESH);
 	new(&_nodeState->renderObjects) ObjectContainer<RenderObject>(HANDLE_DATA, DATA_RENDEROBJECT);
 	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
-	// new(&_nodeState->labelNodes) ObjectContainer<LabelNodeState>();
 	new(&_nodeState->doubles) ObjectContainer<double>(HANDLE_DATA, DATA_DOUBLE);
+	new(&_nodeState->vec3s) ObjectContainer<vec3>(HANDLE_DATA, DATA_VEC3);
 	new(&_nodeState->strings) ObjectContainer<String>(HANDLE_DATA, DATA_STRING);
+	new(&_nodeState->pointLights) ObjectContainer<PointLight>(HANDLE_DATA, DATA_POINTLIGHT);
 
 	// new(&_nodeState->labels) HashMap<NodeHandle>();
 }
@@ -61,11 +54,15 @@ double* GetDoubleOutput(ObjectHandle *handle)
 	Node *node = GetNode(handle);
 	if(!NodeExists(handle) ||
 	   node->type != DATA_DOUBLE) {
-		NOT_IMPLEMENTED
 		return NULL;
 	}
 
 	return GetDouble(&node->GetData());
+}
+
+vec3* GetVec3(ObjectHandle *handle)
+{
+	return _nodeState->vec3s.Get(handle);
 }
 
 Texture* GetTexture(ObjectHandle *handle)
@@ -110,6 +107,11 @@ Mesh* GetMeshInput(NodeInput input)
 RenderObject* GetRenderObject(ObjectHandle *handle)
 {
 	return _nodeState->renderObjects.Get(handle);
+}
+
+PointLight* GetPointLight(ObjectHandle *handle)
+{
+	return _nodeState->pointLights.Get(handle);
 }
 
 bool ConnectNodeParameter(ObjectHandle *handle, ObjectHandle *outHandle, int paramIndex)

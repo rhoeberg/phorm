@@ -31,6 +31,10 @@ void GridOperation(Node *self)
 
 			output->vertices.Insert(nX);
 			output->vertices.Insert(nY);
+
+			output->vertices.Insert(0.0f);
+			output->vertices.Insert(0.0f);
+			output->vertices.Insert(-1.0f);
 		}
 	}
 
@@ -49,4 +53,17 @@ void GridOperation(Node *self)
 			i++;
 		}
 	}
+}
+
+ObjectHandle CreateGridNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+{
+	FixedArray<NodeParameter> params = {
+		NodeParameter("width", 100),
+		NodeParameter("height", 100),
+	};
+
+	FixedArray<NodeInput> inputs = {
+	};
+
+	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
 }

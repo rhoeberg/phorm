@@ -24,7 +24,7 @@ void InitializeNodeEditor()
 	_nodeEditorState = (NodeEditorState*)malloc(sizeof(NodeEditorState));
 
 	NodeEditorState *editor = _nodeEditorState;
-	editor->draggedNode = {};
+	// editor->draggedNode = {};
 	editor->isDragging = false;
 	// editor->hoverState.hoveringElement = false;
 
@@ -34,7 +34,7 @@ void InitializeNodeEditor()
 	// editor->selectDragging = false;
 	new (&editor->selectedNodes) VMArray<ObjectHandle>();
 
-	editor->selectedNode = {};
+	editor->viewerNode = {};
 
 	editor->promptOpen = false;
 	editor->promptSetFocus = false;
@@ -294,14 +294,14 @@ void UpdateNodeStartDragging()
 {
 	NodeEditorState *editor = _nodeEditorState;
 
-	// start dragging something
-	// if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !editor->isDragging) {
 	editor->isDragging = true;
 	editor->draggedType = editor->hoverState.elementType;
+	editor->nodeMultiSelect = false;
 
 	// hovering element
 	if(editor->hoverState.elementType != EDITOR_ELEMENT_NONE) {
 		editor->draggedNode = editor->hoverState.nodeHandle;
+		// editor->selectedNodes.Insert(editor->hoverState.nodeHandle);
 		editor->draggedCtxHandle = editor->hoverState.ctxHandle;
 		Node *node = GetNode(&editor->hoverState.nodeHandle);
 		editor->dragOffset = node->rect.pos - mouse;
@@ -309,10 +309,9 @@ void UpdateNodeStartDragging()
 	else {
 		// start box selecting
 		editor->selectDragStart = mouse;
-		editor->nodeMultiSelect = false;
 		editor->selectedNodes.Clear();
+		editor->nodeMultiSelect = true;
 	}
-	// }
 }
 
 void UpdateNodeContinueDragging()
@@ -466,7 +465,7 @@ void UpdateNodeStopDragging()
 				editor->nodeMultiSelect = true;
 			}
 			else if(editor->selectedNodes.Count() == 1) {
-				editor->selectedNode = editor->selectedNodes[0];
+				editor->viewerNode = editor->selectedNodes[0];
 			}
 		}
 	}
@@ -509,6 +508,8 @@ void ShowNode(ObjectHandle *handle)
 
 void UpdateNodeEditor()
 {
+	NodeEditorState *editor = _nodeEditorState;
+
 	//////////////////
 	// CHECK HOVERSTATE
 	UpdateHoverState();
@@ -517,12 +518,13 @@ void UpdateNodeEditor()
 
 
 	if(keys[GLFW_KEY_SPACE]) {
-		if(_nodeEditorState->draggedNode.isset && NodeExists(&_nodeEditorState->draggedNode)) {
-			_nodeEditorState->selectedNode = _nodeEditorState->draggedNode;
+		if(editor->draggedNode.isset && NodeExists(&editor->draggedNode)) {
+			editor->viewerNode = editor->draggedNode;
+			SetInspectorObject(editor->draggedNode);
 		}
 	}
 	if(keys[GLFW_KEY_DELETE]) {
-		DeleteNode(&_nodeEditorState->draggedNode);
+		DeleteNode(&editor->draggedNode);
 	}
 
 	//////////////////
@@ -536,24 +538,26 @@ void UpdateNodeEditor()
 	}
 
 	// DRAW SELECTED NODE OUTLINES
-	int outlineMargin = 0.7f;
-	for(i32 i = 0; i < _nodeEditorState->selectedNodes.Count(); i++) {
-		Node *node = GetNode(&_nodeEditorState->selectedNodes[i]);
-		if(node) {
-			Rect outline= {};
-			outline.pos = node->rect.pos - vec2(outlineMargin, outlineMargin);
-			outline.width = node->rect.width + outlineMargin;
-			outline.height = node->rect.height + outlineMargin;
+	if(editor->nodeMultiSelect) {
+		int outlineMargin = 0.7f;
+		for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
+			Node *node = GetNode(&editor->selectedNodes[i]);
+			if(node) {
+				Rect outline= {};
+				outline.pos = node->rect.pos - vec2(outlineMargin, outlineMargin);
+				outline.width = node->rect.width + outlineMargin;
+				outline.height = node->rect.height + outlineMargin;
 
-			ImDrawSetColor(vec4(1.0f, 1.0f, 0.0f, 0.7f));
-			ImDrawRectOutline(outline, 1.5f);
+				ImDrawSetColor(vec4(1.0f, 1.0f, 0.0f, 0.7f));
+				ImDrawRectOutline(outline, 1.5f);
+			}
 		}
 	}
 
 	//////////////////
 	// SELECT FOR VIEWER
-	if(_nodeEditorState->selectedNode.isset && NodeExists(&_nodeEditorState->selectedNode)) {
-		ShowNode(&_nodeEditorState->selectedNode);
+	if(editor->viewerNode.isset && NodeExists(&editor->viewerNode)) {
+		ShowNode(&editor->viewerNode);
 	}
 
 	///////////////////

@@ -18,7 +18,7 @@ void MeshNoiseOperation(Node *self)
 	output->vertices = VMArray<float>(input->vertices);
 	output->indices = VMArray<GLuint>(input->indices);
 
-	for(i32 i = 0; i < input->vertices.Count(); i+=5) {
+	for(i32 i = 0; i < input->vertices.Count(); i+=8) {
 		float x = input->vertices[i];
 		float y = input->vertices[i+1];
 		float z = input->vertices[i+2];
@@ -30,5 +30,23 @@ void MeshNoiseOperation(Node *self)
 		output->vertices[i] = x;
 		output->vertices[i+1] = y;
 		output->vertices[i+2] = z;
+
+		/* vec3 normal */
 	}
+}
+
+ObjectHandle CreateMeshNoise(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+{
+	FixedArray<NodeParameter> params = {
+		NodeParameter("amount", 1.0),
+		NodeParameter("octaves", 1),
+		NodeParameter("persistance", 1.0),
+		NodeParameter("freq", 1.0),
+	};
+
+	FixedArray<NodeInput> inputs = {
+		NodeInput(DATA_MESH),
+	};
+
+	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
 }

@@ -127,6 +127,12 @@ void SaveNodes()
 	}
 
 
+	//////////////
+	// SAVE SCENES
+	SaveObjectContainer<ObjectHandle>(&_sceneEditorState->scene.objects, &saveFile);
+	SaveObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
+
+
 	fclose(saveFile.file);
 }
 
@@ -242,5 +248,9 @@ void LoadNodes()
 		}
 	}
 
+	//////////////
+	// LOAD SCENES
+	LoadObjectContainer<ObjectHandle>(&_sceneEditorState->scene.objects, &saveFile);
+	LoadObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
 }

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "../light.h"
+#include "texture.h"
+#include "mesh.h"
+#include "renderobject.h"
+
 struct VideoNodeState {
 	plm_t *plm;
 };
@@ -223,10 +228,12 @@ struct NodeState {
 	ObjectContainer<Mesh> meshes;
 	ObjectContainer<RenderObject> renderObjects;
 	ObjectContainer<double> doubles;
+	ObjectContainer<vec3> vec3s;
 	// HashMap<ObjectHandle> labels;
 	ObjectContainer<VideoNodeState> videoNodes;
 	// ObjectContainer<LabelNodeState> labelNodes;
 	ObjectContainer<String> strings;
+	ObjectContainer<PointLight> pointLights;
 };
 
 global NodeState *_nodeState;
@@ -236,9 +243,11 @@ Node* GetNode(ObjectHandle *handle);
 void DeleteNode(ObjectHandle *handle);
 double* GetDouble(ObjectHandle *handle);
 double* GetDoubleOutput(ObjectHandle *handle);
+vec3* GetVec3(ObjectHandle *handle);
 Texture* GetTexture(ObjectHandle *handle);
 Texture* GetTextureInput(NodeInput input);
 RenderObject* GetRenderObject(ObjectHandle *handle);
+PointLight* GetPointLight(ObjectHandle *handle);
 Mesh* GetMesh(ObjectHandle *handle);
 Mesh* GetMeshInput(NodeInput input);
 bool ConnectNodeParameter(ObjectHandle *handle, ObjectHandle *outHandle, int paramIndex);

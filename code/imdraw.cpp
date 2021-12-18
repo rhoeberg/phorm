@@ -354,7 +354,7 @@ void ImDrawRender()
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
-    glDisable(GL_STENCIL_TEST);
+    // glDisable(GL_STENCIL_TEST);
 
 	glUseProgram(imDrawShader);
 	for(int i = 0; i < ARRAY_SIZE(imDrawLayers); i++) {
@@ -382,7 +382,7 @@ void ImDrawRender()
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);
+    // glEnable(GL_STENCIL_TEST);
 
 }
 

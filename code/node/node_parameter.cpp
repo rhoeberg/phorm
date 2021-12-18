@@ -57,3 +57,24 @@ double NodeParameter::Double()
 
 	return 0.0;
 }
+
+vec3 NodeParameter::Vec3()
+{
+	if(nodeHandle.isset) {
+		Node *node = GetNode(&nodeHandle);
+		if(node) {
+			vec3 *output = GetVec3(&node->GetData());
+			if(output) {
+				return *output;
+			}
+			else {
+				return vec3(0, 0, 0);
+			}
+		}
+	}
+
+	if(type == DATA_VEC3)
+		return v3;
+
+	return vec3(0, 0, 0);
+}

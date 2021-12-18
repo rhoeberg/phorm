@@ -52,12 +52,29 @@ void AddToRenderQueue(ObjectHandle *handle)
 	}
 }
 
+void AddToRenderPointLightQueue(ObjectHandle *handle)
+{
+	PointLight *light = GetPointLight(handle);
+	if(light) {
+		_viewerRenderState.renderPointLights.Insert(*handle);
+	}
+}
+
 struct Camera {
 	vec3 pos;
 };
 
+void ViewerGLSettings()
+{
+    // glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+}
+
 void UpdateViewerRender()
 {
+	ViewerGLSettings();
+
 	// TODO (rhoe) store this somewhere
 	int width, height;
 	GetWindowSize(&width, &height);
@@ -118,6 +135,34 @@ void UpdateViewerRender()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
+	///////////////////
+	// SETUP RENDER LIGHTS
+	glUseProgram(GetTextureShader());
+	i32 lightCount = 0;
+	for(i32 i = 0; i < _viewerRenderState.renderPointLights.Count(); i++) {
+
+		// TODO (rhoe) here we should check for maximum light count reached
+
+		PointLight *pointLight = GetPointLight(&_viewerRenderState.renderPointLights[i]);
+		if(pointLight) {
+			
+			char buffer[128];
+
+			// get pointlight pos uniform
+			sprintf(buffer, "pointLights[%d].pos", lightCount);
+			GLuint posLoc = glGetUniformLocation(GetTextureShader(), buffer);
+			glUniform3fv(posLoc, 1, glm::value_ptr(pointLight->pos));
+
+			// get pointlight color uniform
+			sprintf(buffer, "pointLights[%d].color", lightCount);
+			GLuint colorLoc = glGetUniformLocation(GetTextureShader(), buffer);
+			glUniform3fv(colorLoc, 1, glm::value_ptr(pointLight->color));
+
+			lightCount++;
+		}
+	}
+	GLuint lightAmountLoc = glGetUniformLocation(GetTextureShader(), "pointLightAmount");
+	glUniform1i(lightAmountLoc, lightCount);
 
 	///////////////////
 	// RENDER OBJECTS
@@ -186,6 +231,7 @@ void UpdateViewerRender()
 	///////////////////
 	// RESET STATE
 	_viewerRenderState.renderList.Clear();
+	_viewerRenderState.renderPointLights.Clear();
 
 	if(!ViewerInMain()) {
 		glfwSwapBuffers(_viewerWindow);
