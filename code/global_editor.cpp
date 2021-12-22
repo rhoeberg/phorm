@@ -22,6 +22,16 @@ void SetInspectorObject(ObjectHandle handle)
 	_globalEditorState->inspectorObject = handle;
 }
 
+void ToggleViewerMode()
+{
+	if(_globalEditorState->viewerMode == VIEW_OBJECT) {
+		_globalEditorState->viewerMode = VIEW_SCENE;
+	}
+	else {
+		_globalEditorState->viewerMode = VIEW_OBJECT;
+	}
+}
+
 void UpdateGlobalEditor()
 {
 	// GLOBAL HOTKEYS
@@ -100,6 +110,21 @@ void UpdateGlobalEditor()
 	}
 	// }
 	ImGui::End();
+
+
+	// SEND TO RENDER
+	// TOOD (rhoe) this should probably be moved to viewer
+	switch(_globalEditorState->viewerMode) {
+		case VIEW_OBJECT: {
+			ViewSelectedNode();
+			break;
+		}
+		case VIEW_SCENE: {
+			RenderScene();
+			break;
+		}
+	}
+
 }
 
 void CleanupGlobalEditor()

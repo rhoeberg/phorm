@@ -491,17 +491,21 @@ void UpdateNodeDragging()
 	}
 }
 
-void ShowNode(ObjectHandle *handle)
+void ViewSelectedNode()
 {
-	Node *node = GetNode(handle);
-	switch(node->type) {
-		case DATA_TEXTURE: {
-			AddTextureToRenderQueue(&node->GetData());
-			break;
-		}
-		case DATA_RENDEROBJECT: {
-			AddToRenderQueue(&node->GetData());
-			break;
+	NodeEditorState *editor = _nodeEditorState;
+
+	if(editor->viewerNode.isset && NodeExists(&editor->viewerNode)) {
+		Node *node = GetNode(&editor->viewerNode);
+		switch(node->type) {
+			case DATA_TEXTURE: {
+				AddTextureToRenderQueue(&node->GetData());
+				break;
+			}
+			case DATA_RENDEROBJECT: {
+				AddToRenderQueue(&node->GetData());
+				break;
+			}
 		}
 	}
 }
@@ -552,12 +556,6 @@ void UpdateNodeEditor()
 				ImDrawRectOutline(outline, 1.5f);
 			}
 		}
-	}
-
-	//////////////////
-	// SELECT FOR VIEWER
-	if(editor->viewerNode.isset && NodeExists(&editor->viewerNode)) {
-		ShowNode(&editor->viewerNode);
 	}
 
 	///////////////////

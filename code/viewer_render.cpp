@@ -73,6 +73,8 @@ void ViewerGLSettings()
 
 void UpdateViewerRender()
 {
+	
+
 	ViewerGLSettings();
 
 	// TODO (rhoe) store this somewhere
@@ -247,6 +249,9 @@ void UpdateViewerRenderGUI()
 	ImGui::Checkbox("wireframe", &_viewerRenderState.wireframe);
 	if(ImGui::Button("toggle viewer window")) {
 		ToggleViewer();
+	}
+	if(ImGui::Button("viewer mode")) {
+		ToggleViewerMode();
 	}
 	ImGui::End();
 

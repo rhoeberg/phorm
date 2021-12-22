@@ -5,6 +5,42 @@ void InitializeSceneEditor()
 	_sceneEditorState = (SceneEditorState*)malloc(sizeof(SceneEditorState));
 	new (&_sceneEditorState->scene) Scene();
 }
+void RenderScene()
+{
+	SceneEditorState *editor = _sceneEditorState;
+
+	/////////////
+	// RENDER SCENE
+	for(i32 i = 0; i < editor->scene.pointLights.Count(); i++) {
+		ObjectHandle handle = editor->scene.pointLights.GetHandle(i);
+		ObjectHandle *nodeHandle = editor->scene.pointLights.Get(&handle);
+		if(nodeHandle) {
+			Node *node = GetNode(nodeHandle);
+			if(node) {
+				AddToRenderPointLightQueue(&node->GetData());
+			}
+			else {
+				ObjectHandle handle = editor->scene.objects.GetHandle(i);
+				editor->scene.pointLights.Remove(&handle);
+			}
+		}
+	}
+
+	for(i32 i = 0; i < editor->scene.objects.Count(); i++) {
+		ObjectHandle handleHandle = editor->scene.objects.GetHandle(i);
+		ObjectHandle *nodeHandle = editor->scene.objects.Get(&handleHandle);
+		if(nodeHandle) {
+			Node *node = GetNode(nodeHandle);
+			if(node) {
+				AddToRenderQueue(&node->GetData());
+			}
+			else {
+				ObjectHandle handle = editor->scene.objects.GetHandle(i);
+				editor->scene.objects.Remove(&handle);
+			}
+		}
+	}
+}
 
 void UpdateSceneEditor()
 {
@@ -133,41 +169,6 @@ void UpdateSceneEditor()
 		}
 	}
 	ImGui::End();
-
-
-
-
-	/////////////
-	// RENDER SCENE
-	for(i32 i = 0; i < state->scene.pointLights.Count(); i++) {
-		ObjectHandle handle = state->scene.pointLights.GetHandle(i);
-		ObjectHandle *nodeHandle = state->scene.pointLights.Get(&handle);
-		if(nodeHandle) {
-			Node *node = GetNode(nodeHandle);
-			if(node) {
-				AddToRenderPointLightQueue(&node->GetData());
-			}
-			else {
-				ObjectHandle handle = state->scene.objects.GetHandle(i);
-				state->scene.pointLights.Remove(&handle);
-			}
-		}
-	}
-
-	for(i32 i = 0; i < state->scene.objects.Count(); i++) {
-		ObjectHandle handleHandle = state->scene.objects.GetHandle(i);
-		ObjectHandle *nodeHandle = state->scene.objects.Get(&handleHandle);
-		if(nodeHandle) {
-			Node *node = GetNode(nodeHandle);
-			if(node) {
-				AddToRenderQueue(&node->GetData());
-			}
-			else {
-				ObjectHandle handle = state->scene.objects.GetHandle(i);
-				state->scene.objects.Remove(&handle);
-			}
-		}
-	}
 }
 
 

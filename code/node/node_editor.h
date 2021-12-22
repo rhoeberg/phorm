@@ -49,3 +49,5 @@ struct NodeEditorState {
 /* void NodeEditorSetWindowSize(int width, int height); */
 
 global NodeEditorState *_nodeEditorState;
+
+void ViewSelectedNode();
