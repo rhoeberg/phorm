@@ -22,6 +22,35 @@ void SetInspectorObject(ObjectHandle handle)
 	_globalEditorState->inspectorObject = handle;
 }
 
+void SetViewerNode(ObjectHandle handle)
+{
+	_globalEditorState->viewerNode = handle;
+}
+
+ObjectHandle GetViewerNode()
+{
+	return _globalEditorState->viewerNode;
+}
+
+void RenderViewerNode()
+{
+	ObjectHandle handle = GetViewerNode();
+	if(handle.isset && NodeExists(&handle)) {
+		Node *node = GetNode(&handle);
+		switch(node->type) {
+			case DATA_TEXTURE: {
+				AddTextureToRenderQueue(&node->GetData());
+				break;
+			}
+			case DATA_RENDEROBJECT: {
+				AddToRenderQueue(&node->GetData());
+				break;
+			}
+		}
+	}
+}
+
+
 void ToggleViewerMode()
 {
 	if(_globalEditorState->viewerMode == VIEW_OBJECT) {
@@ -116,7 +145,7 @@ void UpdateGlobalEditor()
 	// TOOD (rhoe) this should probably be moved to viewer
 	switch(_globalEditorState->viewerMode) {
 		case VIEW_OBJECT: {
-			ViewSelectedNode();
+			RenderViewerNode();
 			break;
 		}
 		case VIEW_SCENE: {

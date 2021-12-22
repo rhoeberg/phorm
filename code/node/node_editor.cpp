@@ -34,8 +34,6 @@ void InitializeNodeEditor()
 	// editor->selectDragging = false;
 	new (&editor->selectedNodes) VMArray<ObjectHandle>();
 
-	editor->viewerNode = {};
-
 	editor->promptOpen = false;
 	editor->promptSetFocus = false;
 	new (&editor->promptCandidates) VMArray<String>();
@@ -464,9 +462,9 @@ void UpdateNodeStopDragging()
 			if(editor->selectedNodes.Count() > 1) {
 				editor->nodeMultiSelect = true;
 			}
-			else if(editor->selectedNodes.Count() == 1) {
-				editor->viewerNode = editor->selectedNodes[0];
-			}
+			// else if(editor->selectedNodes.Count() == 1) {
+				// editor->viewerNode = editor->selectedNodes[0];
+			// }
 		}
 	}
 }
@@ -491,24 +489,24 @@ void UpdateNodeDragging()
 	}
 }
 
-void ViewSelectedNode()
-{
-	NodeEditorState *editor = _nodeEditorState;
+// void ViewSelectedNode()
+// {
+// 	NodeEditorState *editor = _nodeEditorState;
 
-	if(editor->viewerNode.isset && NodeExists(&editor->viewerNode)) {
-		Node *node = GetNode(&editor->viewerNode);
-		switch(node->type) {
-			case DATA_TEXTURE: {
-				AddTextureToRenderQueue(&node->GetData());
-				break;
-			}
-			case DATA_RENDEROBJECT: {
-				AddToRenderQueue(&node->GetData());
-				break;
-			}
-		}
-	}
-}
+// 	if(editor->viewerNode.isset && NodeExists(&editor->viewerNode)) {
+// 		Node *node = GetNode(&editor->viewerNode);
+// 		switch(node->type) {
+// 			case DATA_TEXTURE: {
+// 				AddTextureToRenderQueue(&node->GetData());
+// 				break;
+// 			}
+// 			case DATA_RENDEROBJECT: {
+// 				AddToRenderQueue(&node->GetData());
+// 				break;
+// 			}
+// 		}
+// 	}
+// }
 
 void UpdateNodeEditor()
 {
@@ -523,7 +521,8 @@ void UpdateNodeEditor()
 
 	if(keys[GLFW_KEY_SPACE]) {
 		if(editor->draggedNode.isset && NodeExists(&editor->draggedNode)) {
-			editor->viewerNode = editor->draggedNode;
+			// editor->viewerNode = editor->draggedNode;
+			SetViewerNode(editor->draggedNode);
 			SetInspectorObject(editor->draggedNode);
 		}
 	}

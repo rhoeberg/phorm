@@ -5,6 +5,7 @@ void InitializeSceneEditor()
 	_sceneEditorState = (SceneEditorState*)malloc(sizeof(SceneEditorState));
 	new (&_sceneEditorState->scene) Scene();
 }
+
 void RenderScene()
 {
 	SceneEditorState *editor = _sceneEditorState;

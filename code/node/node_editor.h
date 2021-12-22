@@ -21,7 +21,7 @@ struct NodeHoverState {
 
 struct NodeEditorState {
 	NodeHoverState hoverState;
-	ObjectHandle viewerNode;
+	/* ObjectHandle viewerNode; */
 
 	////////////////
 	// DRAG STATE
