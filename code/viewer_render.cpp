@@ -123,7 +123,7 @@ void UpdateViewerRender()
 		int width, height;
 		GetViewerWindowSize(&width, &height);
 		aspectRatio = (float)width / (float)height;
-		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 		glViewport(0, 0, width, height);
 	}
@@ -170,7 +170,6 @@ void UpdateViewerRender()
 	// RENDER OBJECTS
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
 		RenderObject *renderObject = GetRenderObject(&_viewerRenderState.renderList[i]);
-
 		if(renderObject != NULL) {
 
 			///////////////
@@ -250,9 +249,28 @@ void UpdateViewerRenderGUI()
 	if(ImGui::Button("toggle viewer window")) {
 		ToggleViewer();
 	}
+
+	const char* viewerModes[] = { "object", "scene" };
+	static int currentMode = 0;
+	const char* previewValue = viewerModes[currentMode];
+	if(ImGui::BeginCombo("mode", previewValue)) {
+
+		for(i32 i = 0; i < ARRAY_SIZE(viewerModes); i++) {
+			bool isSelected = (currentMode == i);
+			if(ImGui::Selectable(viewerModes[i], isSelected)) {
+				currentMode = i;
+				SetViewerMode(currentMode);
+			}
+
+			if(isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndCombo();
+	}
+
 	if(ImGui::Button("viewer mode")) {
 		ToggleViewerMode();
 	}
 	ImGui::End();
-
 }

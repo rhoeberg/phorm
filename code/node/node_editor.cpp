@@ -294,12 +294,11 @@ void UpdateNodeStartDragging()
 
 	editor->isDragging = true;
 	editor->draggedType = editor->hoverState.elementType;
-	editor->nodeMultiSelect = false;
+	// editor->nodeMultiSelect = false;
 
 	// hovering element
 	if(editor->hoverState.elementType != EDITOR_ELEMENT_NONE) {
 		editor->draggedNode = editor->hoverState.nodeHandle;
-		// editor->selectedNodes.Insert(editor->hoverState.nodeHandle);
 		editor->draggedCtxHandle = editor->hoverState.ctxHandle;
 		Node *node = GetNode(&editor->hoverState.nodeHandle);
 		editor->dragOffset = node->rect.pos - mouse;
@@ -308,7 +307,7 @@ void UpdateNodeStartDragging()
 		// start box selecting
 		editor->selectDragStart = mouse;
 		editor->selectedNodes.Clear();
-		editor->nodeMultiSelect = true;
+		// editor->nodeMultiSelect = true;
 	}
 }
 
@@ -519,11 +518,12 @@ void UpdateNodeEditor()
 		UpdateNodeDragging();
 
 
+	SetInspectorObject(editor->draggedNode);
+
 	if(keys[GLFW_KEY_SPACE]) {
 		if(editor->draggedNode.isset && NodeExists(&editor->draggedNode)) {
 			// editor->viewerNode = editor->draggedNode;
 			SetViewerNode(editor->draggedNode);
-			SetInspectorObject(editor->draggedNode);
 		}
 	}
 	if(keys[GLFW_KEY_DELETE]) {

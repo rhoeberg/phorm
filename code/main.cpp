@@ -123,16 +123,19 @@ int main(int argc, char *argv[])
 		// bool show = true;
 		// ImGui::ShowDemoWindow(&show);
 
+		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
 		///////////////
-		// RENDER
+		// NODESTATE
 		///////////////
-		UpdateRender();
+		// TODO (rhoe) not sure if we need to do a update on all nodes
+		//             every frame
+		UpdateNodes();
 
 		///////////////
 		// VIEWER RENDERING
 		///////////////
-		UpdateViewerRender();
 		UpdateViewerRenderGUI();
 
 		///////////////
@@ -145,6 +148,11 @@ int main(int argc, char *argv[])
 		///////////////
 		// TODO (rhoe) should maybe be switched off by compiler macro
 		UpdateDebug();
+
+		///////////////
+		// RENDERING
+		///////////////
+		UpdateViewerRender();
 
 		///////////////
 		// IMDRAW

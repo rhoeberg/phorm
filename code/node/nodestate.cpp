@@ -187,6 +187,16 @@ String* GetString(ObjectHandle *handle)
 	return _nodeState->strings.Get(handle);
 }
 
+void UpdateNodes()
+{
+	for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
+		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
+		Node *node = GetNode(&handle);
+		if(node) {
+		}
+	}
+}
+
 void CleanupNodes()
 {
 	// TODO (rhoe) freeing moar stuff

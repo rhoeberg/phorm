@@ -108,8 +108,4 @@ private:
 	ObjectHandle dataHandle;
 };
 
-/* ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle()); */
 ObjectHandle AddNode(const char *name, vec2 pos, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle());
-/* ObjectHandle AddNode(const char *name, vec2 pos, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs); */
-
-/* AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs); */

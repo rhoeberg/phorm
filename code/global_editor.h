@@ -18,5 +18,6 @@ void SetPromptActive(bool value);
 void SetInspectorObject(ObjectHandle handle);
 void SetViewerNode(ObjectHandle handle);
 ObjectHandle GetViewerNode();
+void SetViewerMode(i32 mode);
 
 global GlobalEditorState *_globalEditorState;

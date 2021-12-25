@@ -4,9 +4,7 @@ ObjectHandle Node::GetData()
 {
 	if(Changed()) {
 		changed = false;
-		// op(this);
 		CallOp();
-		// CallNodeOp(this);
 	}
 
 	return dataHandle;
