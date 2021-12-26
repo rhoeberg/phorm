@@ -104,15 +104,25 @@ void UpdateGlobalEditor()
 			node->CallOp();
 		}
 
+		// label
+		char buffer[128];
+		sprintf(buffer, "label##label%d", _nodeEditorState->draggedNode.id);
+		String *labelStr = GetStrings()->Get(&node->labelHandle);
+		if(ImGui::InputText(buffer, labelStr->buffer, labelStr->bufferSize)) {
+			labelStr->ReCalc();
+			// node->changed = true;
+		}
+
 		for(int i = 0; i < node->params.Count(); i++) {
 
 			NodeParameter *param = &node->params[i];
 
+			sprintf(buffer, "exposed##exposed%d:%d", _nodeEditorState->draggedNode.id, i);
+
 			// EXPOSE
-			ImGui::Checkbox("##exposed", &param->exposed);
+			ImGui::Checkbox(buffer, &param->exposed);
 			ImGui::SameLine();
 
-			char buffer[128];
 			sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNode.id);
 
 			switch(node->params[i].type) {
@@ -135,7 +145,7 @@ void UpdateGlobalEditor()
 					break;
 				}
 				case DATA_STRING: {
-					String *str = GetString(&param->dataHandle);
+					String *str = GetStrings()->Get(&param->dataHandle);
 					if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
 						str->ReCalc();
 						node->changed = true;

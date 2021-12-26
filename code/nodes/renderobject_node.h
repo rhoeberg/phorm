@@ -2,16 +2,17 @@
 
 void RenderObjectOperation(Node *self)
 {
-	RenderObject *output = GetRenderObject(&self->GetDataLast());
+	RenderObject *output = GetRenderObjects()->Get(&self->GetDataLast());
 
 	output->pos = self->params[0].Vec3();
 	output->scale = self->params[1].Vec3();
+	output->rot = self->params[2].Vec3();
 
-	Mesh *inputMesh = GetMeshInput(self->inputs[0]);
+	Mesh *inputMesh = GetMeshes()->Get(&self->inputs[0]);
 	if(!inputMesh)
 		return;
 	
-	Texture *inputTexture = GetTextureInput(self->inputs[1]);
+	Texture *inputTexture = GetTextures()->Get(&self->inputs[1]);
 	if(inputTexture) {
 		glBindTexture(GL_TEXTURE_2D, output->textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, inputTexture->pixels);
@@ -38,7 +39,7 @@ ObjectHandle CreateRenderObjectNode(String name, vec2 pos, DataType dataType, No
 	FixedArray<NodeParameter> params = {
 		NodeParameter("pos", vec3(0, 0, 0)),
 		NodeParameter("scale", vec3(1.0f, 1.0f, 1.0f)),
-		NodeParameter("label", ""),
+		NodeParameter("rot", vec3(0.0f, 0.0f, 0.0f)),
 	};
 
 	FixedArray<NodeInput> inputs = {

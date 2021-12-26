@@ -1,10 +1,11 @@
 #include "viewer_render.h"
-#include "node/nodestate.h"
+#include "data.h"
 
 void CreateViewerTextureRenderObject()
 {
+	// SETUP RENDEROBJECT FOR TEXTURE QUICK VIEW
 	_viewerRenderState.baseTextureObject = AddNewRenderObject();
-	RenderObject *renderObject = GetRenderObject(&_viewerRenderState.baseTextureObject);
+	RenderObject *renderObject = GetRenderObjects()->Get(&_viewerRenderState.baseTextureObject);
 
 	// TODO (rhoe) currently we are wasting a gl id here
 	//             perhaps we should pass vao as parameter instead of
@@ -22,8 +23,44 @@ void CreateViewerTextureRenderObject()
 
 }
 
+void InitializeDefaultShader()
+{
+	// SETUP VIEW AND PROJECTION
+    glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
+
+	
+	// CREATE DEFAULT SHADER
+    _viewerRenderState.defaultShader = createShaderProgram("assets/texture.vert", "assets/texture.frag");
+    glUseProgram(_viewerRenderState.defaultShader);
+    GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
+    GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+}
+
+void InitializeViewerFBO()
+{
+	// FRAMEBUFFER FOR MAIN WINDOW VIEWER
+	glGenFramebuffers(1, &_viewerRenderState.fbo);
+	glGenTextures(1, &_viewerRenderState.fboTexture);
+	glBindTexture(GL_TEXTURE_2D, _viewerRenderState.fboTexture);
+  
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _viewerRenderState.fboTexture, 0);  
+
+	_viewerRenderState.quad = CreateSpriteVAO();
+
+}
+
 void InitializeViewerRender()
 {
+	InitializeDefaultShader();
 	CreateViewerTextureRenderObject();
 	_viewerRenderState.orbitDistance = 5.0f;
 	_viewerRenderState.orbitDragSpeed = 0.006f;
@@ -32,9 +69,9 @@ void InitializeViewerRender()
 // Takes the handle of texture resource
 void AddTextureToRenderQueue(ObjectHandle *handle)
 {
-	Texture *texture = GetTexture(handle);
+	Texture *texture = GetTextures()->Get(handle);
 	if(texture) {
-		RenderObject *renderObject = GetRenderObject(&_viewerRenderState.baseTextureObject);
+		RenderObject *renderObject = GetRenderObjects()->Get(&_viewerRenderState.baseTextureObject);
 		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -46,7 +83,7 @@ void AddTextureToRenderQueue(ObjectHandle *handle)
 // Takes the handle of RenderObject resource
 void AddToRenderQueue(ObjectHandle *handle)
 {
-	RenderObject *object = GetRenderObject(handle);
+	RenderObject *object = GetRenderObjects()->Get(handle);
 	if(object) {
 		_viewerRenderState.renderList.Insert(*handle);
 	}
@@ -54,7 +91,7 @@ void AddToRenderQueue(ObjectHandle *handle)
 
 void AddToRenderPointLightQueue(ObjectHandle *handle)
 {
-	PointLight *light = GetPointLight(handle);
+	PointLight *light = GetPointLights()->Get(handle);
 	if(light) {
 		_viewerRenderState.renderPointLights.Insert(*handle);
 	}
@@ -113,6 +150,11 @@ void UpdateViewerRender()
 	float aspectRatio;
 	if(ViewerInMain()) {
 		glfwMakeContextCurrent(_win);
+	
+		// glBindFramebuffer(GL_FRAMEBUFFER, _viewerRenderState.fbo);
+		// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+
 		// int width, height;
 		// GetWindowSize(&width, &height);
 		aspectRatio = (float)VIEWER_SIZE / (float)VIEWER_SIZE;
@@ -139,37 +181,36 @@ void UpdateViewerRender()
 
 	///////////////////
 	// SETUP RENDER LIGHTS
-	glUseProgram(GetTextureShader());
+	glUseProgram(_viewerRenderState.defaultShader);
 	i32 lightCount = 0;
 	for(i32 i = 0; i < _viewerRenderState.renderPointLights.Count(); i++) {
 
 		// TODO (rhoe) here we should check for maximum light count reached
-
-		PointLight *pointLight = GetPointLight(&_viewerRenderState.renderPointLights[i]);
+		PointLight *pointLight = GetPointLights()->Get(&_viewerRenderState.renderPointLights[i]);
 		if(pointLight) {
 			
 			char buffer[128];
 
 			// get pointlight pos uniform
 			sprintf(buffer, "pointLights[%d].pos", lightCount);
-			GLuint posLoc = glGetUniformLocation(GetTextureShader(), buffer);
+			GLuint posLoc = glGetUniformLocation(_viewerRenderState.defaultShader, buffer);
 			glUniform3fv(posLoc, 1, glm::value_ptr(pointLight->pos));
 
 			// get pointlight color uniform
 			sprintf(buffer, "pointLights[%d].color", lightCount);
-			GLuint colorLoc = glGetUniformLocation(GetTextureShader(), buffer);
+			GLuint colorLoc = glGetUniformLocation(_viewerRenderState.defaultShader, buffer);
 			glUniform3fv(colorLoc, 1, glm::value_ptr(pointLight->color));
 
 			lightCount++;
 		}
 	}
-	GLuint lightAmountLoc = glGetUniformLocation(GetTextureShader(), "pointLightAmount");
+	GLuint lightAmountLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "pointLightAmount");
 	glUniform1i(lightAmountLoc, lightCount);
 
 	///////////////////
 	// RENDER OBJECTS
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
-		RenderObject *renderObject = GetRenderObject(&_viewerRenderState.renderList[i]);
+		RenderObject *renderObject = GetRenderObjects()->Get(&_viewerRenderState.renderList[i]);
 		if(renderObject != NULL) {
 
 			///////////////
@@ -183,7 +224,7 @@ void UpdateViewerRender()
 				glBindTexture(GL_TEXTURE_2D, _viewerRenderState.defaultTexture);
 			}
 
-			glUseProgram(GetTextureShader());
+			glUseProgram(_viewerRenderState.defaultShader);
 			
 			/////////////////
 			// VIEW
@@ -197,7 +238,7 @@ void UpdateViewerRender()
 
 			view = glm::lookAt(orbitPos, vec3(0, 0, 0), vec3(0, 1, 0));
 
-			GLuint viewLoc = glGetUniformLocation(GetTextureShader(), "view");
+			GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 
@@ -207,17 +248,25 @@ void UpdateViewerRender()
 			glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 													aspectRatio,
 													0.1f, 1000.0f);
-			GLuint projectionLoc = glGetUniformLocation(GetTextureShader(), "projection");
+			GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
 			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
 			/////////////////
 			// MODEL
+			// float time = GetTime();
+			// vec3 angle = vec3(0, 1, 0);
+			// renderObject->rot = angleAxis(time, angle);
+
+			quat q = quat(renderObject->rot);
+
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 			model = glm::translate(model, renderObject->pos);
+			model = model * toMat4(q);
 			model = glm::scale(model, renderObject->scale);
-			GLuint modelLoc = glGetUniformLocation(GetTextureShader(), "model");
+			GLuint modelLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
 
 
 			/////////////////
@@ -237,6 +286,34 @@ void UpdateViewerRender()
 	if(!ViewerInMain()) {
 		glfwSwapBuffers(_viewerWindow);
 		glfwMakeContextCurrent(_win);
+	}
+	else {
+		// render viewer quad in main
+		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// glActiveTexture(GL_TEXTURE0);
+		// glBindTexture(GL_TEXTURE_2D, _viewerRenderState.fboTexture);
+
+		// glUseProgram(_viewerRenderState.defaultShader);
+
+		// glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+		// view = glm::translate(view, vec3(0, 0, 0));
+		// GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
+		// glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		// glm::mat4 projection = glm::perspective(glm::radians(45.0f),
+		// 										aspectRatio,
+		// 										0.1f, 1000.0f);
+		// GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
+		// glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+		// glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+		// model = glm::translate(model, vec3(0, 0, 0));
+		// // model = glm::scale(model, vec3(10, 10, 1));
+		// GLuint modelLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "model");
+		// glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		// glBindVertexArray(_viewerRenderState.quad);
+		// glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+		// glBindVertexArray(0);
 	}
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -273,4 +350,11 @@ void UpdateViewerRenderGUI()
 		ToggleViewerMode();
 	}
 	ImGui::End();
+
+	if(singleKeyPress(GLFW_KEY_R)) {
+		_viewerRenderState.orbitDistance = 5.0f;
+		_viewerRenderState.orbitDragSpeed = 0.006f;
+		_viewerRenderState.dragAmount = vec3(0, 0, 0);
+		// _viewerRenderState.camPos = vec3(0, 0, -1
+	}
 }

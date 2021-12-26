@@ -1,3 +1,10 @@
+/*
+  
+ideas for new nodes:
+- mirror effect (takes a renderobject and mirrors position?)
+
+ */
+
 #pragma once
 
 void BaseNodeDrawFunction(Node *node);
@@ -10,8 +17,12 @@ void BaseNodeDrawFunction(Node *node);
 #include "MeshNoise.h"
 #include "VideoNode.h"
 #include "renderobject_node.h"
+#include "MirrorNode.h"
 #include "TimeNode.h"
 #include "SinNode.h"
+#include "SinWaveNode.h"
+#include "SawWaveNode.h"
+#include "HistogramNode.h"
 #include "PointLightNode.h"
 #include "Vec3Node.h"
 #include "MulNode.h"
@@ -92,10 +103,14 @@ void AddNodeConstructors()
 	AddNodeConstructor(String("noise mesh"), DATA_MESH, MeshNoiseOperation, CreateMeshNoise);
 	AddNodeConstructor(String("double"), DATA_DOUBLE, DoubleOperation, CreateDoubleNode);
 	AddNodeConstructor(String("sin"), DATA_DOUBLE, SinOperation, CreateSinNode);
+	AddNodeConstructor(String("sinwave"), DATA_DOUBLE, SinWaveOperation, CreateSinWaveNode);
+	AddNodeConstructor(String("sawwave"), DATA_DOUBLE, SawWaveOperation, CreateSawWaveNode);
+	AddNodeConstructor(String("histogram"), DATA_DOUBLE, HistogramOperation, DrawHistogramNode, CreateHistogramNode);
 	AddNodeConstructor(String("mul"), DATA_DOUBLE, MulOperation, CreateMulNode);
 	AddNodeConstructor(String("add"), DATA_DOUBLE, AddOperation, CreateAddNode);
 	AddNodeConstructor(String("time"), DATA_DOUBLE, TimeOperation, DrawTimeNode, CreateTimeNode);
 	AddNodeConstructor(String("renderobject"), DATA_RENDEROBJECT, RenderObjectOperation, CreateRenderObjectNode);
+	AddNodeConstructor(String("mirror"), DATA_RENDEROBJECT, MirrorOperation, CreateMirrorNode);
 	AddNodeConstructor(String("pointlight"), DATA_POINTLIGHT, PointLightOperation, CreatePointLightNode);
 	AddNodeConstructor(String("vec3"), DATA_VEC3, Vec3NodeOperation, CreateVec3Node);
 }

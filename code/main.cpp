@@ -30,6 +30,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 #include "portaudio.h"
 #include "stb_vorbis.c"
@@ -46,31 +48,29 @@
 #include "glfw_wrapper.cpp"
 #include "simplexnoise1234.cpp"
 #include "math.cpp"
-#include "render.cpp"
+// #include "render.cpp"
 #include "vm_array.cpp"
 #include "vm_fixedarray.cpp"
 #include "string.cpp"
 #include "hashmap.cpp"
-#include "node/node_parameter.cpp"
-#include "node/node.cpp"
-#include "node/node_editor.cpp"
+#include "ObjectContainer.cpp"
+#include "node_parameter.cpp"
+#include "node.cpp"
+#include "node_editor.cpp"
 #include "scene_editor.cpp"
 #include "global_editor.cpp"
 #include "opengl_wrapper.cpp"
 #include "viewer_render.cpp"
-#include "node/texture.cpp"
-#include "node/mesh.cpp"
-#include "node/nodestate.cpp"
-#include "node/save.cpp"
+#include "texture.cpp"
+#include "mesh.cpp"
+#include "data.cpp"
+#include "save.cpp"
 #include "debug.cpp"
 // #include "video.cpp"
 
 int main(int argc, char *argv[])
 {
 	GLFWwindow *win = initGlfw();
-
-	// initialize graphics
-	InitializeRender();
 
 	// initialize GUI
 	initializeGUI(win);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 		// TIME
 		///////////////
 		double currentFrame = glfwGetTime();
-		double deltaTime = (currentFrame - lastFrame);
+		deltaTime = (currentFrame - lastFrame);
 		lastFrame = currentFrame;
 
 		///////////////
@@ -125,13 +125,6 @@ int main(int argc, char *argv[])
 
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-
-		///////////////
-		// NODESTATE
-		///////////////
-		// TODO (rhoe) not sure if we need to do a update on all nodes
-		//             every frame
-		UpdateNodes();
 
 		///////////////
 		// VIEWER RENDERING
@@ -182,8 +175,6 @@ void cleanup()
     Pa_Terminate();
     imDrawClean();
     glfwTerminate();
-	// NodeEditorCleanup();
-	// CleanupTextureGraph();
 	CleanupNodes();
 	CleanupNodeEditor();
 	CleanupSceneEditor();

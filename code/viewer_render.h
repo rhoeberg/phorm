@@ -10,7 +10,14 @@ struct ViewerRenderState {
 	bool wireframe;
 
 	GLuint defaultTexture;
+	GLuint defaultShader;
 
+	// FRAMEBUFFER FOR MAIN WINDOW VIEWER
+	GLuint fbo;
+	GLuint fboTexture;
+	GLuint quad;
+
+	// CAMERA
 	bool dragging;
 	vec2 startDragPos;
 	vec2 lastDragPos;

@@ -7,10 +7,16 @@ typedef int32_t i32;
 typedef int16_t i16;
 typedef int8_t i8;
 
+typedef glm::vec4 vec4;
+typedef glm::vec3 vec3;
+typedef glm::vec2 vec2;
+typedef glm::quat quat;
+
 enum DataType {
 	DATA_TEXTURE,
 	DATA_MESH,
 	DATA_RENDEROBJECT,
+	DATA_RENDEROBJECT_GROUP,
 	DATA_DOUBLE,
 	DATA_INT,
 	DATA_VEC3,
@@ -49,3 +55,7 @@ struct ObjectHandle {
 		return false;
 	}
 };
+
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
+#define ASSERT(Expression) if(!(Expression)) {*(volatile int *)0 = 0;}
+#define NOT_IMPLEMENTED ASSERT(!"NOT_IMPLEMENTED")

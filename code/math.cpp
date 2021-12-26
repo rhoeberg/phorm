@@ -5,6 +5,11 @@ double Sin(double d)
 	return sin(d);
 }
 
+double Fmod(double numer, double denom)
+{
+	return fmod(numer, denom);
+}
+
 float Min(float a, float b)
 {
 	return (a < b) ? a : b;

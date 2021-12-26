@@ -1,5 +1,5 @@
 #include "node_editor.h"
-#include "nodestate.h"
+#include "data.h"
 
 // void NodeEditorSetWindowSize(int width, int height)
 // {

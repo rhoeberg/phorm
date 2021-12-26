@@ -2,15 +2,15 @@
 
 void AddOperation(Node *self)
 {
-	double *input1 = GetDoubleOutput(&self->inputs[0].handle);
+	double *input1 = GetDoubles()->Get(&self->inputs[0]);
 	if(!input1)
 		return;
 
-	double *input2 = GetDoubleOutput(&self->inputs[1].handle);
+	double *input2 = GetDoubles()->Get(&self->inputs[1]);
 	if(!input2)
 		return;
 
-	double *output = GetDouble(&self->GetDataLast());
+	double *output = GetDoubles()->Get(&self->GetDataLast());
 	*output = *input1 + *input2;
 
 }

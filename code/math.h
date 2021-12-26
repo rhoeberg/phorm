@@ -23,6 +23,7 @@ struct Rect {
 };
 
 double Sin(double d);
+double Fmod(double numer, double denom);
 float Min(float a, float b);
 float Max(float a, float b);
 bool PointInsideRect(vec2 point, Rect rect);

@@ -25,6 +25,8 @@ void UpdateDebug()
 	if(ImGui::Button("reset time")) {
 		ResetTime();
 	}
+
+	ImGui::Text("deltaTime: %f", deltaTime);
     ImGui::End();
 
 }

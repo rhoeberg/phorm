@@ -3,15 +3,15 @@
 void MixTextureOperation(Node *self)
 {
 	// GET INPUTS
-	Texture *tex1 = GetTextureInput(self->inputs[0]);
-	Texture *tex2 = GetTextureInput(self->inputs[1]);
+	Texture *tex1 = GetTextures()->Get(&self->inputs[0]);
+	Texture *tex2 = GetTextures()->Get(&self->inputs[1]);
 	if(!tex1 || !tex2)
 		return;
 
 	// GET SELF
 	// TODO (rhoe) make cleaner way to get parameters
 	double mix = self->params[0].Double();
-	Texture *output = GetTexture(&self->GetDataLast());
+	Texture *output = GetTextures()->Get(&self->GetDataLast());
 
 	// OPERATION
 	float inputMul1 = 1.0f - mix;

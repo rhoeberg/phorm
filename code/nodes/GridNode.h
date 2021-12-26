@@ -2,7 +2,7 @@
 
 void GridOperation(Node *self)
 {
-	Mesh *output = GetMesh(&self->GetDataLast());
+	Mesh *output = GetMeshes()->Get(&self->GetDataLast());
 	if(!output)
 		return;
 

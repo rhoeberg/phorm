@@ -59,7 +59,7 @@ void UpdateSceneEditor()
 		if(nodeHandle) {
 			Node *node = GetNode(nodeHandle);
 			if(node) {
-				String *str = GetString(&node->params[2].dataHandle);
+				String *str = GetStrings()->Get(&node->params[2].dataHandle);
 				if(str) {
 					ImGui::Text("%d", i);
 					ImGui::SameLine(300);
@@ -83,7 +83,7 @@ void UpdateSceneEditor()
 		if(nodeHandle) {
 			Node *node = GetNode(nodeHandle);
 			if(node) {
-				String *str = GetString(&node->params[2].dataHandle);
+				String *str = GetStrings()->Get(&node->params[2].dataHandle);
 				if(str) {
 					ImGui::Text("%d", i);
 					ImGui::SameLine(300);
@@ -129,7 +129,7 @@ void UpdateSceneEditor()
 		Node *node = _nodeState->nodes.Get(&handle);
 		if(node) {
 			if(node->type == DATA_RENDEROBJECT) {
-				String *str = GetString(&node->params[2].dataHandle);
+				String *str = GetStrings()->Get(&node->labelHandle);
 				if(str) {
 					ImGui::Text("%s", str->buffer);
 					ImGui::SameLine();
@@ -153,7 +153,7 @@ void UpdateSceneEditor()
 		Node *node = _nodeState->nodes.Get(&handle);
 		if(node) {
 			if(node->type == DATA_POINTLIGHT) {
-				String *str = GetString(&node->params[2].dataHandle);
+				String *str = GetStrings()->Get(&node->labelHandle);
 				if(str) {
 					ImGui::Text("%s", str->buffer);
 					ImGui::SameLine();

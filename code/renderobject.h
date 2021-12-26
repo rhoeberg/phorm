@@ -9,4 +9,6 @@ struct RenderObject {
 
 	vec3 pos;
 	vec3 scale;
+	/* quat rot; */
+	vec3 rot;
 };

@@ -2,11 +2,11 @@
 
 void MeshNoiseOperation(Node *self)
 {
-	Mesh *input = GetMeshInput(self->inputs[0]);
+	Mesh *input = GetMeshes()->Get(&self->inputs[0]);
 	if(!input)
 		return;
 
-	Mesh *output = GetMesh(&self->GetDataLast());
+	Mesh *output = GetMeshes()->Get(&self->GetDataLast());
 	if(!output)
 		return;
 

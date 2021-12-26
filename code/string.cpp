@@ -104,7 +104,7 @@ String& String::operator=(char *str) {
 }
 
 String& String::operator=(const String &other) {
-	Free();
+	// Free();
 
 	bufferSize = other.bufferSize;
 	length = other.length;

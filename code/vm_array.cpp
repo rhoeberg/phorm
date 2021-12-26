@@ -53,8 +53,11 @@ VMArray<T>::~VMArray()
 template <typename T>
 void VMArray<T>::Grow()
 {
+	int oldMax = max;
 	max *= 2;
 	data = (T*)realloc(data, sizeof(T) * max);
+	T* offset = data + oldMax;
+	memset(offset, 0, max - oldMax);
 }
 
 template <typename T>

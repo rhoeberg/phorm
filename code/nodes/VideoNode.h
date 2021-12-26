@@ -3,7 +3,7 @@
 void VideoOperation(Node *self)
 {
 	// SELF
-	Texture *output = GetTexture(&self->GetDataLast());
+	Texture *output = GetTextures()->Get(&self->GetDataLast());
 	double time = self->params[0].Double();
 
 	VideoNodeState *state = _nodeState->videoNodes.Get(&self->extraHandle);
@@ -43,11 +43,6 @@ void VideoOperation(Node *self)
 		plm_frame_to_rgba(frame, (uint8_t*)(&output->pixels), w * 4);
 		/* free(rgb_buffer); */
 	}
-}
-
-ObjectHandle SetupVideoNode()
-{
-	return _nodeState->videoNodes.Insert(VideoNodeState());
 }
 
 ObjectHandle CreateVideoNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
