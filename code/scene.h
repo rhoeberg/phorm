@@ -1,23 +1,33 @@
 #pragma once
+#include "viewer_render.h"
 
-/* struct SceneNode { */
-/* 	String labelKey; */
-/* 	NodeHandle renderNode; */
-/* }; */
+struct SceneObject
+{
+	ObjectHandle handle; // handle to node (can be renderobject or renderobjectgroup)
+	vec3 pos;
+	vec3 scale;
+	vec3 rot;
+
+	SceneObject(ObjectHandle _handle)
+	{
+		handle = _handle;
+		pos = vec3(0, 0, 0);
+		scale = vec3(1, 1, 1);
+		rot = vec3(0, 0, 0);
+	}
+};
 
 struct Scene {
-	/* VMArray<String> keys; */
-	/* VMArray<ObjectHandle> objects; */
-	ObjectContainer<ObjectHandle> objects;
+	ObjectContainer<SceneObject> sceneObjects;
 	ObjectContainer<ObjectHandle> pointLights;
 
 	Scene() {
-		/* objects = VMArray<ObjectHandle>(); */
-		objects = ObjectContainer<ObjectHandle>(HANDLE_OBJECTHANDLE, DATA_RENDEROBJECT);
+		sceneObjects = ObjectContainer<SceneObject>();
 		pointLights = ObjectContainer<ObjectHandle>(HANDLE_OBJECTHANDLE, DATA_POINTLIGHT);
 	}
 
 	void Free() {
-		objects.Free();
+		sceneObjects.Free();
+		pointLights.Free();
 	}
 };

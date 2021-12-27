@@ -130,7 +130,7 @@ void SaveNodes()
 
 	//////////////
 	// SAVE SCENES
-	SaveObjectContainer<ObjectHandle>(&_sceneEditorState->scene.objects, &saveFile);
+	SaveObjectContainer<SceneObject>(&_sceneEditorState->scene.sceneObjects, &saveFile);
 	SaveObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
 
@@ -260,7 +260,7 @@ void LoadNodes()
 
 	//////////////
 	// LOAD SCENES
-	LoadObjectContainer<ObjectHandle>(&_sceneEditorState->scene.objects, &saveFile);
+	LoadObjectContainer<SceneObject>(&_sceneEditorState->scene.sceneObjects, &saveFile);
 	LoadObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
 }

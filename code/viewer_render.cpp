@@ -76,16 +76,24 @@ void AddTextureToRenderQueue(ObjectHandle *handle)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		AddToRenderQueue(&_viewerRenderState.baseTextureObject);
+
+		RenderObjectInstance instance = RenderObjectInstance(_viewerRenderState.baseTextureObject);
+		AddToRenderQueue(instance);
 	}
 }
 
 // Takes the handle of RenderObject resource
-void AddToRenderQueue(ObjectHandle *handle)
+void AddToRenderQueue(RenderObjectInstance instance)
 {
-	if(handle->dataType == DATA_RENDEROBJECT ||
-	   handle->dataType == DATA_RENDEROBJECT_GROUP) {
-		_viewerRenderState.renderList.Insert(*handle);
+	if(instance.renderObjectHandle.dataType == DATA_RENDEROBJECT) {
+		_viewerRenderState.renderList.Insert(instance);
+	}
+}
+
+void AddToRenderGroupQueue(RenderGroupInstance instance)
+{
+	if(instance.renderGroupHandle.dataType == DATA_RENDEROBJECT_GROUP) {
+		_viewerRenderState.renderGroupList.Insert(instance);
 	}
 }
 
@@ -108,8 +116,10 @@ void ViewerGLSettings()
     glEnable(GL_DEPTH_TEST);
 }
 
-void DrawRenderObject(RenderObject *renderObject, glm::mat4 model)
+void DrawRenderObjectInstance(RenderObjectInstance *instance, glm::mat4 model)
 {
+	RenderObject *renderObject = GetRenderObjects()->Get(&instance->renderObjectHandle);
+
 	///////////////
 	// TEXTURE
 	glActiveTexture(GL_TEXTURE0);
@@ -128,11 +138,18 @@ void DrawRenderObject(RenderObject *renderObject, glm::mat4 model)
 	/////////////////
 	// MODEL
 	model = glm::translate(model, renderObject->pos);
-	quat q = quat(renderObject->rot);
-	model = model * toMat4(q);
-	model = glm::scale(model, renderObject->scale);
+	model = glm::translate(model, instance->pos);
+	quat q = quat(renderObject->rot) * quat(instance->rot);
+	glm::mat4 rotationMatrix = glm::mat4_cast(q);
+	model = model * rotationMatrix;
+	model = glm::scale(model, renderObject->scale * instance->scale);
 	GLuint modelLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	glm::mat3 model3x3 = glm::mat3(model);
+	glm::mat3 normalMatrix = glm::inverseTranspose(model3x3);
+	GLuint normalMatrixLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "normalMatrix");
+	glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
 	/////////////////
 	// DRAW
@@ -144,8 +161,6 @@ void DrawRenderObject(RenderObject *renderObject, glm::mat4 model)
 
 void UpdateViewerRender()
 {
-	
-
 	ViewerGLSettings();
 
 	// TODO (rhoe) store this somewhere
@@ -156,7 +171,7 @@ void UpdateViewerRender()
 	viewerRect.height = VIEWER_SIZE;
 	viewerRect.pos = vec2(width - VIEWER_SIZE, 0);
 
-	if((!ViewerInMain()) || (PointInsideRect(mouse, viewerRect))) {
+	if((!ViewerInMain() && mouseInViewer) || (ViewerInMain() && PointInsideRect(mouse, viewerRect))) {
 		if(scrollReady) {
 			_viewerRenderState.orbitDistance += scrollOffset;
 			scrollReady = false;
@@ -265,39 +280,39 @@ void UpdateViewerRender()
 	GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-
 	///////////////////
 	// RENDER OBJECTS
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
-		ObjectHandle handle = _viewerRenderState.renderList[i];
-		if(handle.dataType == DATA_RENDEROBJECT) {
-			RenderObject *renderObject = GetRenderObjects()->Get(&handle);
-			if(renderObject != NULL) {
-				glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-				DrawRenderObject(renderObject, model);
-			}
+		RenderObjectInstance instance = _viewerRenderState.renderList[i];
+		if(instance.renderObjectHandle.dataType == DATA_RENDEROBJECT) {
+			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+			DrawRenderObjectInstance(&instance, model);
 		}
-		else if(handle.dataType == DATA_RENDEROBJECT_GROUP) {
-			RenderObjectGroup *renderObjectGroup = GetRenderObjectGroups()->Get(&handle);
-			if(renderObjectGroup) {
-				glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-				model = glm::translate(model, renderObjectGroup->pos);
-				quat q = quat(renderObjectGroup->rot);
-				model = model * toMat4(q);
-				model = glm::scale(model, renderObjectGroup->scale);
-				for(i32 j = 0; j < renderObjectGroup->renderObjects.Count(); j++) {
-					RenderObject *renderObject = GetRenderObjects()->Get(&renderObjectGroup->renderObjects[j]);
-					if(renderObject) {
-						DrawRenderObject(renderObject, model);
-					}
-				}
+	}
+
+	///////////////////
+	// RENDER GROUPS
+	for(int i = 0; i < _viewerRenderState.renderGroupList.Count(); i++) {
+		RenderGroupInstance instance = _viewerRenderState.renderGroupList[i];
+		RenderObjectGroup *group = GetRenderObjectGroups()->Get(&instance.renderGroupHandle);
+		if(instance.renderGroupHandle.dataType == DATA_RENDEROBJECT_GROUP) {
+			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+			model = glm::translate(model, group->pos);
+			quat q = quat(group->rot);
+			model = model * toMat4(q);
+			model = glm::scale(model, group->scale);
+
+			for(i32 j = 0; j < group->renderObjects.Count(); j++) {
+				DrawRenderObjectInstance(&group->renderObjects[j], model);
 			}
+
 		}
 	}
 
 	///////////////////
 	// RESET STATE
 	_viewerRenderState.renderList.Clear();
+	_viewerRenderState.renderGroupList.Clear();
 	_viewerRenderState.renderPointLights.Clear();
 
 	if(!ViewerInMain()) {

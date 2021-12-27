@@ -21,6 +21,9 @@ global double scrollOffset;
 global bool imguiWantsKeyboard;
 global bool imguiWantsMouse;
 global double deltaTime;
+global double lastFrame;
+
+/* #include "../tracy/Tracy.hpp" */
 
 #include "audio.h"
 #include "opengl.h"

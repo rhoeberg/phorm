@@ -7,24 +7,20 @@
   
  */
 
-#pragma
+#pragma once
 
-struct RenderObjectInstance
-{
-	ObjectHandle handle;
-	vec3 pos;
-	vec3 scale;
-	vec3 rot;
-};
+#include "scene.h"
 
 struct RenderObjectGroup
 {
-	VMArray<ObjectHandle> renderObjects;
+	// could this contain renderobject instances instead of
+	// sceneobjects to avoid infinite nesting?
+	VMArray<RenderObjectInstance> renderObjects;
 	vec3 pos;
 	vec3 scale;
 	vec3 rot;
 
 	RenderObjectGroup() {
-		renderObjects = VMArray<ObjectHandle>();
+		renderObjects = VMArray<RenderObjectInstance>();
 	}
 };

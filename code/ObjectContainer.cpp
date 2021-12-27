@@ -1,7 +1,12 @@
 template <typename T>
 ObjectContainer<T>::ObjectContainer()
 {
+	elements = VMArray<T>();
+	isFree = VMArray<bool>();
+	slotID = VMArray<u32>();
+
 	handleType = HANDLE_NONE;
+	dataType = DATA_NONE;
 }
 
 template <typename T>
@@ -153,6 +158,16 @@ T* ObjectContainer<T>::Get(NodeInput *input)
 
 	// TODO (rhoe) make sure we have some kind of type validation here
 	return &elements[inputNode->GetData().id];
+}
+
+template <typename T>
+T* ObjectContainer<T>::GetAt(int index)
+{
+	ObjectHandle handle = GetHandle(index);
+	if(!Exists(&handle)) {
+		return NULL;
+	}
+	return &elements[handle.id];
 }
 
 template <typename T>

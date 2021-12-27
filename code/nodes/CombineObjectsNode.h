@@ -13,7 +13,8 @@ void CombineObjectsOperation(Node *self)
 	if(inputNode1) {
 		ObjectHandle handle = inputNode1->GetData();
 		if(handle.dataType == DATA_RENDEROBJECT) {
-			output->renderObjects.Insert(handle);
+			RenderObjectInstance instance = RenderObjectInstance(handle);
+			output->renderObjects.Insert(instance);
 		}
 	}
 
@@ -21,7 +22,8 @@ void CombineObjectsOperation(Node *self)
 	if(inputNode2) {
 		ObjectHandle handle = inputNode2->GetData();
 		if(handle.dataType == DATA_RENDEROBJECT) {
-			output->renderObjects.Insert(handle);
+			RenderObjectInstance instance = RenderObjectInstance(handle);
+			output->renderObjects.Insert(instance);
 		}
 	}
 

@@ -61,6 +61,7 @@ void main()
 	result *= texture(outTexture, TexCoord).xyz;
 	color = vec4(result, 1.0);
 
+	/* color = vec4(abs(normal), 1.0); */
 	/* color = vec4(pointLights[0].color, 1.0); */
 	/* color = vec4(pointLights[0].pos, 1.0); */
 }

@@ -21,17 +21,17 @@ void CubeOperation(Node *self)
 
 		// LEFT FACE index 8..
 		// COORDS              UV           NORMAL
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // back, left, bottom
-		-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f, // front, left, bottom
-		-0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // front, left, top
-		-0.5f, 0.5f, -0.5f,   0.0f, 1.0f, 1.0f, 0.0f, 0.0f, // back, left, top
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // back, left, bottom
+		-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f, // front, left, bottom
+		-0.5f,  0.5f,  0.5f,  1.0f, 1.0f, -1.0f, 0.0f, 0.0f, // front, left, top
+		-0.5f, 0.5f, -0.5f,   0.0f, 1.0f, -1.0f, 0.0f, 0.0f, // back, left, top
 
 		// RIGHT FACE index 12..
 		// COORDS              UV           NORMAL
-		0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // front, right, bottom
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f, // back, right, bottom
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f, 0.0f, 0.0f, // back, right, top
-		0.5f,  0.5f,  0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f, // front, right, top
+		0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // front, right, bottom
+		0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f, // back, right, bottom
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // back, right, top
+		0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f, // front, right, top
 
 		// TOP FACE index 16..
 		// COORDS              UV           NORMAL

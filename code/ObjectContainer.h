@@ -28,6 +28,7 @@ struct ObjectContainer {
 	bool Exists(ObjectHandle *handle);
 	T* Get(ObjectHandle *handle);
 	T* Get(NodeInput *input);
+	T* ObjectContainer<T>::GetAt(int index);
 
 	ObjectHandle GetHandle(int index);
 	int Count();

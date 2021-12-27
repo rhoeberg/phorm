@@ -29,6 +29,7 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
@@ -68,6 +69,73 @@
 #include "debug.cpp"
 // #include "video.cpp"
 
+void UpdateLoop()
+{
+
+	///////////////
+	// TIME
+	///////////////
+	double currentFrame = glfwGetTime();
+	deltaTime = (currentFrame - lastFrame);
+	lastFrame = currentFrame;
+
+	///////////////
+	// INPUT
+	///////////////
+	glfwPollEvents();
+	
+	///////////////
+	// GUI
+	///////////////
+	glfwMakeContextCurrent(_win);
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	// gui();
+	// bool show = true;
+	// ImGui::ShowDemoWindow(&show);
+
+	glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+
+	///////////////
+	// VIEWER RENDERING
+	///////////////
+	UpdateViewerRenderGUI();
+
+	///////////////
+	// GLOBAL EDITOR
+	///////////////
+	UpdateGlobalEditor();
+
+	///////////////
+	// DEBUG
+	///////////////
+	// TODO (rhoe) should maybe be switched off by compiler macro
+	UpdateDebug();
+
+	///////////////
+	// RENDERING
+	///////////////
+	UpdateViewerRender();
+
+	///////////////
+	// IMDRAW
+	///////////////
+	glfwMakeContextCurrent(_win);
+	int screenWidth, screenHeight;
+	GetWindowSize(&screenWidth, &screenHeight);
+	glViewport(0, 0, screenWidth, screenHeight);
+	ImDrawRender();
+
+	///////////////
+	// BUFFER SWAP / IMGUI RENDER
+	///////////////
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	glfwSwapBuffers(_win);
+}
+
 int main(int argc, char *argv[])
 {
 	GLFWwindow *win = initGlfw();
@@ -96,72 +164,10 @@ int main(int argc, char *argv[])
 		SetViewerInMain(true);
 	}
 
-    double lastFrame = glfwGetTime();
+    lastFrame = glfwGetTime();
 	double startTime = 0.0;
     while(!glfwWindowShouldClose(win)) {
-
-		///////////////
-		// TIME
-		///////////////
-		double currentFrame = glfwGetTime();
-		deltaTime = (currentFrame - lastFrame);
-		lastFrame = currentFrame;
-
-		///////////////
-		// INPUT
-		///////////////
-		glfwPollEvents();
-	
-		///////////////
-		// GUI
-		///////////////
-		glfwMakeContextCurrent(_win);
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-		// gui();
-		// bool show = true;
-		// ImGui::ShowDemoWindow(&show);
-
-		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-
-		///////////////
-		// VIEWER RENDERING
-		///////////////
-		UpdateViewerRenderGUI();
-
-		///////////////
-		// GLOBAL EDITOR
-		///////////////
-		UpdateGlobalEditor();
-
-		///////////////
-		// DEBUG
-		///////////////
-		// TODO (rhoe) should maybe be switched off by compiler macro
-		UpdateDebug();
-
-		///////////////
-		// RENDERING
-		///////////////
-		UpdateViewerRender();
-
-		///////////////
-		// IMDRAW
-		///////////////
-		glfwMakeContextCurrent(_win);
-		int screenWidth, screenHeight;
-		GetWindowSize(&screenWidth, &screenHeight);
-		glViewport(0, 0, screenWidth, screenHeight);
-		ImDrawRender();
-
-		///////////////
-		// BUFFER SWAP / IMGUI RENDER
-		///////////////
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(win);
+		UpdateLoop();
     }
     
     cleanup();

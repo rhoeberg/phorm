@@ -44,11 +44,16 @@ void RenderViewerNode()
 				break;
 			}
 			case DATA_RENDEROBJECT: {
-				AddToRenderQueue(&node->GetData());
+				RenderObjectInstance instance = RenderObjectInstance(node->GetData());
+				AddToRenderQueue(instance);
 				break;
 			}
 			case DATA_RENDEROBJECT_GROUP: {
-				AddToRenderQueue(&node->GetData());
+				RenderObjectGroup *group = GetRenderObjectGroups()->Get(&node->GetData());
+				for(i32 i = 0; i < group->renderObjects.Count(); i++) {
+					RenderObjectInstance instance = RenderObjectInstance(node->GetData());
+					AddToRenderQueue(instance);
+				}
 				break;
 			}
 		}
