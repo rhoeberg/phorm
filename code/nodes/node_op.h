@@ -17,6 +17,7 @@ void BaseNodeDrawFunction(Node *node);
 #include "MeshNoise.h"
 #include "VideoNode.h"
 #include "renderobject_node.h"
+#include "CombineObjectsNode.h"
 #include "MirrorNode.h"
 #include "TimeNode.h"
 #include "SinNode.h"
@@ -110,6 +111,7 @@ void AddNodeConstructors()
 	AddNodeConstructor(String("add"), DATA_DOUBLE, AddOperation, CreateAddNode);
 	AddNodeConstructor(String("time"), DATA_DOUBLE, TimeOperation, DrawTimeNode, CreateTimeNode);
 	AddNodeConstructor(String("renderobject"), DATA_RENDEROBJECT, RenderObjectOperation, CreateRenderObjectNode);
+	AddNodeConstructor(String("combine"), DATA_RENDEROBJECT_GROUP, CombineObjectsOperation, CreateCombineObjectsNode);
 	AddNodeConstructor(String("mirror"), DATA_RENDEROBJECT, MirrorOperation, CreateMirrorNode);
 	AddNodeConstructor(String("pointlight"), DATA_POINTLIGHT, PointLightOperation, CreatePointLightNode);
 	AddNodeConstructor(String("vec3"), DATA_VEC3, Vec3NodeOperation, CreateVec3Node);

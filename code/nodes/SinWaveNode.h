@@ -7,7 +7,7 @@ void SinWaveOperation(Node *self)
 		return;
 
 	double rate = self->params[0].Double();
-	*output = Sin(GetTime() * rate);
+	*output = (Sin(GetTime() * rate) + 1.0f) / 2.0f;
 
 	self->changed = true;
 }

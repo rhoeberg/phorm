@@ -15,6 +15,7 @@ void InitializeNodes()
 	new(&_nodeState->textures) ObjectContainer<Texture>(HANDLE_DATA, DATA_TEXTURE);
 	new(&_nodeState->meshes) ObjectContainer<Mesh>(HANDLE_DATA, DATA_MESH);
 	new(&_nodeState->renderObjects) ObjectContainer<RenderObject>(HANDLE_DATA, DATA_RENDEROBJECT);
+	new(&_nodeState->renderObjectGroups) ObjectContainer<RenderObjectGroup>(HANDLE_DATA, DATA_RENDEROBJECT_GROUP);
 	new(&_nodeState->doubles) ObjectContainer<double>(HANDLE_DATA, DATA_DOUBLE);
 	new(&_nodeState->vec3s) ObjectContainer<vec3>(HANDLE_DATA, DATA_VEC3);
 	new(&_nodeState->strings) ObjectContainer<String>(HANDLE_DATA, DATA_STRING);

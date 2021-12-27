@@ -114,6 +114,7 @@ void SaveNodes()
 	SaveI32(_nodeState->textures.Count(), &saveFile);
 	SaveI32(_nodeState->meshes.Count(), &saveFile);
 	SaveI32(_nodeState->renderObjects.Count(), &saveFile);
+	SaveI32(_nodeState->renderObjectGroups.Count(), &saveFile);
 	SaveI32(_nodeState->doubles.Count(), &saveFile);
 	SaveI32(_nodeState->videoNodes.Count(), &saveFile);
 	// SaveI32(_nodeState->labelNodes.Count(), &saveFile);
@@ -205,6 +206,15 @@ void LoadNodes()
 		int count = LoadI32(&saveFile);
 		for(int i = 0; i < count; i++) {
 			AddNewRenderObject();
+		}
+	}
+
+	// load renderobject groups
+	{
+		_nodeState->renderObjectGroups.Clear();
+		int count = LoadI32(&saveFile);
+		for(int i = 0; i < count; i++) {
+			_nodeState->renderObjectGroups.Insert(RenderObjectGroup());
 		}
 	}
 

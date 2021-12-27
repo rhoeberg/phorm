@@ -83,8 +83,8 @@ void AddTextureToRenderQueue(ObjectHandle *handle)
 // Takes the handle of RenderObject resource
 void AddToRenderQueue(ObjectHandle *handle)
 {
-	RenderObject *object = GetRenderObjects()->Get(handle);
-	if(object) {
+	if(handle->dataType == DATA_RENDEROBJECT ||
+	   handle->dataType == DATA_RENDEROBJECT_GROUP) {
 		_viewerRenderState.renderList.Insert(*handle);
 	}
 }
@@ -106,6 +106,40 @@ void ViewerGLSettings()
     // glEnable(GL_CULL_FACE);
     glDisable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+}
+
+void DrawRenderObject(RenderObject *renderObject, glm::mat4 model)
+{
+	///////////////
+	// TEXTURE
+	glActiveTexture(GL_TEXTURE0);
+	if(renderObject->hasTexture) {
+		// render texture to quad here
+		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
+	}
+	else {
+		glBindTexture(GL_TEXTURE_2D, _viewerRenderState.defaultTexture);
+	}
+
+	/////////////////
+	// SHADER
+	glUseProgram(_viewerRenderState.defaultShader);
+			
+	/////////////////
+	// MODEL
+	model = glm::translate(model, renderObject->pos);
+	quat q = quat(renderObject->rot);
+	model = model * toMat4(q);
+	model = glm::scale(model, renderObject->scale);
+	GLuint modelLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	/////////////////
+	// DRAW
+	GLuint VAO = GetCurrentContextVAO(renderObject->VAOHandle);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 
 void UpdateViewerRender()
@@ -207,74 +241,57 @@ void UpdateViewerRender()
 	GLuint lightAmountLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "pointLightAmount");
 	glUniform1i(lightAmountLoc, lightCount);
 
+	/////////////////
+	// PROJECTION
+	// TODO (rhoe) we dont need to update projection uniform every frame
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f),
+											aspectRatio,
+											0.1f, 1000.0f);
+	GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	/////////////////
+	// VIEW
+	glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+
+	vec3 orbitPos = {};
+	float x = _viewerRenderState.orbitDistance * sin(-_viewerRenderState.dragAmount.x) * cos(_viewerRenderState.dragAmount.y);
+	float y = _viewerRenderState.orbitDistance * sin(_viewerRenderState.dragAmount.y);
+	float z = _viewerRenderState.orbitDistance * cos(_viewerRenderState.dragAmount.y) * cos(-_viewerRenderState.dragAmount.x);
+	orbitPos = vec3(x, y, z);
+
+	view = glm::lookAt(orbitPos, vec3(0, 0, 0), vec3(0, 1, 0));
+
+	GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+
 	///////////////////
 	// RENDER OBJECTS
 	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
-		RenderObject *renderObject = GetRenderObjects()->Get(&_viewerRenderState.renderList[i]);
-		if(renderObject != NULL) {
-
-			///////////////
-			// TEXTURE
-			glActiveTexture(GL_TEXTURE0);
-			if(renderObject->hasTexture) {
-				// render texture to quad here
-				glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
+		ObjectHandle handle = _viewerRenderState.renderList[i];
+		if(handle.dataType == DATA_RENDEROBJECT) {
+			RenderObject *renderObject = GetRenderObjects()->Get(&handle);
+			if(renderObject != NULL) {
+				glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+				DrawRenderObject(renderObject, model);
 			}
-			else {
-				glBindTexture(GL_TEXTURE_2D, _viewerRenderState.defaultTexture);
+		}
+		else if(handle.dataType == DATA_RENDEROBJECT_GROUP) {
+			RenderObjectGroup *renderObjectGroup = GetRenderObjectGroups()->Get(&handle);
+			if(renderObjectGroup) {
+				glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+				model = glm::translate(model, renderObjectGroup->pos);
+				quat q = quat(renderObjectGroup->rot);
+				model = model * toMat4(q);
+				model = glm::scale(model, renderObjectGroup->scale);
+				for(i32 j = 0; j < renderObjectGroup->renderObjects.Count(); j++) {
+					RenderObject *renderObject = GetRenderObjects()->Get(&renderObjectGroup->renderObjects[j]);
+					if(renderObject) {
+						DrawRenderObject(renderObject, model);
+					}
+				}
 			}
-
-			glUseProgram(_viewerRenderState.defaultShader);
-			
-			/////////////////
-			// VIEW
-			glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-
-			vec3 orbitPos = {};
-			float x = _viewerRenderState.orbitDistance * sin(-_viewerRenderState.dragAmount.x) * cos(_viewerRenderState.dragAmount.y);
-			float y = _viewerRenderState.orbitDistance * sin(_viewerRenderState.dragAmount.y);
-			float z = _viewerRenderState.orbitDistance * cos(_viewerRenderState.dragAmount.y) * cos(-_viewerRenderState.dragAmount.x);
-			orbitPos = vec3(x, y, z);
-
-			view = glm::lookAt(orbitPos, vec3(0, 0, 0), vec3(0, 1, 0));
-
-			GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
-			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-
-			/////////////////
-			// PROJECTION
-			// TODO (rhoe) we dont need to update projection uniform every frame
-			glm::mat4 projection = glm::perspective(glm::radians(45.0f),
-													aspectRatio,
-													0.1f, 1000.0f);
-			GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
-			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-
-			/////////////////
-			// MODEL
-			// float time = GetTime();
-			// vec3 angle = vec3(0, 1, 0);
-			// renderObject->rot = angleAxis(time, angle);
-
-			quat q = quat(renderObject->rot);
-
-			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-			model = glm::translate(model, renderObject->pos);
-			model = model * toMat4(q);
-			model = glm::scale(model, renderObject->scale);
-			GLuint modelLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "model");
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-
-
-			/////////////////
-			// DRAW
-			GLuint VAO = GetCurrentContextVAO(renderObject->VAOHandle);
-			glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
 		}
 	}
 

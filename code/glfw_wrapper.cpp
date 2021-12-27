@@ -170,7 +170,7 @@ GLFWwindow* initGlfw()
 	if(VIEWER_START_MAIN)
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-    _viewerWindow = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "test", NULL, _win);
+    _viewerWindow = glfwCreateWindow(VIEWER_WIDTH, VIEWER_HEIGHT, "test", NULL, _win);
     if(!_viewerWindow) {
         glfwTerminate();
         exit(EXIT_FAILURE);

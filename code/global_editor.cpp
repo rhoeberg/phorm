@@ -47,6 +47,10 @@ void RenderViewerNode()
 				AddToRenderQueue(&node->GetData());
 				break;
 			}
+			case DATA_RENDEROBJECT_GROUP: {
+				AddToRenderQueue(&node->GetData());
+				break;
+			}
 		}
 	}
 }
