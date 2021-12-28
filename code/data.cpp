@@ -1,4 +1,4 @@
-void InitializeNodes()
+void InitializeData()
 {
 	_nodeState = (NodeState*)malloc(sizeof(NodeState));
 

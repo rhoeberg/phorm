@@ -33,6 +33,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include "glm/gtx/vector_angle.hpp"
 
 #include "portaudio.h"
 #include "stb_vorbis.c"
@@ -152,13 +153,23 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	// Initialize Application
 	InitializeOpenglWrapper();
-	InitializeNodes();
+	InitializeData();
 	AddNodeConstructors();
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();
 	InitializeGlobalEditor();
+
+	// Load scene on start
+	if(argc > 1) {
+		String arg1 = argv[1];
+		if(arg1.Equals("load")) {
+			printf("loading scene on start\n");
+			LoadNodes();
+		}
+	}
 
 	if(VIEWER_START_MAIN) {
 		SetViewerInMain(true);

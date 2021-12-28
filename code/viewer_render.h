@@ -1,4 +1,5 @@
 #pragma once
+#include "Camera.h"
 
 #define VIEWER_SIZE 600
 
@@ -60,11 +61,13 @@ struct ViewerRenderState {
 
 	/////////////
 	// CAMERA
+	Camera cam;
+
 	bool dragging;
 	vec2 startDragPos;
 	vec2 lastDragPos;
 	vec2 dragAmount;
-	float orbitDistance;
+	/* float orbitDistance; */
 	float orbitDragSpeed;
 };
 

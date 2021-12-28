@@ -4,8 +4,8 @@
 #define VIEWER_START_MAIN true
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
-#define VIEWER_WIDTH 800
-#define VIEWER_HEIGHT 600
+#define VIEWER_WIDTH 1920
+#define VIEWER_HEIGHT 1080
 /* #define SCREEN_WIDTH 2560 */
 /* #define SCREEN_HEIGHT 1440 */
 
@@ -50,6 +50,8 @@ global double lastFrame;
 #include "scene_editor.h"
 #include "viewer_render.h"
 #include "save.h"
+#include "Camera.h"
+
 /* #include "node/texture.h" */
 /* #include "node/mesh.h" */
 

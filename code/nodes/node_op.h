@@ -95,25 +95,54 @@ void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeCreateFun
 void AddNodeConstructors()
 {
 	nextConstructPos = vec2(0, 0);
+
+	/////////////////
+	// TEXTURE NODES
+	/////////////////
 	AddNodeConstructor(String("blur texture"), DATA_TEXTURE, BlurOperation, CreateBlurTexture);
 	AddNodeConstructor(String("mix texture"), DATA_TEXTURE, MixTextureOperation, CreateMixTexture);
 	AddNodeConstructor(String("load texture"), DATA_TEXTURE, LoadTextureOperation, CreateLoadTexture);
 	AddNodeConstructor(String("video"), DATA_TEXTURE, VideoOperation, CreateVideoNode);
+
+	/////////////////
+	// MESH NODES
+	/////////////////
 	AddNodeConstructor(String("cube mesh"), DATA_MESH, CubeOperation, CreateCubeNode);
 	AddNodeConstructor(String("grid mesh"), DATA_MESH, GridOperation, CreateGridNode);
 	AddNodeConstructor(String("noise mesh"), DATA_MESH, MeshNoiseOperation, CreateMeshNoise);
+
+
+	/////////////////
+	// DOUBLE NODES
+	/////////////////
 	AddNodeConstructor(String("double"), DATA_DOUBLE, DoubleOperation, CreateDoubleNode);
 	AddNodeConstructor(String("sin"), DATA_DOUBLE, SinOperation, CreateSinNode);
 	AddNodeConstructor(String("sinwave"), DATA_DOUBLE, SinWaveOperation, CreateSinWaveNode);
 	AddNodeConstructor(String("sawwave"), DATA_DOUBLE, SawWaveOperation, CreateSawWaveNode);
 	AddNodeConstructor(String("histogram"), DATA_DOUBLE, HistogramOperation, DrawHistogramNode, CreateHistogramNode);
-	AddNodeConstructor(String("mul"), DATA_DOUBLE, MulOperation, CreateMulNode);
-	AddNodeConstructor(String("add"), DATA_DOUBLE, AddOperation, CreateAddNode);
+	AddNodeConstructor(String("mul"), DATA_DOUBLE, MulOperation, DrawMulNode, CreateMulNode);
+	AddNodeConstructor(String("add"), DATA_DOUBLE, AddOperation, DrawAddNode, CreateAddNode);
 	AddNodeConstructor(String("time"), DATA_DOUBLE, TimeOperation, DrawTimeNode, CreateTimeNode);
+
+	/////////////////
+	// RENDEROBJECT NODES
+	/////////////////
 	AddNodeConstructor(String("renderobject"), DATA_RENDEROBJECT, RenderObjectOperation, CreateRenderObjectNode);
-	AddNodeConstructor(String("combine"), DATA_RENDEROBJECT_GROUP, CombineObjectsOperation, CreateCombineObjectsNode);
 	AddNodeConstructor(String("mirror"), DATA_RENDEROBJECT, MirrorOperation, CreateMirrorNode);
+
+	/////////////////
+	// RENDEROBJECT GROUP NODES
+	/////////////////
+	AddNodeConstructor(String("combine"), DATA_RENDEROBJECT_GROUP, CombineObjectsOperation, CreateCombineObjectsNode);
+
+	/////////////////
+	// POINTLIGHT NODES
+	/////////////////
 	AddNodeConstructor(String("pointlight"), DATA_POINTLIGHT, PointLightOperation, CreatePointLightNode);
+
+	/////////////////
+	// VEC3 NODES
+	/////////////////
 	AddNodeConstructor(String("vec3"), DATA_VEC3, Vec3NodeOperation, CreateVec3Node);
 }
 

@@ -30,22 +30,21 @@ void MeshNoiseOperation(Node *self)
 		output->vertices[i] = x;
 		output->vertices[i+1] = y;
 		output->vertices[i+2] = z;
-
-		/* vec3 normal */
 	}
 
+	// TODO (rhoe) this should be multithreaded or
+	//             optimised using compute shader
 	for(i32 i = 0; i < input->indices.Count(); i += 3) {
-		float x = output->vertices[output->indices[i]];
-		float y = output->vertices[output->indices[i] + 1];
-		float z = output->vertices[output->indices[i] + 2];
-
-		float ux = output->vertices[output->indices[i] + 3];
-		float uy = output->vertices[output->indices[i] + 4];
-
-		float nx = output->vertices[output->indices[i] + 5];
-		float ny = output->vertices[output->indices[i] + 6];
-		float nz = output->vertices[output->indices[i] + 7];
-		
+		Vertex a = output->GetVertex(output->indices[i]);
+		Vertex b = output->GetVertex(output->indices[i+1]);
+		Vertex c = output->GetVertex(output->indices[i+2]);
+		vec3 ba = b.Pos() - a.Pos();
+		vec3 ca = c.Pos() - a.Pos();
+		vec3 cross = glm::cross(ba, ca);
+		vec3 normal = glm::normalize(cross);
+		output->SetNormalAt(i, normal);
+		output->SetNormalAt(i+1, normal);
+		output->SetNormalAt(i+2, normal);
 	}
 }
 

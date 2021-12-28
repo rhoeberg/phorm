@@ -1,5 +1,6 @@
 #include "viewer_render.h"
 #include "data.h"
+#include "Camera.h"
 
 void CreateViewerTextureRenderObject()
 {
@@ -26,8 +27,8 @@ void CreateViewerTextureRenderObject()
 void InitializeDefaultShader()
 {
 	// SETUP VIEW AND PROJECTION
-    glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    // glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
 
@@ -35,9 +36,9 @@ void InitializeDefaultShader()
 	// CREATE DEFAULT SHADER
     _viewerRenderState.defaultShader = createShaderProgram("assets/texture.vert", "assets/texture.frag");
     glUseProgram(_viewerRenderState.defaultShader);
-    GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
+    // GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
     GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 
@@ -62,7 +63,7 @@ void InitializeViewerRender()
 {
 	InitializeDefaultShader();
 	CreateViewerTextureRenderObject();
-	_viewerRenderState.orbitDistance = 5.0f;
+	// _viewerRenderState.orbitDistance = 5.0f;
 	_viewerRenderState.orbitDragSpeed = 0.006f;
 }
 
@@ -104,10 +105,6 @@ void AddToRenderPointLightQueue(ObjectHandle *handle)
 		_viewerRenderState.renderPointLights.Insert(*handle);
 	}
 }
-
-struct Camera {
-	vec3 pos;
-};
 
 void ViewerGLSettings()
 {
@@ -161,6 +158,9 @@ void DrawRenderObjectInstance(RenderObjectInstance *instance, glm::mat4 model)
 
 void UpdateViewerRender()
 {
+
+	ViewerRenderState *viewer = &_viewerRenderState;
+
 	ViewerGLSettings();
 
 	// TODO (rhoe) store this somewhere
@@ -173,26 +173,41 @@ void UpdateViewerRender()
 
 	if((!ViewerInMain() && mouseInViewer) || (ViewerInMain() && PointInsideRect(mouse, viewerRect))) {
 		if(scrollReady) {
-			_viewerRenderState.orbitDistance += scrollOffset;
+			// viewer.orbitDistance += scrollOffset;
 			scrollReady = false;
 		}
 
 		vec2 dragOffset;
 		// mouse drag
 		if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
-			dragOffset = mouse - _viewerRenderState.lastDragPos;
-			dragOffset *= _viewerRenderState.orbitDragSpeed;
-			_viewerRenderState.dragAmount += dragOffset;
+			dragOffset = mouse - viewer->lastDragPos;
+			dragOffset *= viewer->orbitDragSpeed;
+			viewer->dragAmount += dragOffset;
 
-			if(_viewerRenderState.dragAmount.y > glm::radians(89.0f)) {
-				_viewerRenderState.dragAmount.y = glm::radians(89.0f);
+			if(viewer->dragAmount.y > glm::radians(89.0f)) {
+				viewer->dragAmount.y = glm::radians(89.0f);
 			}
-			else if(_viewerRenderState.dragAmount.y < glm::radians(-89.0f)) {
-				_viewerRenderState.dragAmount.y = glm::radians(-89.0f);
+			else if(viewer->dragAmount.y < glm::radians(-89.0f)) {
+				viewer->dragAmount.y = glm::radians(-89.0f);
 			}
+			viewer->cam.OrbitDrag(viewer->dragAmount);
 		}
-		_viewerRenderState.lastDragPos = mouse;
+		viewer->lastDragPos = mouse;
+
+		if(keys[GLFW_KEY_W]) {
+			viewer->cam.Move(CAM_FORWARD);
+		}
+		else if(keys[GLFW_KEY_S]) {
+			viewer->cam.Move(CAM_BACKWARD);
+		}
+		else if(keys[GLFW_KEY_A]) {
+			viewer->cam.Move(CAM_LEFT);
+		}
+		else if(keys[GLFW_KEY_D]) {
+			viewer->cam.Move(CAM_RIGHT);
+		}
 	}
+
 
 	///////////////////
 	// SETUP VIEWER MODE
@@ -200,7 +215,7 @@ void UpdateViewerRender()
 	if(ViewerInMain()) {
 		glfwMakeContextCurrent(_win);
 	
-		// glBindFramebuffer(GL_FRAMEBUFFER, _viewerRenderState.fbo);
+		// glBindFramebuffer(GL_FRAMEBUFFER, viewer.fbo);
 		// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
@@ -221,7 +236,7 @@ void UpdateViewerRender()
 
 	///////////////////
 	// WIREFRAME MODE
-	if(_viewerRenderState.wireframe) {
+	if(viewer->wireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	else {
@@ -230,30 +245,30 @@ void UpdateViewerRender()
 
 	///////////////////
 	// SETUP RENDER LIGHTS
-	glUseProgram(_viewerRenderState.defaultShader);
+	glUseProgram(viewer->defaultShader);
 	i32 lightCount = 0;
-	for(i32 i = 0; i < _viewerRenderState.renderPointLights.Count(); i++) {
+	for(i32 i = 0; i < viewer->renderPointLights.Count(); i++) {
 
 		// TODO (rhoe) here we should check for maximum light count reached
-		PointLight *pointLight = GetPointLights()->Get(&_viewerRenderState.renderPointLights[i]);
+		PointLight *pointLight = GetPointLights()->Get(&viewer->renderPointLights[i]);
 		if(pointLight) {
 			
 			char buffer[128];
 
 			// get pointlight pos uniform
 			sprintf(buffer, "pointLights[%d].pos", lightCount);
-			GLuint posLoc = glGetUniformLocation(_viewerRenderState.defaultShader, buffer);
+			GLuint posLoc = glGetUniformLocation(viewer->defaultShader, buffer);
 			glUniform3fv(posLoc, 1, glm::value_ptr(pointLight->pos));
 
 			// get pointlight color uniform
 			sprintf(buffer, "pointLights[%d].color", lightCount);
-			GLuint colorLoc = glGetUniformLocation(_viewerRenderState.defaultShader, buffer);
+			GLuint colorLoc = glGetUniformLocation(viewer->defaultShader, buffer);
 			glUniform3fv(colorLoc, 1, glm::value_ptr(pointLight->color));
 
 			lightCount++;
 		}
 	}
-	GLuint lightAmountLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "pointLightAmount");
+	GLuint lightAmountLoc = glGetUniformLocation(viewer->defaultShader, "pointLightAmount");
 	glUniform1i(lightAmountLoc, lightCount);
 
 	/////////////////
@@ -262,28 +277,28 @@ void UpdateViewerRender()
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 											aspectRatio,
 											0.1f, 1000.0f);
-	GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
+	GLuint projectionLoc = glGetUniformLocation(viewer->defaultShader, "projection");
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	/////////////////
 	// VIEW
-	glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+	mat4 view = viewer->cam.GetViewMatrix();
 
-	vec3 orbitPos = {};
-	float x = _viewerRenderState.orbitDistance * sin(-_viewerRenderState.dragAmount.x) * cos(_viewerRenderState.dragAmount.y);
-	float y = _viewerRenderState.orbitDistance * sin(_viewerRenderState.dragAmount.y);
-	float z = _viewerRenderState.orbitDistance * cos(_viewerRenderState.dragAmount.y) * cos(-_viewerRenderState.dragAmount.x);
-	orbitPos = vec3(x, y, z);
+	// mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+	// vec3 orbitPos = {};
+	// float x = sin(-viewer->dragAmount.x) * cos(viewer->dragAmount.y);
+	// float y = sin(viewer->dragAmount.y);
+	// float z = cos(viewer->dragAmount.y) * cos(-viewer->dragAmount.x);
+	// orbitPos = vec3(x, y, z);
+	// view = glm::lookAt(orbitPos, vec3(0, 0, 0), vec3(0, 1, 0));
 
-	view = glm::lookAt(orbitPos, vec3(0, 0, 0), vec3(0, 1, 0));
-
-	GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
+	GLuint viewLoc = glGetUniformLocation(viewer->defaultShader, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 	///////////////////
 	// RENDER OBJECTS
-	for(int i = 0; i < _viewerRenderState.renderList.Count(); i++) {
-		RenderObjectInstance instance = _viewerRenderState.renderList[i];
+	for(int i = 0; i < viewer->renderList.Count(); i++) {
+		RenderObjectInstance instance = viewer->renderList[i];
 		if(instance.renderObjectHandle.dataType == DATA_RENDEROBJECT) {
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 			DrawRenderObjectInstance(&instance, model);
@@ -292,8 +307,8 @@ void UpdateViewerRender()
 
 	///////////////////
 	// RENDER GROUPS
-	for(int i = 0; i < _viewerRenderState.renderGroupList.Count(); i++) {
-		RenderGroupInstance instance = _viewerRenderState.renderGroupList[i];
+	for(int i = 0; i < viewer->renderGroupList.Count(); i++) {
+		RenderGroupInstance instance = viewer->renderGroupList[i];
 		RenderObjectGroup *group = GetRenderObjectGroups()->Get(&instance.renderGroupHandle);
 		if(instance.renderGroupHandle.dataType == DATA_RENDEROBJECT_GROUP) {
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
@@ -311,9 +326,9 @@ void UpdateViewerRender()
 
 	///////////////////
 	// RESET STATE
-	_viewerRenderState.renderList.Clear();
-	_viewerRenderState.renderGroupList.Clear();
-	_viewerRenderState.renderPointLights.Clear();
+	viewer->renderList.Clear();
+	viewer->renderGroupList.Clear();
+	viewer->renderPointLights.Clear();
 
 	if(!ViewerInMain()) {
 		glfwSwapBuffers(_viewerWindow);
@@ -323,27 +338,27 @@ void UpdateViewerRender()
 		// render viewer quad in main
 		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// glActiveTexture(GL_TEXTURE0);
-		// glBindTexture(GL_TEXTURE_2D, _viewerRenderState.fboTexture);
+		// glBindTexture(GL_TEXTURE_2D, viewer.fboTexture);
 
-		// glUseProgram(_viewerRenderState.defaultShader);
+		// glUseProgram(viewer.defaultShader);
 
 		// glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 		// view = glm::translate(view, vec3(0, 0, 0));
-		// GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
+		// GLuint viewLoc = glGetUniformLocation(viewer.defaultShader, "view");
 		// glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 		// glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 		// 										aspectRatio,
 		// 										0.1f, 1000.0f);
-		// GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
+		// GLuint projectionLoc = glGetUniformLocation(viewer.defaultShader, "projection");
 		// glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		// glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 		// model = glm::translate(model, vec3(0, 0, 0));
 		// // model = glm::scale(model, vec3(10, 10, 1));
-		// GLuint modelLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "model");
+		// GLuint modelLoc = glGetUniformLocation(viewer.defaultShader, "model");
 		// glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		// glBindVertexArray(_viewerRenderState.quad);
+		// glBindVertexArray(viewer.quad);
 		// glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 		// glBindVertexArray(0);
 	}
@@ -384,7 +399,7 @@ void UpdateViewerRenderGUI()
 	ImGui::End();
 
 	if(singleKeyPress(GLFW_KEY_R)) {
-		_viewerRenderState.orbitDistance = 5.0f;
+		// _viewerRenderState.orbitDistance = 5.0f;
 		_viewerRenderState.orbitDragSpeed = 0.006f;
 		_viewerRenderState.dragAmount = vec3(0, 0, 0);
 		// _viewerRenderState.camPos = vec3(0, 0, -1

@@ -5,7 +5,7 @@ void InitializeGlobalEditor()
 	_globalEditorState = (GlobalEditorState*)malloc(sizeof(GlobalEditorState));
 	_globalEditorState->nodeEditorOn = true;
 	_globalEditorState->promptActive = false;
-	_globalEditorState->viewerMode = VIEW_OBJECT;
+	_globalEditorState->viewerMode = VIEW_SCENE;
 }
 
 bool IsPromptActive()
