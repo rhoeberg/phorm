@@ -252,15 +252,19 @@ void UpdateHoverState()
 				}
 			}
 
-			// CHECK INPUTS PARAM
+			// CHECK PARAMS
 			if(!foundElement) {
+				i32 ctxIndex = 0;
 				for(int j = 0; j < node->params.Count(); j++) {
-					Rect paramRect = GetNodeParamRect(&handle, j);
-					if(PointInsideRect(mouse, paramRect)) {
-						foundElement = true;
-						editor->hoverState.nodeHandle = handle;
-						editor->hoverState.elementType = EDITOR_ELEMENT_PARAM;
-						editor->hoverState.ctxHandle = j;
+					if(node->params[j].exposed) {
+						Rect paramRect = GetNodeParamRect(&handle, ctxIndex);
+						if(PointInsideRect(mouse, paramRect)) {
+							foundElement = true;
+							editor->hoverState.nodeHandle = handle;
+							editor->hoverState.elementType = EDITOR_ELEMENT_PARAM;
+							editor->hoverState.ctxHandle = j;
+						}
+						ctxIndex++;
 					}
 				}
 			}
@@ -432,7 +436,7 @@ void UpdateNodeStopDragging()
 			else if(editor->hoverState.elementType == EDITOR_ELEMENT_PARAM) {
 				ObjectHandle *outHandle = &editor->draggedNode;
 				ObjectHandle *inHandle = &editor->hoverState.nodeHandle;
-				int ctxHandle = editor->draggedCtxHandle;
+				int ctxHandle = editor->hoverState.ctxHandle;
 				ConnectNodeParameter(inHandle, outHandle, ctxHandle);
 			}
 			break;

@@ -23,28 +23,20 @@ uniform sampler2D outTexture;
 vec3 CalcPointLight(PointLight light, vec3 fragPos, vec3 normal)
 {
 	vec3 result = vec3(0);
-	/* vec3 norm = normalize(Normal); */
-
-	// point lights
-	/* for(int i = 0; i < pointLightAmount; i++) { */
-		////////////
-		// DIFFUSE
-		vec3 lightDir = normalize(light.pos - fragPos);
-		float diff = max(dot(normal, lightDir), 0.0);
-		vec3 diffuse = diff * light.color;
-		result += diffuse;
-	/* } */
+	vec3 lightDir = normalize(light.pos - fragPos);
+	float diff = max(dot(normal, lightDir), 0.0);
+	vec3 diffuse = diff * light.color;
+	result += diffuse;
 
 	return result;
 }
 
 void main()
 {
-	/* pointLightAmount = 1; */
-	/* pointLights[0].pos = vec3(1, 1, 1); */
-	/* pointLights[0].color = vec3(1, 1, 1); */
-
 	vec3 normal = normalize(Normal);
+	if(!gl_FrontFacing) {
+		normal *= -1.0;
+	}
 
 	////////////
 	// AMBIENT
@@ -53,15 +45,11 @@ void main()
 	vec3 ambient = ambientStrength * ambientColor;
 
 	vec3 result = vec3(0);
-	for(int i = 0; i < pointLightAmount; i++)
- {
+	for(int i = 0; i < pointLightAmount; i++) {
 		result += CalcPointLight(pointLights[i], FragPos, normal);
 	}
+
 	result += ambient;
 	result *= texture(outTexture, TexCoord).xyz;
 	color = vec4(result, 1.0);
-
-	/* color = vec4(abs(normal), 1.0); */
-	/* color = vec4(pointLights[0].color, 1.0); */
-	/* color = vec4(pointLights[0].pos, 1.0); */
 }

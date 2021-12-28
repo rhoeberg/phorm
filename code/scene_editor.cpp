@@ -79,6 +79,7 @@ void UpdateSceneEditor()
 	////////////
 	// SCENE OBJECTS
 	for(i32 i = 0; i < state->scene.sceneObjects.Count(); i++) {
+		ObjectHandle handle = state->scene.sceneObjects.GetHandle(i);
 		SceneObject *sceneObject = state->scene.sceneObjects.GetAt(i);
 		if(sceneObject) {
 			Node *node = GetNode(&sceneObject->handle);
@@ -86,7 +87,7 @@ void UpdateSceneEditor()
 				String *str = GetStrings()->Get(&node->labelHandle);
 				if(str) {
 					ImGui::Text("%d", i);
-					ImGui::SameLine(300);
+					ImGui::SameLine(40);
 					if(ImGui::Button(str->buffer)) {
 						SetInspectorObject(sceneObject->handle);
 					}
@@ -94,31 +95,13 @@ void UpdateSceneEditor()
 				else {
 					ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
 				}
+				ImGui::SameLine(150);
+				if(ImGui::Button("remove")) {
+					state->scene.sceneObjects.Remove(&handle);
+				}
 			}
 		}
 	}
-
-	// ////////////
-	// // SCENE GROUPS
-	// for(i32 i = 0; i < state->scene.groupInstances.Count(); i++) {
-	// 	RenderGroupInstance *instance = state->scene.groupInstances.GetAt(i);
-	// 	if(instance) {
-	// 		Node *node = GetNode(&instance->nodeHandle);
-	// 		if(node) {
-	// 			String *str = GetStrings()->Get(&node->labelHandle);
-	// 			if(str) {
-	// 				ImGui::Text("%d", i);
-	// 				ImGui::SameLine(300);
-	// 				if(ImGui::Button(str->buffer)) {
-	// 					SetInspectorObject(instance->nodeHandle);
-	// 				}
-	// 			}
-	// 			else {
-	// 				ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	////////////
 	// SCENE LIGHTS
@@ -131,7 +114,7 @@ void UpdateSceneEditor()
 				String *str = GetStrings()->Get(&node->labelHandle);
 				if(str) {
 					ImGui::Text("%d", i);
-					ImGui::SameLine(300);
+					ImGui::SameLine(40);
 					if(ImGui::Button(str->buffer)) {
 						SetInspectorObject(*nodeHandle);
 					}
@@ -139,6 +122,10 @@ void UpdateSceneEditor()
 				}
 				else {
 					ImGui::Text("LIGHT LABEL NOT FOUND");
+				}
+				ImGui::SameLine(150);
+				if(ImGui::Button("remove")) {
+					state->scene.pointLights.Remove(&handle);
 				}
 
 				// char buffer[128];

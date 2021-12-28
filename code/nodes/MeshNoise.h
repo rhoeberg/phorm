@@ -33,6 +33,20 @@ void MeshNoiseOperation(Node *self)
 
 		/* vec3 normal */
 	}
+
+	for(i32 i = 0; i < input->indices.Count(); i += 3) {
+		float x = output->vertices[output->indices[i]];
+		float y = output->vertices[output->indices[i] + 1];
+		float z = output->vertices[output->indices[i] + 2];
+
+		float ux = output->vertices[output->indices[i] + 3];
+		float uy = output->vertices[output->indices[i] + 4];
+
+		float nx = output->vertices[output->indices[i] + 5];
+		float ny = output->vertices[output->indices[i] + 6];
+		float nz = output->vertices[output->indices[i] + 7];
+		
+	}
 }
 
 ObjectHandle CreateMeshNoise(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)

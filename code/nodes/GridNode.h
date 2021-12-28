@@ -34,7 +34,7 @@ void GridOperation(Node *self)
 
 			output->vertices.Insert(0.0f);
 			output->vertices.Insert(0.0f);
-			output->vertices.Insert(-1.0f);
+			output->vertices.Insert(1.0f);
 		}
 	}
 
