@@ -64,7 +64,7 @@ void InitializeViewerRender()
 	InitializeDefaultShader();
 	CreateViewerTextureRenderObject();
 	// _viewerRenderState.orbitDistance = 5.0f;
-	_viewerRenderState.orbitDragSpeed = 0.006f;
+	// _viewerRenderState.orbitDragSpeed = 0.006f;
 }
 
 // Takes the handle of texture resource
@@ -156,14 +156,8 @@ void DrawRenderObjectInstance(RenderObjectInstance *instance, glm::mat4 model)
 	glBindVertexArray(0);
 }
 
-void UpdateViewerRender()
+bool MouseInsideViewerRect()
 {
-
-	ViewerRenderState *viewer = &_viewerRenderState;
-
-	ViewerGLSettings();
-
-	// TODO (rhoe) store this somewhere
 	int width, height;
 	GetWindowSize(&width, &height);
 	Rect viewerRect = {};
@@ -171,27 +165,41 @@ void UpdateViewerRender()
 	viewerRect.height = VIEWER_SIZE;
 	viewerRect.pos = vec2(width - VIEWER_SIZE, 0);
 
-	if((!ViewerInMain() && mouseInViewer) || (ViewerInMain() && PointInsideRect(mouse, viewerRect))) {
+	if(ViewerInMain() && PointInsideRect(mouse, viewerRect) ||
+	   !ViewerInMain() && mouseInViewerWin)
+		return true;
+
+	return false;
+}
+
+void UpdateViewerRender()
+{
+	ViewerRenderState *viewer = &_viewerRenderState;
+
+	///////////////////
+	// SETUP GL STATE
+	ViewerGLSettings();
+
+	///////////////////
+	// HANDLE VIEWER INPUT
+	if(MouseInsideViewerRect()) {
 		if(scrollReady) {
-			// viewer.orbitDistance += scrollOffset;
+			viewer->cam.OrbitScrollOut(scrollOffset);
+			viewer->cam.OrbitDrag(vec2(0.0f, 0.0f));
 			scrollReady = false;
 		}
 
 		vec2 dragOffset;
-		// mouse drag
-		if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
-			dragOffset = mouse - viewer->lastDragPos;
-			dragOffset *= viewer->orbitDragSpeed;
-			viewer->dragAmount += dragOffset;
 
-			if(viewer->dragAmount.y > glm::radians(89.0f)) {
-				viewer->dragAmount.y = glm::radians(89.0f);
-			}
-			else if(viewer->dragAmount.y < glm::radians(-89.0f)) {
-				viewer->dragAmount.y = glm::radians(-89.0f);
-			}
-			viewer->cam.OrbitDrag(viewer->dragAmount);
+		// mouse drag
+		dragOffset = mouse - viewer->lastDragPos;
+		if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
+			viewer->cam.OrbitDrag(dragOffset);
 		}
+		else if(mouse_buttons[GLFW_MOUSE_BUTTON_2]) {
+			viewer->cam.LookDir(dragOffset);
+		}
+
 		viewer->lastDragPos = mouse;
 
 		if(keys[GLFW_KEY_W]) {
@@ -200,7 +208,8 @@ void UpdateViewerRender()
 		else if(keys[GLFW_KEY_S]) {
 			viewer->cam.Move(CAM_BACKWARD);
 		}
-		else if(keys[GLFW_KEY_A]) {
+
+		if(keys[GLFW_KEY_A]) {
 			viewer->cam.Move(CAM_LEFT);
 		}
 		else if(keys[GLFW_KEY_D]) {
@@ -219,8 +228,8 @@ void UpdateViewerRender()
 		// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
-		// int width, height;
-		// GetWindowSize(&width, &height);
+		int width, height;
+		GetWindowSize(&width, &height);
 		aspectRatio = (float)VIEWER_SIZE / (float)VIEWER_SIZE;
 		glViewport(width - VIEWER_SIZE, height - VIEWER_SIZE, VIEWER_SIZE, VIEWER_SIZE);
 	}
@@ -400,8 +409,9 @@ void UpdateViewerRenderGUI()
 
 	if(singleKeyPress(GLFW_KEY_R)) {
 		// _viewerRenderState.orbitDistance = 5.0f;
-		_viewerRenderState.orbitDragSpeed = 0.006f;
-		_viewerRenderState.dragAmount = vec3(0, 0, 0);
+		// _viewerRenderState.orbitDragSpeed = 0.006f;
+		// _viewerRenderState.dragAmount = vec3(0, 0, 0);
+		_viewerRenderState.cam.Reset();
 		// _viewerRenderState.camPos = vec3(0, 0, -1
 	}
 }

@@ -3,14 +3,16 @@ global GLFWwindow *_viewerWindow;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	ImGuiIO& io = ImGui::GetIO();
-	imguiWantsKeyboard = io.WantCaptureKeyboard;
+	if(key > 0) {
+		ImGuiIO& io = ImGui::GetIO();
+		imguiWantsKeyboard = io.WantCaptureKeyboard;
 
-	if(action == GLFW_PRESS) {
-		keys[key] = true;
-	}
-	else if(action == GLFW_RELEASE) {
-		keys[key] = false;
+		if(action == GLFW_PRESS) {
+			keys[key] = true;
+		}
+		else if(action == GLFW_RELEASE) {
+			keys[key] = false;
+		}
 	}
 }  
 
@@ -24,13 +26,13 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	ImGuiIO& io = ImGui::GetIO();
 	imguiWantsMouse = io.WantCaptureMouse;
-	mouseInViewer = false;
+	mouseInViewerWin = false;
 	SetMouse(xpos, ypos);
 }
 
 void mouseCallbackViewerWin(GLFWwindow* window, double xpos, double ypos)
 {
-	mouseInViewer = true;
+	mouseInViewerWin = true;
 	SetMouse(xpos, ypos);
 	mouse.x = xpos;
 	mouse.y = ypos;
@@ -157,6 +159,7 @@ GLFWwindow* initGlfw()
     glfwSetCursorPosCallback(_win, mouseCallback);
     glfwSetKeyCallback(_win, keyCallback);
     glfwSetMouseButtonCallback(_win, mouseButtonCallback);
+    glfwSetScrollCallback(_win, MouseScrollCallback);
     glfwSetDropCallback(_win, dropCallback);
     glfwSetWindowSizeCallback(_win, windowSizeCallback);
     int vWidth, vHeight;

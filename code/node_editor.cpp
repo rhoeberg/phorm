@@ -229,6 +229,23 @@ void DrawNode(ObjectHandle *handle)
 	}
 }
 
+void DrawNodeOutline(ObjectHandle handle)
+{
+	int outlineMargin = 0.7f;
+	NodeEditorState *editor = _nodeEditorState;
+
+	Node *node = GetNode(&handle);
+	if(node) {
+		Rect outline= {};
+		outline.pos = node->rect.pos - vec2(outlineMargin, outlineMargin);
+		outline.width = node->rect.width + outlineMargin;
+		outline.height = node->rect.height + outlineMargin;
+
+		ImDrawSetColor(vec4(1.0f, 1.0f, 0.0f, 0.7f));
+		ImDrawRectOutline(outline, 1.5f);
+	}
+}
+
 void UpdateHoverState()
 {
 	NodeEditorState *editor = _nodeEditorState;
@@ -476,7 +493,7 @@ void UpdateNodeDragging()
 {
 	NodeEditorState *editor = _nodeEditorState;
 
-	if(!mouseInViewer) {
+	if(!MouseInsideViewerRect()) {
 		// start dragging something
 		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !editor->isDragging) {
 			UpdateNodeStartDragging();
@@ -492,25 +509,6 @@ void UpdateNodeDragging()
 	}
 }
 
-// void ViewSelectedNode()
-// {
-// 	NodeEditorState *editor = _nodeEditorState;
-
-// 	if(editor->viewerNode.isset && NodeExists(&editor->viewerNode)) {
-// 		Node *node = GetNode(&editor->viewerNode);
-// 		switch(node->type) {
-// 			case DATA_TEXTURE: {
-// 				AddTextureToRenderQueue(&node->GetData());
-// 				break;
-// 			}
-// 			case DATA_RENDEROBJECT: {
-// 				AddToRenderQueue(&node->GetData());
-// 				break;
-// 			}
-// 		}
-// 	}
-// }
-
 void UpdateNodeEditor()
 {
 	NodeEditorState *editor = _nodeEditorState;
@@ -518,7 +516,7 @@ void UpdateNodeEditor()
 	//////////////////
 	// CHECK HOVERSTATE
 	UpdateHoverState();
-	if(!mouseInViewer)
+	if(!mouseInViewerWin)
 		UpdateNodeDragging();
 
 
@@ -546,19 +544,12 @@ void UpdateNodeEditor()
 
 	// DRAW SELECTED NODE OUTLINES
 	if(editor->nodeMultiSelect) {
-		int outlineMargin = 0.7f;
 		for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
-			Node *node = GetNode(&editor->selectedNodes[i]);
-			if(node) {
-				Rect outline= {};
-				outline.pos = node->rect.pos - vec2(outlineMargin, outlineMargin);
-				outline.width = node->rect.width + outlineMargin;
-				outline.height = node->rect.height + outlineMargin;
-
-				ImDrawSetColor(vec4(1.0f, 1.0f, 0.0f, 0.7f));
-				ImDrawRectOutline(outline, 1.5f);
-			}
+			DrawNodeOutline(editor->selectedNodes[i]);
 		}
+	}
+	if(editor->draggedNode.isset && NodeExists(&editor->draggedNode)) {
+		DrawNodeOutline(editor->draggedNode);
 	}
 
 	///////////////////

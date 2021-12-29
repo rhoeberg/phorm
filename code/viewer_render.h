@@ -66,12 +66,13 @@ struct ViewerRenderState {
 	bool dragging;
 	vec2 startDragPos;
 	vec2 lastDragPos;
-	vec2 dragAmount;
+	/* vec2 dragAmount; */
 	/* float orbitDistance; */
-	float orbitDragSpeed;
+	/* float orbitDragSpeed; */
 };
 
 void InitializeViewerRender();
+bool MouseInsideViewerRect();
 void UpdateViewerRender();
 void AddToRenderQueue(RenderObjectInstance instance);
 void AddToRenderGroupQueue(RenderGroupInstance instance);

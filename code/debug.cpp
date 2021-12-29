@@ -31,7 +31,7 @@ void UpdateDebug()
 	ImGui::Text("CAMERA");
 	ImGui::InputFloat3("pos", glm::value_ptr(_viewerRenderState.cam.pos));
 	ImGui::InputFloat3("front", glm::value_ptr(_viewerRenderState.cam.front));
-	ImGui::Text("speed: %f", _viewerRenderState.cam.speed);
+	ImGui::Text("speed: %f", _viewerRenderState.cam.moveSpeed);
 	ImGui::Text("orbitdist: %f", _viewerRenderState.cam.orbitDist);
     ImGui::End();
 

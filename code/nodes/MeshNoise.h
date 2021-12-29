@@ -40,7 +40,7 @@ void MeshNoiseOperation(Node *self)
 		Vertex c = output->GetVertex(output->indices[i+2]);
 		vec3 ba = b.Pos() - a.Pos();
 		vec3 ca = c.Pos() - a.Pos();
-		vec3 cross = glm::cross(ba, ca);
+		vec3 cross = glm::cross(ca, ba);
 		vec3 normal = glm::normalize(cross);
 		output->SetNormalAt(i, normal);
 		output->SetNormalAt(i+1, normal);

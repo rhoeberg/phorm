@@ -8,18 +8,34 @@ enum CamDir {
 };
 
 struct Camera {
+	// base attributes
 	vec3 pos;
 	vec3 front;
+
+	// orbit
+	vec3 orbitCenter;
 	float orbitDist;
-	float speed;
+	float orbitDragSpeed;
+
+	// movement
+	float moveSpeed;
+	float lookDirSpeed;
 
 	Camera()
 	{
-		pos = vec3(0, 0, -3);
-		front = vec3(0, 0, 1);
+		Reset();
+	}
 
-		orbitDist = 5.0f;
-		speed = 10.0f;
+	void Reset()
+	{
+		pos = vec3(0, 0, -2);
+		front = vec3(0, 0, 1);
+		orbitDist = 2.0f;
+		orbitDragSpeed = 0.01f;
+		orbitCenter = vec3(0, 0, 0);
+
+		moveSpeed = 3.0f;
+		lookDirSpeed = 0.005f;
 	}
 
 	mat4 GetViewMatrix()
@@ -29,41 +45,102 @@ struct Camera {
 		return view;
 	}
 
-	void OrbitDrag(vec2 dragAmount)
+	void OrbitScrollOut(float amount)
 	{
-		float x = orbitDist * sin(-dragAmount.x) * cos(dragAmount.y);
-		float y = orbitDist * sin(dragAmount.y);
-		float z = orbitDist * cos(dragAmount.y) * cos(-dragAmount.x);
-		vec3 newPos = pos + vec3(x, y, z);
+		if((orbitDist - amount) > 0.0f) {
+			orbitDist -= amount;
+			pos = pos + (front * orbitDist);
+		}
+	}
 
-		vec3 orbitCenter = pos + (front * orbitDist);
+	// Returns pitch in degrees
+	double Pitch()
+	{
+		// GET PITCH
+		vec3 frontX0Z = glm::normalize(front * vec3(1, 0, 1));
+		double angle = glm::angle(front, frontX0Z);
+		return glm::degrees(angle);
+	}
 
-		front = glm::normalize(newPos - orbitCenter);
+	vec3 CamRight()
+	{
+		vec3 result = glm::normalize(glm::cross(front, WORLD_UP));
+		return result;
+	}
 
-		pos = newPos;
+	vec3 CamUp()
+	{
+		vec3 result = glm::normalize(glm::cross(CamRight(), front));
+		return result;
+	}
+
+
+	/*
+	  Currently we can only orbit around a fixed point (default to center)
+	  This makes it easier to understand the orbit center point for the user
+	  but mean we cannot orbit around objects which is not in the center
+	  it also mean that the camera is jumping to orbit pos when you start
+	  orbiting.
+
+	  using this as orbit center would allow us to orbit any arbitrary point
+	  its just very hard for the user to actually uniformly around an object
+	  because you have to find the exact camera pos that corresponds to the
+	  object centered with the corrent orbit distance
+	  # vec3 orbitCenter = pos + (front * orbitDist);
+	  
+	  would be nice to have a more dynamic way of doing it
+	 */
+	void OrbitDrag(vec2 dragOffset)
+	{
+		orbitCenter = pos + (front * orbitDist);
+
+		vec3 camFocus = glm::normalize(pos - orbitCenter) * orbitDist;
+		float yawAmount = orbitDragSpeed * dragOffset.x;
+		float pitchAmount = orbitDragSpeed * dragOffset.y;
+
+		// multiply yaw by pitch value to compensate for smaller yaw
+		// distance when looking "down" or "up" at center
+		float yawMult = ((90 - Pitch()) / 90);
+		yawAmount = yawAmount * yawMult;
+
+		// do the actualy rotation of the orbit focus point
+		mat3 yawMat = glm::rotate(yawAmount, CamUp());
+		mat3 pitchMat = glm::rotate(pitchAmount, CamRight());
+		camFocus = camFocus * pitchMat * yawMat;
+
+		// set the new pos and front vectors
+		pos = camFocus + orbitCenter;
+		front = glm::normalize(orbitCenter - pos);
+	}
+
+	void LookDir(vec2 offset)
+	{
+		float yawAmount = lookDirSpeed * offset.x;
+		float pitchAmount = lookDirSpeed * offset.y;
+		mat3 yawMat = glm::rotate(yawAmount, CamUp());
+		mat3 pitchMat = glm::rotate(pitchAmount, CamRight());
+		front = glm::normalize(front * pitchMat * yawMat);
 	}
 
 	void Move(CamDir dir)
 	{
-		vec3 vel = vec3(0, 0, 0);
-		float deltaSpeed = speed * deltaTime;
-
 		vec3 right = glm::normalize(glm::cross(front, WORLD_UP));
 
+		vec3 vel = vec3(0, 0, 0);
 		if(dir == CAM_FORWARD) {
-			vel += front * deltaSpeed;
+			vel += front;
 		}
 		if(dir == CAM_BACKWARD) {
-			vel -= front * deltaSpeed;
+			vel -= front;
 		}
 		if(dir == CAM_LEFT) {
-			vel -= right * deltaSpeed;
+			vel -= right;
 		}
 		if(dir == CAM_RIGHT) {
-			vel += right * deltaSpeed;
+			vel += right;
 		}
 
-		pos += vel;
+		float deltaSpeed = moveSpeed * deltaTime;
+		pos += glm::normalize(vel) * deltaSpeed;
 	}
-	
 };
