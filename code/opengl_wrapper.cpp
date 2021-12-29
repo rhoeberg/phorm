@@ -73,6 +73,16 @@ GLuint GetMainContextVAO(int handle)
 	return _openglWrapperState->mainContextVAO[handle];
 }
 
+void BindMainContextVAO(int handle)
+{
+	glBindVertexArray(_openglWrapperState->mainContextVAO[handle]);
+}
+
+void BindViewerContextVAO(int handle)
+{
+	glBindVertexArray(_openglWrapperState->viewerContextVAO[handle]);
+}
+
 GLuint GetViewerContextVAO(int handle)
 {
 	return _openglWrapperState->viewerContextVAO[handle];
@@ -86,6 +96,16 @@ GLuint GetCurrentContextVAO(int handle)
 	else {
 		return GetViewerContextVAO(handle);
 	}
+}
+
+void SetContextMain()
+{
+	glfwMakeContextCurrent(_win);
+}
+
+void SetContextViewer()
+{
+	glfwMakeContextCurrent(_viewerWindow);
 }
 
 void BindBuffersToVAO(int VAOHandle, GLuint VBO, GLuint EBO)

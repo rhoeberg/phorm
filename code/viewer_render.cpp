@@ -30,16 +30,17 @@ void InitializeDefaultShader()
     // glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
+
+    // glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
 
 	
 	// CREATE DEFAULT SHADER
     _viewerRenderState.defaultShader = createShaderProgram("assets/texture.vert", "assets/texture.frag");
     glUseProgram(_viewerRenderState.defaultShader);
     // GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
-    GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
+    // GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
     // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    // glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 
 void InitializeViewerFBO()
@@ -292,15 +293,6 @@ void UpdateViewerRender()
 	/////////////////
 	// VIEW
 	mat4 view = viewer->cam.GetViewMatrix();
-
-	// mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-	// vec3 orbitPos = {};
-	// float x = sin(-viewer->dragAmount.x) * cos(viewer->dragAmount.y);
-	// float y = sin(viewer->dragAmount.y);
-	// float z = cos(viewer->dragAmount.y) * cos(-viewer->dragAmount.x);
-	// orbitPos = vec3(x, y, z);
-	// view = glm::lookAt(orbitPos, vec3(0, 0, 0), vec3(0, 1, 0));
-
 	GLuint viewLoc = glGetUniformLocation(viewer->defaultShader, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
@@ -332,6 +324,12 @@ void UpdateViewerRender()
 
 		}
 	}
+
+	///////////////////
+	// Draw gizmoz
+	ImDraw3DSetView(view);
+	ImDraw3DSetProjection(projection);
+	UpdateGizmos();
 
 	///////////////////
 	// RESET STATE
@@ -373,6 +371,12 @@ void UpdateViewerRender()
 	}
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+}
+
+void UpdateGizmos()
+{
+	ImDraw3DCube(vec3(0, 0, 0), 0.5f);
 }
 
 void UpdateViewerRenderGUI()

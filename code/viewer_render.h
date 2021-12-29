@@ -78,5 +78,6 @@ void AddToRenderQueue(RenderObjectInstance instance);
 void AddToRenderGroupQueue(RenderGroupInstance instance);
 void AddTextureToRenderQueue(ObjectHandle *textureHandle);
 void AddToRenderPointLightQueue(ObjectHandle *handle);
+void UpdateGizmos();
 
 global ViewerRenderState _viewerRenderState;

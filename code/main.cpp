@@ -43,6 +43,7 @@
 
 #include "main.h"
 #include "imdraw.cpp"
+#include "imdraw3D.cpp"
 #include "opengl.cpp"
 #include "audio.cpp"
 #include "util.cpp"
@@ -123,11 +124,13 @@ void UpdateLoop()
 	///////////////
 	// IMDRAW
 	///////////////
-	glfwMakeContextCurrent(_win);
+	// glfwMakeContextCurrent(_win);
+	SetContextMain();
 	int screenWidth, screenHeight;
 	GetWindowSize(&screenWidth, &screenHeight);
 	glViewport(0, 0, screenWidth, screenHeight);
 	ImDrawRender();
+	ImDraw3DRender();
 
 	///////////////
 	// BUFFER SWAP / IMGUI RENDER
@@ -144,8 +147,11 @@ int main(int argc, char *argv[])
 	// initialize GUI
 	initializeGUI(win);
 
+	InitializeOpenglWrapper();
+
 	// initialize ImDraw
     ImDrawInitialize();
+	ImDraw3DInitialize();
 
 	// Initialize Audio
     if(!audioInitialize()) {
@@ -154,7 +160,6 @@ int main(int argc, char *argv[])
 	}
 
 	// Initialize Application
-	InitializeOpenglWrapper();
 	InitializeData();
 	AddNodeConstructors();
 	InitializeNodeEditor();

@@ -202,13 +202,6 @@ void ImDrawSetColor(vec4 color)
 
 void ImDrawAddVertex(vec2 v)
 {
-	// imDrawVertices.Insert(v.x);
-	// imDrawVertices.Insert(v.y);
-	// imDrawVertices.Insert(imDrawColor.r);
-	// imDrawVertices.Insert(imDrawColor.g);
-	// imDrawVertices.Insert(imDrawColor.b);
-	// imDrawVertices.Insert(imDrawColor.a);
-
 	imDrawLayers[imDrawNextLayer].vertices.Insert(v.x);
 	imDrawLayers[imDrawNextLayer].vertices.Insert(v.y);
 	imDrawLayers[imDrawNextLayer].vertices.Insert(imDrawColor.r);
