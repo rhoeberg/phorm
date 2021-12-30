@@ -32,13 +32,10 @@ void ImDraw3DInitialize()
 	
 	// SETUP SHADER
     _im3D->shader = createShaderProgram("assets\\imdraw3d.vs", "assets\\imdraw3d.frag");
-	GLuint viewLoc = glGetUniformLocation(_im3D->shader, "view");
-	GLuint projectionLoc = glGetUniformLocation(_im3D->shader, "projection");
-	glUseProgram(_im3D->shader);
+	// GLuint viewLoc = glGetUniformLocation(_im3D->shader, "view");
+	// GLuint projectionLoc = glGetUniformLocation(_im3D->shader, "projection");
+	// glUseProgram(_im3D->shader);
 	
-
-	//
-
 
 	// SETUP GL BUFFERS
 	_im3D->vaoHandle = AddVAO();
@@ -47,6 +44,7 @@ void ImDraw3DInitialize()
 
 	SetContextMain();
 	BindMainContextVAO(_im3D->vaoHandle);
+	glBindBuffer(GL_ARRAY_BUFFER, _im3D->vbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(0);
@@ -55,6 +53,7 @@ void ImDraw3DInitialize()
 
 	SetContextViewer();
 	BindViewerContextVAO(_im3D->vaoHandle);
+	glBindBuffer(GL_ARRAY_BUFFER, _im3D->vbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(0);
@@ -63,6 +62,8 @@ void ImDraw3DInitialize()
 
 
 
+	//
+	ImDraw3DSetColor(vec3(1.0f, 1.0f, 1.0f));
 }
 
 void ImDraw3DSetColor(vec4 color)
@@ -143,14 +144,20 @@ void ImDraw3DRender()
 	glUseProgram(_im3D->shader);
 
 	glBindVertexArray(GetCurrentContextVAO(_im3D->vaoHandle));
-	glBindBuffer(GL_ARRAY_BUFFER, imDrawVBO);
-	
+	glBindBuffer(GL_ARRAY_BUFFER, _im3D->vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * _im3D->vertices.Count(), _im3D->vertices.Data(), GL_DYNAMIC_DRAW);
 	glBindVertexArray(0);
+
+
+	GLuint loc = glGetUniformLocation(_im3D->shader, "model");
+	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(model));
 	
 	glBindVertexArray(GetCurrentContextVAO(_im3D->vaoHandle));
 	glDrawArrays(GL_TRIANGLES, 0, _im3D->vertices.Count() / 7);
 	glBindVertexArray(0);
+
+	_im3D->vertices.Clear();
 }
 
 void ImDraw3DCleanup()

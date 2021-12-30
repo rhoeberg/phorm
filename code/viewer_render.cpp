@@ -371,7 +371,6 @@ void UpdateViewerRender()
 	}
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 }
 
 void UpdateGizmos()
