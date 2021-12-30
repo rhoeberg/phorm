@@ -254,13 +254,10 @@ void ImDrawRectOutline(Rect rect, float size)
 {
 	// top
 	ImDrawLine(rect.pos, rect.pos + vec2(rect.width, 0.0f), size);
-
 	// right
 	ImDrawLine(rect.pos + vec2(rect.width, 0.0f), rect.pos + vec2(rect.width, rect.height), size);
-
 	// bottom
 	ImDrawLine(rect.pos + vec2(0.0f, rect.height), rect.pos + vec2(rect.width, rect.height), size);
-
 	// left
 	ImDrawLine(rect.pos, rect.pos + vec2(0.0f, rect.height), size);
 }

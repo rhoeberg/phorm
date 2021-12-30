@@ -15,6 +15,7 @@ typedef glm::mat4 mat4;
 typedef glm::mat3 mat3;
 
 #define WORLD_UP vec3(0, 1, 0)
+#define PI 3.14159265358979323846
 
 enum DataType {
 	DATA_TEXTURE,

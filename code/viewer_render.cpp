@@ -337,6 +337,8 @@ void UpdateViewerRender()
 	viewer->renderGroupList.Clear();
 	viewer->renderPointLights.Clear();
 
+	ImDraw3DRender();
+
 	if(!ViewerInMain()) {
 		glfwSwapBuffers(_viewerWindow);
 		glfwMakeContextCurrent(_win);
@@ -373,9 +375,24 @@ void UpdateViewerRender()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+void DrawTransformGizmo(vec3 pos)
+{
+	// y
+	ImDraw3DArrow(pos, pos + vec3(0, 1, 0));
+
+	// x
+	ImDraw3DArrow(pos, pos + vec3(1, 0, 0));
+
+	// z
+	ImDraw3DArrow(pos, pos + vec3(0, 0, 1));
+}
+
 void UpdateGizmos()
 {
-	ImDraw3DCube(vec3(0, 0, 0), 0.5f);
+	// DrawTransformGizmo(vec3(0, 0, 0));
+	ImDraw3DCylinder(vec3(0, 0, 0), vec3(0.5f, 0.4f, 0.5f), 0.1f, 10);
+	// ImDraw3DCone(vec3(1, 0, 0), vec3(1, 0.2f, 0), 0.1f, 10);
+	// ImDraw3DArrow(vec3(-1, 0, 0), vec3(-1, 0.2f, 0));
 }
 
 void UpdateViewerRenderGUI()
@@ -411,10 +428,6 @@ void UpdateViewerRenderGUI()
 	ImGui::End();
 
 	if(singleKeyPress(GLFW_KEY_R)) {
-		// _viewerRenderState.orbitDistance = 5.0f;
-		// _viewerRenderState.orbitDragSpeed = 0.006f;
-		// _viewerRenderState.dragAmount = vec3(0, 0, 0);
 		_viewerRenderState.cam.Reset();
-		// _viewerRenderState.camPos = vec3(0, 0, -1
 	}
 }

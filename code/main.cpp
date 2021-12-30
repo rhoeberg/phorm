@@ -124,13 +124,11 @@ void UpdateLoop()
 	///////////////
 	// IMDRAW
 	///////////////
-	// glfwMakeContextCurrent(_win);
 	SetContextMain();
 	int screenWidth, screenHeight;
 	GetWindowSize(&screenWidth, &screenHeight);
 	glViewport(0, 0, screenWidth, screenHeight);
 	ImDrawRender();
-	ImDraw3DRender();
 
 	///////////////
 	// BUFFER SWAP / IMGUI RENDER

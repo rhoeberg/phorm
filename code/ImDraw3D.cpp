@@ -29,18 +29,12 @@ void ImDraw3DInitialize()
 	_im3D= (ImDraw3DState*)malloc(sizeof(ImDraw3DState));
 	new(&_im3D->vertices) VMArray<GLfloat>();
 
-	
 	// SETUP SHADER
     _im3D->shader = createShaderProgram("assets\\imdraw3d.vs", "assets\\imdraw3d.frag");
-	// GLuint viewLoc = glGetUniformLocation(_im3D->shader, "view");
-	// GLuint projectionLoc = glGetUniformLocation(_im3D->shader, "projection");
-	// glUseProgram(_im3D->shader);
-	
 
 	// SETUP GL BUFFERS
 	_im3D->vaoHandle = AddVAO();
 	glGenBuffers(1, &_im3D->vbo);
-
 
 	SetContextMain();
 	BindMainContextVAO(_im3D->vaoHandle);
@@ -61,8 +55,7 @@ void ImDraw3DInitialize()
 	glBindVertexArray(0);
 
 
-
-	//
+	// set default color
 	ImDraw3DSetColor(vec3(1.0f, 1.0f, 1.0f));
 }
 
@@ -106,9 +99,186 @@ void ImDraw3DPushQuad(vec3 a, vec3 b, vec3 c, vec3 d)
 	ImDraw3DAddVertex(a);
 }
 
+void ImDraw3DCone(vec3 start, vec3 end, float thickness, int resolution)
+{
+    float deltaAngle = 2.0 * PI / resolution;
+	mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+	vec3 dir = glm::normalize(end - start);
+	if(dir != WORLD_UP && dir != vec3(0, -1, 0)) {
+		rotation = glm::lookAt(start, end, WORLD_UP);
+	}
+
+	{
+		// draw bottom
+		vec3 point0;
+		point0.x = cos(deltaAngle * 0) * thickness;
+		point0.z = sin(deltaAngle * 0) * thickness;
+		point0.y = 0.0f;
+		point0 = rotation * point0;
+		for(i32 i = 2; i < resolution; i++) {
+			// point 1
+			vec3 point1 = vec3(0, 0, 0);
+			point1.x = cos(deltaAngle * (i - 1)) * thickness;
+			point1.z = sin(deltaAngle * (i - 1)) * thickness;
+			point1 = rotation * point1;
+
+			// point 2
+			vec3 point2 = vec3(0, 0, 0);
+			point2.x = cos(deltaAngle * i) * thickness;
+			point2.z = sin(deltaAngle * i) * thickness;
+			point2 = rotation * point2;
+
+			ImDraw3DPushTriangle(point0 + start, point1 + start, point2 + start);
+		}
+	}
+
+	// draw sides
+	for(i32 i = 0; i < resolution; i++) {
+		// point 1
+		vec3 point0 = vec3(0, 0, 0);
+		point0.x = cos(deltaAngle * (i - 1)) * thickness;
+		point0.z = sin(deltaAngle * (i - 1)) * thickness;
+		point0 = rotation * point0;
+
+		// point 2
+		vec3 point1 = vec3(0, 0, 0);
+		point1.x = cos(deltaAngle * i) * thickness;
+		point1.z = sin(deltaAngle * i) * thickness;
+		point1 = rotation * point1;
+
+		ImDraw3DPushTriangle(point0 + start, point1 + start, end);
+
+		if(i == resolution) {
+			// draw from end to beginning
+		}
+	}
+}
+
+// mat3 RotationFromDirection(vec3 dir)
+// {
+// 	mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+//     if(dir != WORLD_UP && dir != vec3(0, -1, 0)) {
+//         vec3 new_y = glm::normalize(dir);
+//         vec3 new_z = glm::normalize(glm::cross(new_y, vec3(0, 1, 0)));
+//         vec3 new_x = glm::normalize(glm::cross(new_y, new_z));
+//         rotation = mat3(new_x, new_y, new_z);
+//     }
+//     return rotation;
+// }
+
+void ImDraw3DCylinder(vec3 start, vec3 end, float thickness, int resolution)
+{
+    float deltaAngle = 2.0 * PI / resolution;
+    
+	mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+	vec3 dir = glm::normalize(end - start);
+	if(dir != WORLD_UP && dir != vec3(0, -1, 0)) {
+		rotation = glm::lookAt(start, start+dir, WORLD_UP);
+	}
+
+	vec3 up = WORLD_UP * rotation;
+	vec3 left = vec3(-1, 0, 0) * rotation;
+	vec3 right = vec3(1, 0, 0) * rotation;
+	vec3 front = vec3(0, 0, -1) * rotation;
+
+	float upLength = glm::length(up);
+	float leftLength = glm::length(left);
+	float rigthLength = glm::length(right);
+	float frontLength = glm::length(right);
+
+	// vec3 dir = glm::normalize(end - start);
+	// mat3 rotation = RotationFromDirection(dir);
+
+    vec3 firstBottom;
+    vec3 firstTop;
+    vec3 oldBottom;
+    vec3 oldTop;
+
+    for(i32 i = 0; i < resolution; i++) {
+        vec3 newP;
+        newP.x = cos(deltaAngle * i) * thickness;
+        newP.z = sin(deltaAngle * i) * thickness;
+        newP.y = 0.0f;
+        
+		// vec3 bottom = (newP+start) * rotation;
+		// vec3 top = (newP+end) * rotation;
+
+        // newP = rotation * newP;
+        
+        vec3 bottom = newP + start;
+        vec3 top = newP + end;
+
+        
+        if(i == 0) {
+            firstBottom = bottom;
+            firstTop = top;
+        }
+        else {
+            vec3 p1 = oldBottom;
+            vec3 p2 = bottom;
+            vec3 p3 = top;
+            vec3 p4 = oldTop;
+            ImDraw3DPushQuad(p1, p2, p3, p4);
+        }
+        oldBottom = bottom;
+        oldTop = top;
+    }
+    
+    vec3 p1 = oldBottom;
+    vec3 p2 = firstBottom;
+    vec3 p3 = firstTop;
+    vec3 p4 = oldTop;
+    ImDraw3DPushQuad(p1, p2, p3, p4);
+
+	// draw top and bottom
+	vec3 point0;
+	point0.x = cos(deltaAngle * 0) * thickness;
+	point0.z = sin(deltaAngle * 0) * thickness;
+	point0.y = 0.0f;
+	point0 = rotation * point0;
+	for(i32 i = 2; i < resolution; i++) {
+		// point 1
+		vec3 point1 = vec3(0, 0, 0);
+		point1.x = cos(deltaAngle * (i - 1)) * thickness;
+		point1.z = sin(deltaAngle * (i - 1)) * thickness;
+		point1 = rotation * point1;
+
+		// point 2
+		vec3 point2 = vec3(0, 0, 0);
+		point2.x = cos(deltaAngle * i) * thickness;
+		point2.z = sin(deltaAngle * i) * thickness;
+		point2 = rotation * point2;
+
+		ImDraw3DPushTriangle(point0 + start, point1 + start, point2 + start);
+		ImDraw3DPushTriangle(point2 + end, point1 + end, point0 + end);
+	}
+}
+
+void ImDraw3DArrow(vec3 start, vec3 end, float thickness = 0.03f)
+{
+	int resolution = 10;
+	// float thickness = 0.03f;
+
+	vec3 dir = glm::normalize(end - start);
+	float length = glm::distance(start, end);
+
+	float coneHeight = 0.1f;
+	if(length < 0.1f)
+		coneHeight = length / 2.0f;
+
+	float lengthCyl = length - coneHeight;
+
+	ImDraw3DCylinder(start, start + (dir * lengthCyl), thickness, resolution);
+	ImDraw3DCone(start + (dir * lengthCyl), end, thickness * 2, resolution);
+}
+
+
+/* 
+   Draw a axis aligned cube with evenly sized faces
+*/
 void ImDraw3DCube(vec3 pos, float size)
 {
-	// front
+	// FRONT
 	vec3 frontOffset = pos - vec3(0, 0, size);
 	vec3 frontBottomLeft = frontOffset + vec3(-size, -size, 0);
 	vec3 frontBottomRight = frontOffset + vec3(size, -size, 0);
@@ -116,27 +286,40 @@ void ImDraw3DCube(vec3 pos, float size)
 	vec3 frontTopLeft = frontOffset + vec3(-size, size, 0);
 	ImDraw3DPushQuad(frontBottomLeft, frontBottomRight, frontTopRight, frontTopLeft);
 
-	// back
-	vec3 backOffset = pos + vec3(0, 0, size);
-	vec3 backBottomRight = backOffset + vec3(size, -size, 0);
-	vec3 backBottomLeft = backOffset + vec3(-size, -size, 0);
-	vec3 backTopLeft = backOffset + vec3(-size, size, 0);
-	vec3 backTopRight = backOffset + vec3(size, size, 0);
-	ImDraw3DPushQuad(frontBottomLeft, frontBottomRight, frontTopRight, frontTopLeft);
+	// BACK
+	vec3 backBottomRight = pos + vec3(size, -size, size);
+	vec3 backBottomLeft = pos + vec3(-size, -size, size);
+	vec3 backTopLeft = pos + vec3(-size, size, size);
+	vec3 backTopRight = pos + vec3(size, size, size);
+	ImDraw3DPushQuad(backBottomLeft, backBottomRight, backTopRight, backTopLeft);
 
-	// left
+	// LEFT
 	vec3 leftBottomBack = pos + vec3(-size, -size, -size);
 	vec3 leftBottomFront = pos + vec3(-size, -size, size);
 	vec3 leftTopFront = pos + vec3(-size, size, size);
 	vec3 leftTopBack = pos + vec3(-size, size, -size);
 	ImDraw3DPushQuad(leftBottomBack, leftBottomFront, leftTopFront, leftTopBack);
 
-	// rigth
+	// RIGHT
 	vec3 rightBottomFront = pos + vec3(size, -size, size);
 	vec3 rightBottomBack = pos + vec3(size, -size, -size);
 	vec3 rightTopBack = pos + vec3(size, size, -size);
 	vec3 rightTopFront = pos + vec3(size, size, size);
 	ImDraw3DPushQuad(rightBottomFront, rightBottomBack, rightTopBack, rightTopFront);
+
+	// TOP
+	vec3 topFrontLeft = pos + vec3(-size, size, -size);
+	vec3 topFrontRight = pos + vec3(size, size, -size);
+	vec3 topBackRight = pos + vec3(size, size, size);
+	vec3 topBackLeft = pos + vec3(-size, size, size);
+	ImDraw3DPushQuad(topFrontLeft, topFrontRight, topBackRight, topBackLeft);
+
+	// BOTTOM
+	vec3 bottomFrontRight = pos + vec3(size, -size, -size);
+	vec3 bottomFrontLeft = pos + vec3(-size, -size, -size);
+	vec3 bottomBackLeft = pos + vec3(-size, -size, size);
+	vec3 bottomBackRight = pos + vec3(size, -size, size);
+	ImDraw3DPushQuad(bottomFrontRight, bottomFrontLeft, bottomBackLeft, bottomBackRight);
 }
 
 void ImDraw3DRender()
