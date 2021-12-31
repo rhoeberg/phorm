@@ -28,11 +28,11 @@ global double lastFrame;
 #include "util.h"
 #include "simplexnoise1234.h"
 #include "math.h"
-#include "imdraw.h"
-#include "Imdraw3D.h"
 /* #include "render.h" */
 #include "vm_array.h"
 #include "vm_fixedarray.h"
+#include "imdraw.h"
+#include "Imdraw3D.h"
 #include "string.h"
 #include "hashmap.h"
 #include "ObjectContainer.h"

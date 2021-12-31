@@ -1,15 +1,3 @@
-
-struct ImDraw3DState
-{
-	VMArray<GLfloat> vertices;
-	vec4 drawColor;
-	GLuint shader;
-	GLuint vbo;
-	int vaoHandle;
-};
-
-global ImDraw3DState *_im3D;
-
 void ImDraw3DSetView(mat4 view)
 {
 	glUseProgram(_im3D->shader);
@@ -173,18 +161,45 @@ void ImDraw3DCylinder(vec3 start, vec3 end, float thickness, int resolution)
 	mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 	vec3 dir = glm::normalize(end - start);
 	if(dir != WORLD_UP && dir != vec3(0, -1, 0)) {
-		rotation = glm::lookAt(start, start+dir, WORLD_UP);
+		rotation = glm::lookAt(start, end, WORLD_UP);
 	}
 
-	vec3 up = WORLD_UP * rotation;
-	vec3 left = vec3(-1, 0, 0) * rotation;
-	vec3 right = vec3(1, 0, 0) * rotation;
-	vec3 front = vec3(0, 0, -1) * rotation;
+	// vec3 dirRight = glm::normalize(glm::cross(dir, WORLD_UP));
+	// vec3 dirUp = glm::normalize(glm::cross(dir, dirRight));
+	// rotation = mat3(dir, dirUp, dirRight);
 
-	float upLength = glm::length(up);
-	float leftLength = glm::length(left);
-	float rigthLength = glm::length(right);
-	float frontLength = glm::length(right);
+	// float yAngle = glm::angle(dirUp, WORLD_UP);
+	// float xAngle = glm::angle(dirRight, vec3(1, 0, 0));
+	// float zAngle = glm::angle(dir, vec3(0, 0, 1));
+
+	// mat3 up = glm::rotate(glm::angle(dirUp, WORLD_UP), dirUp);
+	// mat3 right = glm::rotate(glm::angle(dirRight, vec3(1, 0, 0)), dirRight);
+
+	// float yAngle = glm::angle(dir, WORLD_UP);
+	// rotation = glm::rotate(yAngle, dir);
+	// rotation = up * right * rotation;
+
+	// float zAngle = glm::angle(dir, vec3(0, 0, 1));
+
+	float xAngle = glm::angle(dir, vec3(1, 0, 0));
+	float yAngle = glm::angle(dir, vec3(0, 1, 0));
+
+	mat3 yRot = glm::rotate(xAngle, vec3(0, 1, 0));
+	mat3 zRot = glm::rotate(yAngle, vec3(0, 0, 1));
+
+	// mat3 xRot = glm::rotate(yAngle, vec3(1, 0, 0));
+	// mat3 zRot = glm::rotate(yAngle, vec3(0, 0, 1));
+	rotation = yRot * zRot;
+	// rotation = yRot;
+
+	// vec3 up = WORLD_UP * rotation;
+	// vec3 left = vec3(-1, 0, 0) * rotation;
+	// vec3 right = vec3(1, 0, 0) * rotation;
+	// vec3 front = vec3(0, 0, -1) * rotation;
+	// float upLength = glm::length(up);
+	// float leftLength = glm::length(left);
+	// float rigthLength = glm::length(right);
+	// float frontLength = glm::length(right);
 
 	// vec3 dir = glm::normalize(end - start);
 	// mat3 rotation = RotationFromDirection(dir);
@@ -193,7 +208,6 @@ void ImDraw3DCylinder(vec3 start, vec3 end, float thickness, int resolution)
     vec3 firstTop;
     vec3 oldBottom;
     vec3 oldTop;
-
     for(i32 i = 0; i < resolution; i++) {
         vec3 newP;
         newP.x = cos(deltaAngle * i) * thickness;
@@ -203,7 +217,7 @@ void ImDraw3DCylinder(vec3 start, vec3 end, float thickness, int resolution)
 		// vec3 bottom = (newP+start) * rotation;
 		// vec3 top = (newP+end) * rotation;
 
-        // newP = rotation * newP;
+        newP = rotation * newP;
         
         vec3 bottom = newP + start;
         vec3 top = newP + end;
