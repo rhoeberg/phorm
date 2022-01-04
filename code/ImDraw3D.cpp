@@ -142,67 +142,40 @@ void ImDraw3DCone(vec3 start, vec3 end, float thickness, int resolution)
 	}
 }
 
-// mat3 RotationFromDirection(vec3 dir)
-// {
-// 	mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-//     if(dir != WORLD_UP && dir != vec3(0, -1, 0)) {
-//         vec3 new_y = glm::normalize(dir);
-//         vec3 new_z = glm::normalize(glm::cross(new_y, vec3(0, 1, 0)));
-//         vec3 new_x = glm::normalize(glm::cross(new_y, new_z));
-//         rotation = mat3(new_x, new_y, new_z);
-//     }
-//     return rotation;
-// }
-
 void ImDraw3DCylinder(vec3 start, vec3 end, float thickness, int resolution)
 {
     float deltaAngle = 2.0 * PI / resolution;
     
-	mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-	vec3 dir = glm::normalize(end - start);
-	if(dir != WORLD_UP && dir != vec3(0, -1, 0)) {
-		rotation = glm::lookAt(start, end, WORLD_UP);
-	}
-
-	// vec3 dirRight = glm::normalize(glm::cross(dir, WORLD_UP));
-	// vec3 dirUp = glm::normalize(glm::cross(dir, dirRight));
-	// rotation = mat3(dir, dirUp, dirRight);
-
-	// float yAngle = glm::angle(dirUp, WORLD_UP);
-	// float xAngle = glm::angle(dirRight, vec3(1, 0, 0));
-	// float zAngle = glm::angle(dir, vec3(0, 0, 1));
-
-	// mat3 up = glm::rotate(glm::angle(dirUp, WORLD_UP), dirUp);
-	// mat3 right = glm::rotate(glm::angle(dirRight, vec3(1, 0, 0)), dirRight);
-
-	// float yAngle = glm::angle(dir, WORLD_UP);
-	// rotation = glm::rotate(yAngle, dir);
-	// rotation = up * right * rotation;
-
-	// float zAngle = glm::angle(dir, vec3(0, 0, 1));
-
-	float xAngle = glm::angle(dir, vec3(1, 0, 0));
-	float yAngle = glm::angle(dir, vec3(0, 1, 0));
-
-	mat3 yRot = glm::rotate(xAngle, vec3(0, 1, 0));
-	mat3 zRot = glm::rotate(yAngle, vec3(0, 0, 1));
-
-	// mat3 xRot = glm::rotate(yAngle, vec3(1, 0, 0));
-	// mat3 zRot = glm::rotate(yAngle, vec3(0, 0, 1));
-	rotation = yRot * zRot;
-	// rotation = yRot;
-
-	// vec3 up = WORLD_UP * rotation;
-	// vec3 left = vec3(-1, 0, 0) * rotation;
-	// vec3 right = vec3(1, 0, 0) * rotation;
-	// vec3 front = vec3(0, 0, -1) * rotation;
-	// float upLength = glm::length(up);
-	// float leftLength = glm::length(left);
-	// float rigthLength = glm::length(right);
-	// float frontLength = glm::length(right);
-
+	// mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 	// vec3 dir = glm::normalize(end - start);
-	// mat3 rotation = RotationFromDirection(dir);
+	// if(dir != WORLD_UP && dir != vec3(0, -1, 0)) {
+	// 	rotation = glm::lookAt(start, end, WORLD_UP);
+	// }
+
+	// float xAngle = glm::angle(dir, vec3(1, 0, 0));
+	// float zAngle = glm::angle(vec3(dir.x, 0.0f, dir.z), vec3(0, 0, 1));
+	// float yAngle = glm::angle(dir, vec3(0, 1, 0));
+	// mat3 yRot = glm::rotate(xAngle, vec3(0, 1, 0));
+	// mat3 zRot = glm::rotate(yAngle, vec3(0, 0, 1));
+	// rotation = yRot * zRot;
+
+
+	// vec3 axis = glm::cross(dir, WORLD_UP);
+	// if(glm::length(glm::normalize(axis)) > 0.0f) {
+		// this should just be glm::angle function
+		// float theta = glm::acos(glm::dot(WORLD_UP, dir));
+		// float angle = glm::angle(WORLD_UP, dir);
+		// rotation = glm::rotate(angle, glm::normalize(axis));
+	// }
+
+	// we make a rotation matrix from a normal pointing in "world up"
+	// to normal pointing in the given direction
+	vec3 dir = glm::normalize(end - start);
+	mat3 rotation = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+	vec3 axis = glm::cross(WORLD_UP, dir);
+	float angle = glm::angle(WORLD_UP, dir);
+	rotation = glm::rotate(angle, axis);
+
 
     vec3 firstBottom;
     vec3 firstTop;
@@ -214,9 +187,6 @@ void ImDraw3DCylinder(vec3 start, vec3 end, float thickness, int resolution)
         newP.z = sin(deltaAngle * i) * thickness;
         newP.y = 0.0f;
         
-		// vec3 bottom = (newP+start) * rotation;
-		// vec3 top = (newP+end) * rotation;
-
         newP = rotation * newP;
         
         vec3 bottom = newP + start;
