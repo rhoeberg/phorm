@@ -293,6 +293,8 @@ void ImDraw3DCube(vec3 pos, float size)
 
 void ImDraw3DRender()
 {
+    glDisable(GL_DEPTH_TEST);
+
 	glUseProgram(_im3D->shader);
 
 	glBindVertexArray(GetCurrentContextVAO(_im3D->vaoHandle));
@@ -310,6 +312,8 @@ void ImDraw3DRender()
 	glBindVertexArray(0);
 
 	_im3D->vertices.Clear();
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void ImDraw3DCleanup()

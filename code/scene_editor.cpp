@@ -4,6 +4,7 @@ void InitializeSceneEditor()
 {
 	_sceneEditorState = (SceneEditorState*)malloc(sizeof(SceneEditorState));
 	new (&_sceneEditorState->scene) Scene();
+	_sceneEditorState->selectedObject.isset = false;
 }
 
 void RenderScene()
@@ -68,6 +69,12 @@ void RenderScene()
 	// }
 }
 
+SceneObject* GetSelectedSceneObject()
+{
+	SceneEditorState *state = _sceneEditorState;
+	return state->scene.sceneObjects.Get(&state->selectedObject);
+}
+
 void UpdateSceneEditor()
 {
 	// shorthand
@@ -90,6 +97,7 @@ void UpdateSceneEditor()
 					ImGui::SameLine(40);
 					if(ImGui::Button(str->buffer)) {
 						SetInspectorObject(sceneObject->handle);
+						state->selectedObject = handle;
 					}
 				}
 				else {

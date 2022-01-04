@@ -174,9 +174,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if(VIEWER_START_MAIN) {
-		SetViewerInMain(true);
-	}
+	SetViewerInMain(VIEWER_START_MAIN);
 
     lastFrame = glfwGetTime();
 	double startTime = 0.0;

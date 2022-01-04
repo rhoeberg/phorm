@@ -1,7 +1,7 @@
 #pragma once
 
 #define global static
-#define VIEWER_START_MAIN true
+#define VIEWER_START_MAIN false
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 #define VIEWER_WIDTH 1920

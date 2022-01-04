@@ -91,13 +91,16 @@ vec3 RayFromMouseCoord(int width, int height, int mouseX, int mouseY, mat4 proje
 }
 
 /*
-  p = cylinder start
-  q = cylinder end
-  r = cylinder radius
+  SEGMENT CYLINDER INTERSECTION
   
   sa = segment start
   sb = segment end
 
+  p = cylinder start
+  q = cylinder end
+  r = cylinder radius
+
+  returns:
   t = intersection distance along segment direction
  */
 bool IntersectSegmentCylinder(vec3 sa, vec3 sb, vec3 p, vec3 q, float  r, float *t)
@@ -156,4 +159,33 @@ bool IntersectSegmentCylinder(vec3 sa, vec3 sb, vec3 p, vec3 q, float  r, float 
     }
     // Segment intersects cylinder between the endcaps; t is correct
     return true; 
+}
+
+/*
+  SEGMENT PLANE INTERSECTION
+
+  a = segment start
+  b = segment end
+  
+  o = plane origin
+  n = plane normal
+  
+
+  returns:
+  t = intersection distance along segment 
+  q = intersection position
+
+ */
+bool IntersectSegmentPlane(vec3 a, vec3 b, vec3 o, vec3 n, float *t, vec3 *q)
+{
+    // Compute the t value for the directed line ab intersecting the plane
+    vec3 ab = b - a;
+    *t = (glm::dot(n, o) - glm::dot(n, a)) / glm::dot(n, ab);
+    // If t in [0..1] compute and return intersection point
+    if (*t >= 0.0f && *t <= 1.0f) {
+        *q = a + *t * ab;
+        return true; 
+    }
+    // Else no intersection
+    return false; 
 }

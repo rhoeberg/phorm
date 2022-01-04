@@ -212,9 +212,9 @@ void UpdateViewerRender()
 
 		vec2 dragOffset;
 
-		// mouse drag
+		// mouse drag (orbit)
 		dragOffset = mouse - viewer->lastDragPos;
-		if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
+		if(mouse_buttons[GLFW_MOUSE_BUTTON_3]) {
 			viewer->cam.OrbitDrag(dragOffset);
 		}
 		else if(mouse_buttons[GLFW_MOUSE_BUTTON_2]) {
@@ -421,30 +421,40 @@ void TransformGizmo(vec3 pos)
 
 	vec3 rayDir = RayFromMouseCoord(width, height, mouseX, mouseY, projection, view);
 	vec3 seStart  =_viewerRenderState.cam.pos;
-	vec3 seEnd = seStart + (rayDir * 100.0f);
+	vec3 seEnd = seStart + (rayDir * 1000.0f);
 	float t;
 
-	// y
-	if(IntersectSegmentCylinder(seStart, seEnd, pos, pos + vec3(0, 1, 0) * size, 0.015f, &t)) {
-		ImDraw3DSetColor(vec3(1, 1, 1));
-		// try start dragging y handle
-		if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
-			if(!_viewerRenderState.transformGizmo.isDragging) {
-				_viewerRenderState.transformGizmo.isDragging = true;
-				_viewerRenderState.transformGizmo.gizmoHandle = TRANSFORM_Y;
-				_viewerRenderState.transformGizmo.mouseStart = mouse;
-			}
-		}
-	}
-	else {
-		ImDraw3DSetColor(vec3(0, 0, 1));
-	}
-	ImDraw3DArrow(pos, pos + vec3(0, 1, 0) * size);
+	// // y
+	// if(IntersectSegmentCylinder(seStart, seEnd, pos, pos + vec3(0, 1, 0) * size, 0.015f, &t)) {
+	// 	ImDraw3DSetColor(vec3(1, 1, 1));
+	// 	// try start dragging y handle
+	// 	if(mouse_buttons[GLFW_MOUSE_BUTTON_1] && !_viewerRenderState.transformGizmo.isDragging) {
+	// 		_viewerRenderState.transformGizmo.isDragging = true;
+	// 		_viewerRenderState.transformGizmo.gizmoHandle = TRANSFORM_Y;
+	// 		_viewerRenderState.transformGizmo.mouseStart = mouse;
+	// 		_viewerRenderState.transformGizmo.objectStart = pos;
+	// 	}
+	// }
+	// else {
+	// 	ImDraw3DSetColor(vec3(0, 0, 1));
+	// }
+	// ImDraw3DArrow(pos, pos + vec3(0, 1, 0) * size);
 
 
 	// x
 	if(IntersectSegmentCylinder(seStart, seEnd, pos, pos + vec3(1, 0, 0) * size, 0.015f, &t)) {
 		ImDraw3DSetColor(vec3(1, 1, 1));
+		if(mouse_buttons[GLFW_MOUSE_BUTTON_1] && !_viewerRenderState.transformGizmo.isDragging) {
+			float t;
+			vec3 q;
+			if(IntersectSegmentPlane(seStart, seEnd, pos, vec3(1, 0, 0), &t, &q)) {
+				_viewerRenderState.transformGizmo.dragStart = q;
+				_viewerRenderState.transformGizmo.dragOffset = q - pos;
+				_viewerRenderState.transformGizmo.isDragging = true;
+				_viewerRenderState.transformGizmo.gizmoHandle = TRANSFORM_X;
+				_viewerRenderState.transformGizmo.mouseStart = mouse;
+			}
+		}
 	}
 	else {
 		ImDraw3DSetColor(vec3(1, 0, 0));
@@ -452,25 +462,79 @@ void TransformGizmo(vec3 pos)
 	ImDraw3DArrow(pos, pos + vec3(1, 0, 0) * size);
 
 	// z
-	if(IntersectSegmentCylinder(seStart, seEnd, pos, pos + vec3(0, 0, 1) * size, 0.015f, &t)) {
-		ImDraw3DSetColor(vec3(1, 1, 1));
-	}
-	else {
-		ImDraw3DSetColor(vec3(0, 1, 0));
-	}
-	ImDraw3DArrow(pos, pos + vec3(0, 0, 1) * size);
-
+	// if(IntersectSegmentCylinder(seStart, seEnd, pos, pos + vec3(0, 0, 1) * size, 0.015f, &t)) {
+	// 	ImDraw3DSetColor(vec3(1, 1, 1));
+	// 	if(mouse_buttons[GLFW_MOUSE_BUTTON_1] && !_viewerRenderState.transformGizmo.isDragging) {
+	// 		_viewerRenderState.transformGizmo.isDragging = true;
+	// 		_viewerRenderState.transformGizmo.gizmoHandle = TRANSFORM_Z;
+	// 		_viewerRenderState.transformGizmo.mouseStart = mouse;
+	// 		_viewerRenderState.transformGizmo.objectStart = pos;
+	// 	}
+	// }
+	// else {
+	// 	ImDraw3DSetColor(vec3(0, 1, 0));
+	// }
+	// ImDraw3DArrow(pos, pos + vec3(0, 0, 1) * size);
 
 	// handle dragging
 	if(_viewerRenderState.transformGizmo.isDragging) {
-		if(_viewerRenderState.transformGizmo.transformHandle == TRANSFORM_Y) {
+		if(!mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
+			_viewerRenderState.transformGizmo.isDragging = false;
+		}
+		else {
+			vec3 planeOrigin = pos;
+			vec3 planeNormal;
+
+			vec3 dragAxis;
+			if(_viewerRenderState.transformGizmo.gizmoHandle == TRANSFORM_X) {
+				dragAxis = vec3(1, 0, 0);
+				planeNormal = vec3(0, 1, 0);
+			}
+			else if(_viewerRenderState.transformGizmo.gizmoHandle == TRANSFORM_Y) {
+				dragAxis = vec3(0, -1, 0);
+				planeNormal = vec3(1, 0, 0);
+			}
+			else if(_viewerRenderState.transformGizmo.gizmoHandle == TRANSFORM_Z) {
+				dragAxis = vec3(0, 0, 1);
+				planeNormal = vec3(0, 1, 0);
+			}
+
+			float t;
+			vec3 q;
+			if(IntersectSegmentPlane(seStart, seEnd, planeOrigin, planeNormal, &t, &q)) {
+				SceneObject *selectedObject = GetSelectedSceneObject();
+				if(selectedObject != NULL) {
+					vec3 dragDir = q - _viewerRenderState.transformGizmo.dragStart;
+					dragDir *= dragAxis;
+					selectedObject->pos += dragDir;
+					_viewerRenderState.transformGizmo.dragStart = q;
+					// _viewerRenderState.transformGizmo.dragOffset = q;
+				}	
+			}
+
+			// vec2 mouseNorm = mouse / vec2(width, height);
+			// vec3 dragDir = vec3(mouseNorm, 0.0f) - vec3(_viewerRenderState.transformGizmo.mouseStart / vec2(width, height), 0.0f);
+			// dragDir = view * vec4(dragDir, 0.0f);
+			// dragDir *= dragAxis;
+
+			// SceneObject *selectedObject = GetSelectedSceneObject();
+			// if(selectedObject != NULL) {
+			// 	selectedObject->pos += dragDir;
+			// }	
+			// _viewerRenderState.transformGizmo.mouseStart = mouse;
 		}
 	}
 }
 
 void UpdateGizmos()
 {
-	TransformGizmo(vec3(0, 0, 0));
+
+	if(_globalEditorState->viewerMode == VIEW_SCENE) {
+		SceneObject *selectedObject = GetSelectedSceneObject();
+		if(selectedObject != NULL) {
+			TransformGizmo(selectedObject->pos);
+		}
+	}
 	// ImDraw3DCone(vec3(1, 0, 0), vec3(1, 0.2f, 0), 0.1f, 10);
 	// ImDraw3DArrow(vec3(-1, 0, 0), vec3(-1, 0.2f, 0));
 
