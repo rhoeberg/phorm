@@ -377,34 +377,32 @@ void UpdateViewerRender()
 
 void DrawTransformGizmo(vec3 pos)
 {
+	float size = 0.2f;
 	// y
-	ImDraw3DArrow(pos, pos + vec3(0, 1, 0));
+	ImDraw3DArrow(pos, pos + vec3(0, 1, 0) * size);
 
 	// x
-	ImDraw3DArrow(pos, pos + vec3(1, 0, 0));
+	ImDraw3DArrow(pos, pos + vec3(1, 0, 0) * size);
 
 	// z
-	ImDraw3DArrow(pos, pos + vec3(0, 0, 1));
+	ImDraw3DArrow(pos, pos + vec3(0, 0, 1) * size);
 }
 
 void UpdateGizmos()
 {
-	// DrawTransformGizmo(vec3(0, 0, 0));
+	DrawTransformGizmo(vec3(0, 0, 0));
 	// ImDraw3DCone(vec3(1, 0, 0), vec3(1, 0.2f, 0), 0.1f, 10);
 	// ImDraw3DArrow(vec3(-1, 0, 0), vec3(-1, 0.2f, 0));
 
-	ImDraw3DCylinder(vec3(1.3f, 0, 0), vec3(1.3f, 0.5f, 0.5f), 0.1f, 10);
-	ImDraw3DCylinder(vec3(0.8f, 0, 0), vec3(0.8f, 0.5f, 0), 0.1f, 10);
-	ImDraw3DCylinder(vec3(0, 0, 0), vec3(0.5f, 0, 0), 0.1f, 10);
-	ImDraw3DCylinder(vec3(-0.5f, 0, 0), vec3(-0.5f, 0, 0.5f), 0.1f, 10);
-	ImDraw3DCylinder(vec3(-1.0f, 0, 0), vec3(-1.5f, 0, -0.5f), 0.1f, 10);
-
-	ImDraw3DCylinder(vec3(-2.0f, 0, 0), vec3(-2.5f, 0.5f, 0.5f), 0.1f, 10);
-
-	ImDraw3DCylinder(vec3(-3.0f, 0, 0), vec3(-3.0f, -0.5f, 0.5f), 0.1f, 10);
-
-	ImDraw3DCylinder(vec3(-4.0f, 0, 0), vec3(-4.0f, -0.5f, -0.5f), 0.1f, 10);
-	ImDraw3DCylinder(vec3(-5.0f, 0, 0), vec3(-5.5f, 0.5f, 0), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(1.3f, 0, 0), vec3(1.3f, 0.5f, 0.5f), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(0.8f, 0, 0), vec3(0.8f, 0.5f, 0), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(0, 0, 0), vec3(0.5f, 0, 0), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(-0.5f, 0, 0), vec3(-0.5f, 0, 0.5f), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(-1.0f, 0, 0), vec3(-1.5f, 0, -0.5f), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(-2.0f, 0, 0), vec3(-2.5f, 0.5f, 0.5f), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(-3.0f, 0, 0), vec3(-3.0f, -0.5f, 0.5f), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(-4.0f, 0, 0), vec3(-4.0f, -0.5f, -0.5f), 0.1f, 10);
+	// ImDraw3DCylinder(vec3(-5.0f, 0, 0), vec3(-5.5f, 0.5f, 0), 0.1f, 10);
 }
 
 void UpdateViewerRenderGUI()
