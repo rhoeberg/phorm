@@ -1,5 +1,10 @@
 #pragma once
 
+struct Ray {
+	vec3 o;
+	vec3 d;
+};
+
 struct Rect {
 	vec2 pos;
 	float width;
@@ -30,3 +35,4 @@ bool PointInsideRect(vec2 point, Rect rect);
 vec2 GetRectCenter(Rect rect);
 float Noise2D(float x, float y, i32 octaves, double persistance, double frequency);
 float Noise3D(float x, float y, float z, i32 octaves, double persistance, double frequency);
+bool IntersectSegmentCylinder(vec3 sa, vec3 sb, vec3 p, vec3 q, float  r, float *t);

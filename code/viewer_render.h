@@ -43,10 +43,24 @@ struct RenderGroupInstance {
 	}
 };
 
+
+enum TransformGizmoHandle {
+	TRANSFORM_Y,
+	TRANSFORM_X,
+	TRANSFORM_Z,
+};
+
+struct TransformGizmoState {
+	ObjectHandle handle;
+	bool isDragging;
+	TransformGizmoHandle gizmoHandle;
+	vec2 mouseStart;
+};
+
 struct ViewerRenderState {
 	VMArray<RenderObjectInstance> renderList;
 	VMArray<RenderGroupInstance> renderGroupList;
-	VMArray<ObjectHandle> renderPointLights;
+ 	VMArray<ObjectHandle> renderPointLights;
 	ObjectHandle baseTextureObject;
 	bool wireframe;
 
@@ -69,6 +83,10 @@ struct ViewerRenderState {
 	/* vec2 dragAmount; */
 	/* float orbitDistance; */
 	/* float orbitDragSpeed; */
+
+	/////////////
+	// GIZMOS
+	TransformGizmoState transformGizmo;
 };
 
 void InitializeViewerRender();
