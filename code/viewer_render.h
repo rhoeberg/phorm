@@ -66,7 +66,8 @@ struct ViewerRenderState {
 	bool wireframe;
 
 	GLuint defaultTexture;
-	GLuint defaultShader;
+	/* GLuint defaultShader; */
+	Shader defaultShader;
 
 	/////////////
 	// FRAMEBUFFER FOR MAIN WINDOW VIEWER

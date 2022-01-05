@@ -40,6 +40,7 @@ global GLFWSettings glfwSettings;
 #include "ObjectContainer.h"
 #include "glfw_wrapper.h"
 #include "opengl_wrapper.h"
+#include "Shader.h"
 #include "light.h"
 #include "node_parameter.h"
 #include "node.h"

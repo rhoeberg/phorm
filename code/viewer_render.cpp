@@ -24,25 +24,6 @@ void CreateViewerTextureRenderObject()
 
 }
 
-void InitializeDefaultShader()
-{
-	// SETUP VIEW AND PROJECTION
-    // glm::mat4 view = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-    // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-
-    // glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
-
-	
-	// CREATE DEFAULT SHADER
-    _viewerRenderState.defaultShader = createShaderProgram("assets/texture.vert", "assets/texture.frag");
-    glUseProgram(_viewerRenderState.defaultShader);
-    // GLuint viewLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "view");
-    // GLuint projectionLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "projection");
-    // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    // glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-}
-
 void InitializeViewerFBO()
 {
 	// FRAMEBUFFER FOR MAIN WINDOW VIEWER
@@ -62,10 +43,9 @@ void InitializeViewerFBO()
 
 void InitializeViewerRender()
 {
-	InitializeDefaultShader();
+    _viewerRenderState.defaultShader = Shader("assets/texture.vert", "assets/texture.frag");
+	_viewerRenderState.defaultShader.Use();
 	CreateViewerTextureRenderObject();
-	// _viewerRenderState.orbitDistance = 5.0f;
-	// _viewerRenderState.orbitDragSpeed = 0.006f;
 }
 
 // Takes the handle of texture resource
@@ -131,7 +111,8 @@ void DrawRenderObjectInstance(RenderObjectInstance *instance, glm::mat4 model)
 
 	/////////////////
 	// SHADER
-	glUseProgram(_viewerRenderState.defaultShader);
+	// glUseProgram(_viewerRenderState.defaultShader);
+	_viewerRenderState.defaultShader.Use();
 			
 	/////////////////
 	// MODEL
@@ -141,13 +122,11 @@ void DrawRenderObjectInstance(RenderObjectInstance *instance, glm::mat4 model)
 	glm::mat4 rotationMatrix = glm::mat4_cast(q);
 	model = model * rotationMatrix;
 	model = glm::scale(model, renderObject->scale * instance->scale);
-	GLuint modelLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	_viewerRenderState.defaultShader.SetUniformMatrix4fv("model", model);
 
 	glm::mat3 model3x3 = glm::mat3(model);
 	glm::mat3 normalMatrix = glm::inverseTranspose(model3x3);
-	GLuint normalMatrixLoc = glGetUniformLocation(_viewerRenderState.defaultShader, "normalMatrix");
-	glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+	_viewerRenderState.defaultShader.SetUniformMatrix3fv("normalMatrix", normalMatrix);
 
 	/////////////////
 	// DRAW
@@ -275,7 +254,7 @@ void UpdateViewerRender()
 
 	///////////////////
 	// SETUP RENDER LIGHTS
-	glUseProgram(viewer->defaultShader);
+	viewer->defaultShader.Use();
 	i32 lightCount = 0;
 	for(i32 i = 0; i < viewer->renderPointLights.Count(); i++) {
 
@@ -287,19 +266,17 @@ void UpdateViewerRender()
 
 			// get pointlight pos uniform
 			sprintf(buffer, "pointLights[%d].pos", lightCount);
-			GLuint posLoc = glGetUniformLocation(viewer->defaultShader, buffer);
-			glUniform3fv(posLoc, 1, glm::value_ptr(pointLight->pos));
+			viewer->defaultShader.SetUniform3fv(buffer, pointLight->pos);
 
 			// get pointlight color uniform
 			sprintf(buffer, "pointLights[%d].color", lightCount);
-			GLuint colorLoc = glGetUniformLocation(viewer->defaultShader, buffer);
-			glUniform3fv(colorLoc, 1, glm::value_ptr(pointLight->color));
+			viewer->defaultShader.SetUniform3fv(buffer, pointLight->color);
 
 			lightCount++;
 		}
 	}
-	GLuint lightAmountLoc = glGetUniformLocation(viewer->defaultShader, "pointLightAmount");
-	glUniform1i(lightAmountLoc, lightCount);
+	viewer->defaultShader.SetUniform1i("pointLightAmount", lightCount);
+	
 
 	/////////////////
 	// PROJECTION
@@ -307,14 +284,12 @@ void UpdateViewerRender()
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 											aspectRatio,
 											0.1f, 1000.0f);
-	GLuint projectionLoc = glGetUniformLocation(viewer->defaultShader, "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	viewer->defaultShader.SetUniformMatrix4fv("projection", projection);
 
 	/////////////////
 	// VIEW
 	mat4 view = viewer->cam.GetViewMatrix();
-	GLuint viewLoc = glGetUniformLocation(viewer->defaultShader, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	viewer->defaultShader.SetUniformMatrix4fv("view", view);
 
 	///////////////////
 	// RENDER OBJECTS
