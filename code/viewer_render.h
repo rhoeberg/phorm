@@ -43,19 +43,19 @@ struct RenderGroupInstance {
 	}
 };
 
-enum TransformGizmoHandle {
-	TRANSFORM_Y,
-	TRANSFORM_X,
-	TRANSFORM_Z,
-};
+/* enum TransformGizmoHandle { */
+/* 	TRANSFORM_Y, */
+/* 	TRANSFORM_X, */
+/* 	TRANSFORM_Z, */
+/* }; */
 
 struct TransformGizmoState {
 	ObjectHandle handle;
 	bool isDragging;
-	TransformGizmoHandle gizmoHandle;
-	vec2 mouseStart;
-	vec3 dragOffset;
+	/* TransformGizmoHandle gizmoHandle; */
 	vec3 dragStart;
+	vec3 dragPlaneNormal;
+	vec3 dragAxisLock;
 };
 
 struct ViewerRenderState {

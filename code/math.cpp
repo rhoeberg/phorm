@@ -189,3 +189,70 @@ bool IntersectSegmentPlane(vec3 a, vec3 b, vec3 o, vec3 n, float *t, vec3 *q)
     // Else no intersection
     return false; 
 }
+
+// Given line pq and ccw quadrilateral abcd, return whether the line
+// pierces the triangle. If so, also return the point r of intersection
+/*
+  p = segment start
+  q = segment end
+  
+  a, b, c, d = quad corners
+  
+  returns:
+  r = intersection point
+ */
+bool IntersectSegmentQuad(vec3 p, vec3 q, vec3 a, vec3 b, vec3 c, vec3 d, vec3 *r) 
+{
+    vec3 pq = q - p;
+    vec3 pa = a - p;
+    vec3 pb = b - p;
+    vec3 pc = c - p;
+    // Determine which triangle to test against by testing against
+    // diagonal first 
+    vec3 m = glm::cross(pc, pq);
+    float v = glm::dot(pa, m); // ScalarTriple(pq, pa, pc); 
+    if (v >= 0.0f) {
+        // Test intersection against triangle abc
+        float u = -glm::dot(pb, m); // ScalarTriple(pq, pc, pb);
+        if (u < 0.0f) return false;
+        // r32 w = ScalarTriple(pq, pb, pa);
+        float w = glm::dot(pa, glm::cross(pq,pb)); //ScalarTriple(pq, pb, pa);
+        if (w < 0.0f) return false;
+        // Compute r, r = u*a + v*b + w*c, from barycentric coordinates (u, v, w) 
+        float denom = 1.0f / (u + v + w);
+        u *= denom;
+        v *= denom;
+        w *= denom; // w = 1.0f - u - v;
+        *r = u*a + v*b + w*c;
+    } else {
+        // Test intersection against triangle dac
+        vec3 pd = d - p;
+        float u = glm::dot(pd, m); // ScalarTriple(pq, pd, pc);
+        if (u < 0.0f) return false;
+        // r32 w = ScalarTriple(pq, pa, pd);
+        float w = glm::dot(pd, glm::cross(pq, pa));
+        if (w < 0.0f) return false;
+        v = -v;
+        // Compute r, r = u*a + v*d + w*c, from barycentric coordinates (u, v, w) 
+        float denom = 1.0f / (u + v + w);
+        u *= denom;
+        v *= denom;
+        w *= denom; // w = 1.0f - u - v;
+        *r = u*a + v*d + w*c;
+    }
+    return true; 
+}
+
+// same as above but checks both sides of quad
+// double as slow
+bool IntersectSegmentQuadDouble(vec3 p, vec3 q, vec3 a, vec3 b, vec3 c, vec3 d, vec3 *r)
+{
+	if(IntersectSegmentQuad(p, q, a, b, c, d, r)) {
+		return true;
+	}
+	else if(IntersectSegmentQuad(p, q, d, c, b, a, r)) {
+		return true;
+	}
+
+	return false;
+}

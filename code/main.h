@@ -22,6 +22,8 @@ global bool imguiWantsKeyboard;
 global bool imguiWantsMouse;
 global double deltaTime;
 global double lastFrame;
+global u64 frameCount;
+global GLFWSettings glfwSettings;
 
 #include "audio.h"
 #include "opengl.h"

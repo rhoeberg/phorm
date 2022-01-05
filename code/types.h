@@ -1,5 +1,6 @@
 #pragma once
 
+typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint16_t u16;
 typedef uint8_t u8;
@@ -59,6 +60,21 @@ struct ObjectHandle {
 
 		return false;
 	}
+};
+
+///////////
+// GLFW WINDOW MANAGEMENT
+///////////
+struct WindowSettings
+{
+	i32 posX;
+	i32 posY;
+};
+
+struct GLFWSettings
+{
+	WindowSettings mainWindow;
+	WindowSettings viewerWindow;
 };
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))

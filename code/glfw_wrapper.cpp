@@ -130,6 +130,11 @@ void ResetTime()
 	startTime = glfwGetTime();
 }
 
+void SetWindowSettings(GLFWwindow *win, WindowSettings settings)
+{
+	glfwSetWindowPos(win, settings.posX, settings.posY);
+}
+
 GLFWwindow* initGlfw()
 {
 	startTime = 0.0;

@@ -77,6 +77,7 @@ void UpdateLoop()
 	///////////////
 	// TIME
 	///////////////
+	frameCount++;
 	double currentFrame = glfwGetTime();
 	deltaTime = (currentFrame - lastFrame);
 	lastFrame = currentFrame;
@@ -140,6 +141,9 @@ void UpdateLoop()
 
 int main(int argc, char *argv[])
 {
+	///////////
+	// INITIALIZATION
+	///////////
 	GLFWwindow *win = initGlfw();
 
 	// initialize GUI
@@ -165,7 +169,13 @@ int main(int argc, char *argv[])
 	InitializeSceneEditor();
 	InitializeGlobalEditor();
 
-	// Load scene on start
+
+
+	///////////
+	// LOAD SETTINGS
+	///////////
+
+	// load default scene
 	if(argc > 1) {
 		String arg1 = argv[1];
 		if(arg1.Equals("load")) {
@@ -174,16 +184,33 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// load viewer settings
 	SetViewerInMain(VIEWER_START_MAIN);
 
+	// load windows settings
+	glfwSettings.mainWindow.posX = 100;
+	glfwSettings.mainWindow.posY = 100;
+	glfwSettings.viewerWindow.posX = 2600;
+	glfwSettings.viewerWindow.posY = 100;
+	SetWindowSettings(_win, glfwSettings.mainWindow);
+	SetWindowSettings(_viewerWindow, glfwSettings.viewerWindow);
+
+
+	////////////
+	// UPDATE LOOP
+	////////////
     lastFrame = glfwGetTime();
+	frameCount = 0;
 	double startTime = 0.0;
     while(!glfwWindowShouldClose(win)) {
 		UpdateLoop();
     }
     
-    cleanup();
 
+	////////////
+	// DONE
+	////////////
+    cleanup();
     return 0;
 }
 

@@ -87,6 +87,23 @@ void ImDraw3DPushQuad(vec3 a, vec3 b, vec3 c, vec3 d)
 	ImDraw3DAddVertex(a);
 }
 
+void ImDraw3DPlane(vec3 pos, vec3 normal, float size)
+{
+	vec3 forward = vec3(0, 0, 1);
+	if(normal != WORLD_UP) {
+		forward = glm::cross(WORLD_UP, normal);
+	}
+	vec3 right = glm::cross(normal, forward);
+
+	vec3 a = pos - (right * size) - (forward * size);
+	vec3 b = pos - (right * size) + (forward * size);
+	vec3 c = pos + (right * size) + (forward * size);
+	vec3 d = pos + (right * size) - (forward * size);
+
+	ImDraw3DPushQuad(a, b, c, d);
+}
+
+
 void ImDraw3DCone(vec3 start, vec3 end, float thickness, int resolution)
 {
     float deltaAngle = 2.0 * PI / resolution;
