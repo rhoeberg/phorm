@@ -43,16 +43,9 @@ struct RenderGroupInstance {
 	}
 };
 
-/* enum TransformGizmoHandle { */
-/* 	TRANSFORM_Y, */
-/* 	TRANSFORM_X, */
-/* 	TRANSFORM_Z, */
-/* }; */
-
 struct TransformGizmoState {
 	ObjectHandle handle;
 	bool isDragging;
-	/* TransformGizmoHandle gizmoHandle; */
 	vec3 dragStart;
 	vec3 dragPlaneNormal;
 	vec3 dragAxisLock;
@@ -66,7 +59,6 @@ struct ViewerRenderState {
 	bool wireframe;
 
 	GLuint defaultTexture;
-	/* GLuint defaultShader; */
 	Shader defaultShader;
 
 	/////////////
@@ -82,9 +74,6 @@ struct ViewerRenderState {
 	bool dragging;
 	vec2 startDragPos;
 	vec2 lastDragPos;
-	/* vec2 dragAmount; */
-	/* float orbitDistance; */
-	/* float orbitDragSpeed; */
 
 	/////////////
 	// GIZMOS
