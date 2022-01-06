@@ -105,3 +105,24 @@ vec3 NodeParameter::Vec3()
 
 	return vec3(0, 0, 0);
 }
+
+vec4 NodeParameter::Vec4()
+{
+	if(nodeHandle.isset) {
+		Node *node = GetNode(&nodeHandle);
+		if(node) {
+			vec4 *output = GetVec4s()->Get(&node->GetData());
+			if(output) {
+				return *output;
+			}
+			else {
+				return vec4(0, 0, 0, 0);
+			}
+		}
+	}
+
+	if(type == DATA_VEC4)
+		return v4;
+
+	return vec4(0, 0, 0, 0);
+}

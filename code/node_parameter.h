@@ -10,6 +10,7 @@ struct NodeParameter {
 		int i;
 		double d;
 		vec3 v3;
+		vec4 v4;
 
 		// TOOD (rhoe) here we could use a handle to a String type stored somewhere else
 		/* char str[128]; */
@@ -24,4 +25,5 @@ struct NodeParameter {
 	NodeParameter(const char *_name, ObjectHandle handle);
 	double Double();
 	vec3 Vec3();
+	vec4 Vec4();
 };

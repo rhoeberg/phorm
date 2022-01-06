@@ -157,7 +157,7 @@ void LoadNodes()
 		Node *node = _nodeState->nodes.Get(&handle);
 		if(node) {
 			String name = String(node->name);
-			NodeConstructor *nodeConstructor = nodeConstructors.Get(name);
+			NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(name);
 			if(nodeConstructor) {
 				node->op = nodeConstructor->op;
 				node->drawFunc = nodeConstructor->drawFunc;

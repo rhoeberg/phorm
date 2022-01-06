@@ -18,6 +18,7 @@ void InitializeData()
 	new(&_nodeState->renderObjectGroups) ObjectContainer<RenderObjectGroup>(HANDLE_DATA, DATA_RENDEROBJECT_GROUP);
 	new(&_nodeState->doubles) ObjectContainer<double>(HANDLE_DATA, DATA_DOUBLE);
 	new(&_nodeState->vec3s) ObjectContainer<vec3>(HANDLE_DATA, DATA_VEC3);
+	new(&_nodeState->vec4s) ObjectContainer<vec4>(HANDLE_DATA, DATA_VEC4);
 	new(&_nodeState->strings) ObjectContainer<String>(HANDLE_DATA, DATA_STRING);
 	new(&_nodeState->pointLights) ObjectContainer<PointLight>(HANDLE_DATA, DATA_POINTLIGHT);
 
@@ -61,6 +62,11 @@ ObjectContainer<RenderObjectGroup>* GetRenderObjectGroups()
 ObjectContainer<vec3>* GetVec3s()
 {
 	return &_nodeState->vec3s;
+}
+
+ObjectContainer<vec4>* GetVec4s()
+{
+	return &_nodeState->vec4s;
 }
 
 ObjectContainer<PointLight>* GetPointLights()

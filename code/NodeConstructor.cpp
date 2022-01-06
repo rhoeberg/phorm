@@ -1,90 +1,48 @@
-/*
-  
-ideas for new nodes:
-- mirror effect (takes a renderobject and mirrors position?)
-
- */
-
-#pragma once
-
-void BaseNodeDrawFunction(Node *node);
-
-#include "BlurNode.h"
-#include "LoadTextureNode.h"
-#include "MixTextureNode.h"
-#include "CubeNode.h"
-#include "GridNode.h"
-#include "MeshNoise.h"
-#include "VideoNode.h"
-#include "renderobject_node.h"
-#include "CombineObjectsNode.h"
-#include "MirrorNode.h"
-#include "TimeNode.h"
-#include "SinNode.h"
-#include "SinWaveNode.h"
-#include "SawWaveNode.h"
-#include "HistogramNode.h"
-#include "PointLightNode.h"
-#include "Vec3Node.h"
-#include "MulNode.h"
-#include "DoubleNode.h"
-#include "AddNode.h"
-/* #include "LabelNode.h" */
-
-/* typedef ObjectHandle (*NodeCreateExtraHandleFunc)(); */
-typedef ObjectHandle (*NodeCreateFunc)(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc);
-
-struct NodeConstructor
+void InitializeNodeConstructors()
 {
-	NodeOp op;
-	NodeDrawFunc drawFunc;
-	DataType dataType;
+	_nodeConstructorState = (NodeConstructorState*)malloc(sizeof(NodeConstructorState));
 
-	NodeCreateFunc createFunc;
+	new(&_nodeConstructorState->names) VMArray<String>();
+	new(&_nodeConstructorState->constructors) HashMap<NodeConstructor>(1024);
+	_nodeConstructorState->nextPos = vec2(0, 0);
+}
 
-	// TODO (rhoe) maybe we can come up with something prettier than this function pointer
-	// just for adding a extraHandle to the node?
-	/* NodeCreateExtraHandleFunc createExtraHandleFunc; */
+VMArray<String>* GetNodeNames()
+{
+	return &_nodeConstructorState->names;
+}
 
-	vec2 pos;
-
-	FixedArray<NodeParameter> params;
-	FixedArray<NodeInput> inputs;
-};
-
-global VMArray<String> nodeNames = VMArray<String>();;
-global HashMap<NodeConstructor> nodeConstructors = HashMap<NodeConstructor>(1024);;
-global vec2 nextConstructPos;
+HashMap<NodeConstructor>* GetNodeConstructors()
+{
+	return &_nodeConstructorState->constructors;
+}
 
 void SetNextConstructPos(vec2 pos)
 {
-	nextConstructPos = pos;
+	_nodeConstructorState->nextPos = pos;
+}
+
+vec2 GetNextNewNodePos()
+{
+	return _nodeConstructorState->nextPos;
 }
 
 void ConstructNode(String name, NodeConstructor *nodeConstructor)
 {
-	/* ObjectHandle extraHandle = ObjectHandle(); */
-	/* if(nodeConstructor->createExtraHandleFunc) { */
-		/* extraHandle = nodeConstructor->createExtraHandleFunc(); */
-	/* } */
-
-	nodeConstructor->createFunc(name, nextConstructPos, nodeConstructor->dataType, nodeConstructor->op, nodeConstructor->drawFunc);
-	/* AddNode(name.buffer, nextConstructPos, nodeConstructor->dataType, nodeConstructor->op, nodeConstructor->drawFunc, nodeConstructor->params, nodeConstructor->inputs, extraHandle); */
+	nodeConstructor->createFunc(name, nodeConstructor->dataType, nodeConstructor->op, nodeConstructor->drawFunc);
 }
 
 void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc, NodeCreateFunc createFunc)
 {
+	NodeConstructorState *state = _nodeConstructorState;
 
-	nodeNames.Insert(name);
+	state->names.Insert(name);
 	NodeConstructor constructor = {};
 	constructor.dataType = dataType;
 	constructor.op = op;
 	constructor.drawFunc = drawFunc;
 	constructor.createFunc = createFunc;
-	/* constructor.params = params; */
-	/* constructor.inputs = inputs; */
-	/* constructor.createExtraHandleFunc = createExtraHandleFunc; */
-	nodeConstructors.Insert(name, constructor);
+	state->constructors.Insert(name, constructor);
 }
 
 void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeCreateFunc createFunc)
@@ -94,8 +52,6 @@ void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeCreateFun
 
 void AddNodeConstructors()
 {
-	nextConstructPos = vec2(0, 0);
-
 	/////////////////
 	// TEXTURE NODES
 	/////////////////
@@ -148,19 +104,21 @@ void AddNodeConstructors()
 
 VMArray<String> NamesBeginningWith(String typed)
 {
+	NodeConstructorState *state = _nodeConstructorState;
+
 	VMArray<String> results = VMArray<String>();
-	for(i32 i = 0; i < nodeNames.Count(); i++) {
-		if(nodeNames[i].length >= typed.length) {
+	for(i32 i = 0; i < state->names.Count(); i++) {
+		if(state->names[i].length >= typed.length) {
 			bool match = true;
 			for(i32 j = 0; j < typed.length; j++) {
 				// TODO (rhoe) should probably be case insensitive
-				if(typed.buffer[j] != nodeNames[i].buffer[j]) {
+				if(typed.buffer[j] != state->names[i].buffer[j]) {
 					match = false;
 					break;
 				}
 			}
 			if(match) {
-				results.Insert(nodeNames[i]);
+				results.Insert(state->names[i]);
 			}
 		}
 	}
@@ -182,3 +140,4 @@ void BaseNodeDrawFunction(Node *node)
 	vec2 namePos = node->rect.pos + vec2(8.0f, node->rect.height - 8.0f);
 	ImDrawText(namePos, node->name);
 }
+

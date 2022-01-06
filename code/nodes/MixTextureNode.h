@@ -28,7 +28,7 @@ void MixTextureOperation(Node *self)
 	}
 }
 
-ObjectHandle CreateMixTexture(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateMixTexture(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("mix", 0.5),
@@ -39,5 +39,5 @@ ObjectHandle CreateMixTexture(String name, vec2 pos, DataType dataType, NodeOp o
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
 }

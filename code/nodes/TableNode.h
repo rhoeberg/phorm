@@ -46,7 +46,7 @@ void DrawTabelNode(Node *self)
 	ImDrawText(namePos, self->name);
 }
 
-ObjectHandle CreateTableNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateTableNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 	};
@@ -57,5 +57,5 @@ ObjectHandle CreateTableNode(String name, vec2 pos, DataType dataType, NodeOp op
 
 
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
 }

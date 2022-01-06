@@ -35,7 +35,7 @@ void RenderScene()
 			Node *node = GetNode(&sceneObject->handle);
 			if(node) {
 				if(node->type == DATA_RENDEROBJECT) {
-					RenderObjectInstance instance = RenderObjectInstance(node->GetData(), sceneObject->pos, sceneObject->scale, sceneObject->rot);
+					RenderObjectInstance instance = sceneObject->ToRenderObjectInstance(node->GetData());
 					AddToRenderQueue(instance);
 				}
 				else if(node->type == DATA_RENDEROBJECT_GROUP) {
@@ -80,144 +80,166 @@ void UpdateSceneEditor()
 	// shorthand
 	SceneEditorState *state = _sceneEditorState;
 
+
 	ImGui::Begin("Scene Editor");
-	ImGui::Text("SCENE");
 
-	////////////
-	// SCENE OBJECTS
-	for(i32 i = 0; i < state->scene.sceneObjects.Count(); i++) {
-		ObjectHandle handle = state->scene.sceneObjects.GetHandle(i);
-		SceneObject *sceneObject = state->scene.sceneObjects.GetAt(i);
-		if(sceneObject) {
-			Node *node = GetNode(&sceneObject->handle);
+	{
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
+		ImGui::BeginChild("Scene Objects", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 300), false, window_flags);
+
+		ImGui::Separator();
+
+		////////////
+		// SCENE OBJECTS
+		for(i32 i = 0; i < state->scene.sceneObjects.Count(); i++) {
+			ObjectHandle handle = state->scene.sceneObjects.GetHandle(i);
+			SceneObject *sceneObject = state->scene.sceneObjects.GetAt(i);
+			if(sceneObject) {
+				Node *node = GetNode(&sceneObject->handle);
+				if(node) {
+					String *str = GetStrings()->Get(&node->labelHandle);
+					if(str) {
+						ImGui::Text("%d", i);
+						ImGui::SameLine(40);
+						if(ImGui::Button(str->buffer)) {
+							SetInspectorObject(sceneObject->handle);
+							state->selectedObject = handle;
+						}
+					}
+					else {
+						ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
+					}
+					ImGui::SameLine(150);
+					if(ImGui::Button("remove")) {
+						state->scene.sceneObjects.Remove(&handle);
+					}
+				}
+			}
+		}
+
+		////////////
+		// SCENE LIGHTS
+		for(i32 i = 0; i < state->scene.pointLights.Count(); i++) {
+			ObjectHandle handle = state->scene.pointLights.GetHandle(i);
+			ObjectHandle *nodeHandle = state->scene.pointLights.Get(&handle);
+			if(nodeHandle) {
+				Node *node = GetNode(nodeHandle);
+				if(node) {
+					String *str = GetStrings()->Get(&node->labelHandle);
+					if(str) {
+						ImGui::Text("%d", i);
+						ImGui::SameLine(40);
+						if(ImGui::Button(str->buffer)) {
+							SetInspectorObject(*nodeHandle);
+						}
+						// ImGui::Text("%s", str->buffer);
+					}
+					else {
+						ImGui::Text("LIGHT LABEL NOT FOUND");
+					}
+					ImGui::SameLine(150);
+					if(ImGui::Button("remove")) {
+						state->scene.pointLights.Remove(&handle);
+					}
+
+					// char buffer[128];
+					// sprintf(buffer, "pos##light%d", i); 
+					// // ImGui::InputFloat3(buf, 
+					// ImGui::InputFloat3(buffer, glm::value_ptr(light->pos));
+					// sprintf(buffer, "col##light%d", i); 
+					// ImGui::InputFloat3(buffer, glm::value_ptr(light->color));
+				}
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+
+		//////////
+		// ADD STUFF TO SCENE
+		ImGui::Text("OBJECTS");
+
+		// add renderobjects
+		ImGui::Text("RENDER OBJECTS");
+		for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
+			ObjectHandle handle = _nodeState->nodes.GetHandle(i);
+			Node *node = _nodeState->nodes.Get(&handle);
 			if(node) {
-				String *str = GetStrings()->Get(&node->labelHandle);
-				if(str) {
-					ImGui::Text("%d", i);
-					ImGui::SameLine(40);
-					if(ImGui::Button(str->buffer)) {
-						SetInspectorObject(sceneObject->handle);
-						state->selectedObject = handle;
+				if(node->type == DATA_RENDEROBJECT || node->type == DATA_RENDEROBJECT_GROUP) {
+					String *str = GetStrings()->Get(&node->labelHandle);
+					if(str) {
+						ImGui::Text("%s", str->buffer);
+						ImGui::SameLine();
+						static char buf[32];
+						sprintf(buf, "add##%d", i);
+						if(ImGui::Button(buf)) {
+							SceneObject sceneObject = SceneObject(handle);
+							state->scene.sceneObjects.Insert(sceneObject);
+						}
+					}
+					else {
+						ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
 					}
 				}
-				else {
-					ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
-				}
-				ImGui::SameLine(150);
-				if(ImGui::Button("remove")) {
-					state->scene.sceneObjects.Remove(&handle);
-				}
+				// else if(node->type == DATA_RENDEROBJECT_GROUP) {
+				// 	String *str = GetStrings()->Get(&node->labelHandle);
+				// 	if(str) {
+				// 		ImGui::Text("%s", str->buffer);
+				// 		ImGui::SameLine();
+				// 		static char buf[32];
+				// 		sprintf(buf, "add##%d", i);
+				// 		if(ImGui::Button(buf)) {
+				// 			RenderGroupInstance instance = RenderGroupInstance(handle);
+				// 			state->scene.groupInstances.Insert(instance);
+				// 		}
+				// 	}
+				// 	else {
+				// 		ImGui::Text("RENDERGROUP LABEL NOT FOUND");
+				// 	}
+
+				// }
 			}
 		}
-	}
 
-	////////////
-	// SCENE LIGHTS
-	for(i32 i = 0; i < state->scene.pointLights.Count(); i++) {
-		ObjectHandle handle = state->scene.pointLights.GetHandle(i);
-		ObjectHandle *nodeHandle = state->scene.pointLights.Get(&handle);
-		if(nodeHandle) {
-			Node *node = GetNode(nodeHandle);
+		// add pointlights
+		ImGui::Text("LIGHT OBJECTS");
+		for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
+			ObjectHandle handle = _nodeState->nodes.GetHandle(i);
+			Node *node = _nodeState->nodes.Get(&handle);
 			if(node) {
-				String *str = GetStrings()->Get(&node->labelHandle);
-				if(str) {
-					ImGui::Text("%d", i);
-					ImGui::SameLine(40);
-					if(ImGui::Button(str->buffer)) {
-						SetInspectorObject(*nodeHandle);
+				if(node->type == DATA_POINTLIGHT) {
+					String *str = GetStrings()->Get(&node->labelHandle);
+					if(str) {
+						ImGui::Text("%s", str->buffer);
+						ImGui::SameLine();
+						static char buf[32];
+						sprintf(buf, "add##%d", i);
+						if(ImGui::Button(buf)) {
+							state->scene.pointLights.Insert(handle);
+						}
 					}
-					// ImGui::Text("%s", str->buffer);
-				}
-				else {
-					ImGui::Text("LIGHT LABEL NOT FOUND");
-				}
-				ImGui::SameLine(150);
-				if(ImGui::Button("remove")) {
-					state->scene.pointLights.Remove(&handle);
-				}
-
-				// char buffer[128];
-				// sprintf(buffer, "pos##light%d", i); 
-				// // ImGui::InputFloat3(buf, 
-				// ImGui::InputFloat3(buffer, glm::value_ptr(light->pos));
-				// sprintf(buffer, "col##light%d", i); 
-				// ImGui::InputFloat3(buffer, glm::value_ptr(light->color));
-			}
-		}
-	}
-
-	ImGui::Spacing();
-	ImGui::Separator();
-
-	//////////
-	// ADD STUFF TO SCENE
-	ImGui::Text("OBJECTS");
-
-	// add renderobjects
-	ImGui::Text("RENDER OBJECTS");
-	for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
-		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(&handle);
-		if(node) {
-			if(node->type == DATA_RENDEROBJECT || node->type == DATA_RENDEROBJECT_GROUP) {
-				String *str = GetStrings()->Get(&node->labelHandle);
-				if(str) {
-					ImGui::Text("%s", str->buffer);
-					ImGui::SameLine();
-					static char buf[32];
-					sprintf(buf, "add##%d", i);
-					if(ImGui::Button(buf)) {
-						SceneObject sceneObject = SceneObject(handle);
-						state->scene.sceneObjects.Insert(sceneObject);
+					else {
+						ImGui::Text("LIGHTOBJECT LABEL NOT FOUND");
 					}
-				}
-				else {
-					ImGui::Text("RENDEROBJECT LABEL NOT FOUND");
-				}
-			}
-			// else if(node->type == DATA_RENDEROBJECT_GROUP) {
-			// 	String *str = GetStrings()->Get(&node->labelHandle);
-			// 	if(str) {
-			// 		ImGui::Text("%s", str->buffer);
-			// 		ImGui::SameLine();
-			// 		static char buf[32];
-			// 		sprintf(buf, "add##%d", i);
-			// 		if(ImGui::Button(buf)) {
-			// 			RenderGroupInstance instance = RenderGroupInstance(handle);
-			// 			state->scene.groupInstances.Insert(instance);
-			// 		}
-			// 	}
-			// 	else {
-			// 		ImGui::Text("RENDERGROUP LABEL NOT FOUND");
-			// 	}
-
-			// }
-		}
-	}
-
-	// add pointlights
-	ImGui::Text("LIGHT OBJECTS");
-	for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
-		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(&handle);
-		if(node) {
-			if(node->type == DATA_POINTLIGHT) {
-				String *str = GetStrings()->Get(&node->labelHandle);
-				if(str) {
-					ImGui::Text("%s", str->buffer);
-					ImGui::SameLine();
-					static char buf[32];
-					sprintf(buf, "add##%d", i);
-					if(ImGui::Button(buf)) {
-						state->scene.pointLights.Insert(handle);
-					}
-				}
-				else {
-					ImGui::Text("LIGHTOBJECT LABEL NOT FOUND");
 				}
 			}
 		}
+		ImGui::EndChild();
 	}
+
+	ImGui::SameLine();
+
+	{
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
+		ImGui::BeginChild("SceneObject Inspector", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 300), false, window_flags);
+
+		ImGui::Separator();
+
+		ImGui::Text("SceneObject Inspector");
+
+		ImGui::EndChild();
+	}
+
 	ImGui::End();
 }
 

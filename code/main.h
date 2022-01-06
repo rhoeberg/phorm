@@ -46,7 +46,7 @@ global GLFWSettings glfwSettings;
 #include "node.h"
 #include "data.h"
 #include "node_editor.h"
-#include "nodes/node_op.h"
+#include "NodeConstructor.h"
 #include "global_editor.h"
 #include "scene.h"
 #include "scene_editor.h"

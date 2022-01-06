@@ -57,6 +57,7 @@
 #include "string.cpp"
 #include "hashmap.cpp"
 #include "ObjectContainer.cpp"
+#include "NodeConstructor.cpp"
 #include "node_parameter.cpp"
 #include "node.cpp"
 #include "node_editor.cpp"
@@ -95,8 +96,8 @@ void UpdateLoop()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	// gui();
-	// bool show = true;
-	// ImGui::ShowDemoWindow(&show);
+	bool show = true;
+	ImGui::ShowDemoWindow(&show);
 
 	glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
@@ -163,7 +164,7 @@ int main(int argc, char *argv[])
 
 	// Initialize Application
 	InitializeData();
-	AddNodeConstructors();
+	InitializeNodeConstructors();
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();

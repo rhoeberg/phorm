@@ -8,6 +8,7 @@ struct RenderObjectInstance {
 	vec3 pos;
 	vec3 scale;
 	vec3 rot;
+	vec4 color;
 
 	RenderObjectInstance() {}
 
@@ -17,14 +18,16 @@ struct RenderObjectInstance {
 		pos = vec3(0, 0, 0);
 		scale = vec3(1, 1, 1);
 		rot = vec3(0, 0, 0);
+		color = vec4(1, 1, 1, 1);
 	}
 
-	RenderObjectInstance(ObjectHandle _renderObjectHandle, vec3 _pos, vec3 _scale, vec3 _rot)
+	RenderObjectInstance(ObjectHandle _renderObjectHandle, vec3 _pos, vec3 _scale, vec3 _rot, vec4 _color)
 	{
 		renderObjectHandle = _renderObjectHandle;
 		pos = _pos;
 		scale = _scale;
 		rot = _rot;
+		color = _color;
 	}
 };
 

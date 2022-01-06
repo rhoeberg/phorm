@@ -35,6 +35,7 @@ struct NodeState {
 	ObjectContainer<RenderObjectGroup> renderObjectGroups;
 	ObjectContainer<double> doubles;
 	ObjectContainer<vec3> vec3s;
+	ObjectContainer<vec4> vec4s;
 	// HashMap<ObjectHandle> labels;
 	// ObjectContainer<LabelNodeState> labelNodes;
 	ObjectContainer<String> strings;
@@ -53,6 +54,7 @@ ObjectContainer<double>* GetDoubles();
 ObjectContainer<RenderObject>* GetRenderObjects();
 ObjectContainer<RenderObjectGroup>* GetRenderObjectGroups();
 ObjectContainer<vec3>* GetVec3s();
+ObjectContainer<vec4>* GetVec4s();
 ObjectContainer<PointLight>* GetPointLights();
 ObjectContainer<String>* GetStrings();
 

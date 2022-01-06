@@ -57,8 +57,7 @@ bool Node::Changed()
 	return false;
 }
 
-// ObjectHandle AddNode(const char *name, DataType type, NodeOp op, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
-ObjectHandle AddNode(const char *name, vec2 pos, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
+ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
 {
 	// TODO (rhoe) since similar node type dont change name we could
 	//             store the names in a string array and just refer to the handle
@@ -67,7 +66,7 @@ ObjectHandle AddNode(const char *name, vec2 pos, DataType type, NodeOp op, NodeD
 	int winWidth, winHeight;
 	GetWindowSize(&winWidth, &winHeight);
 	// node.rect.pos = vec2(winWidth / 2, winHeight / 2);
-	node.rect.pos = pos;
+	node.rect.pos = GetNextNewNodePos();
 	// node.rect.w = NODE_BASE_WIDTH;
 	// node.rect.h = NODE_HEIGHT;
 	node.changed = true;

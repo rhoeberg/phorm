@@ -82,7 +82,7 @@ void BlurOperation(Node *self)
 	}
 }
 
-ObjectHandle CreateBlurTexture(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateBlurTexture(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("amount", 20),
@@ -92,5 +92,5 @@ ObjectHandle CreateBlurTexture(String name, vec2 pos, DataType dataType, NodeOp 
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
 }

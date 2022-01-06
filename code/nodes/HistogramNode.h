@@ -52,7 +52,7 @@ void DrawHistogramNode(Node *self)
 	ImDrawText(namePos, self->name);
 }
 
-ObjectHandle CreateHistogramNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateHistogramNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 	};
@@ -63,5 +63,5 @@ ObjectHandle CreateHistogramNode(String name, vec2 pos, DataType dataType, NodeO
 
 	ObjectHandle extraHandle = _nodeState->sinWaveNodes.InsertNew();
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs, extraHandle);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs, extraHandle);
 }

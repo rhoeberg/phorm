@@ -11,4 +11,5 @@ struct RenderObject {
 	vec3 scale;
 	/* quat rot; */
 	vec3 rot;
+	vec4 color;
 };

@@ -52,11 +52,13 @@ void NodeGUI()
 	/////////////////
 	// NODE LIST
 	/////////////////
+	VMArray<String>* names = GetNodeNames();
+
 	ImGui::Begin("nodes");
-	for(i32 i = 0; i < nodeNames.Count(); i++) {
-		if(ImGui::Button(nodeNames[i].buffer)) {
-			NodeConstructor *nodeConstructor = nodeConstructors.Get(nodeNames[i]);
-			ConstructNode(nodeNames[i], nodeConstructor);
+	for(i32 i = 0; i < names->Count(); i++) {
+		if(ImGui::Button((*names)[i].buffer)) {
+			NodeConstructor *nodeConstructor = GetNodeConstructors()->Get((*names)[i]);
+			ConstructNode((*names)[i], nodeConstructor);
 		}
 	}
 	ImGui::End();
@@ -122,7 +124,7 @@ void NodeGUI()
 
 			if(clickedOption) {
 				SetNextConstructPos(mouse);
-				NodeConstructor *nodeConstructor = nodeConstructors.Get(editor->promptCandidates[i]);
+				NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(editor->promptCandidates[i]);
 				ConstructNode(editor->promptCandidates[i].buffer, nodeConstructor);
 				editor->promptOpen = false;
 				SetPromptActive(false);

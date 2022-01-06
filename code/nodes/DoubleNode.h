@@ -9,7 +9,7 @@ void DoubleOperation(Node *self)
 	*output = self->params[0].Double();
 }
 
-ObjectHandle CreateDoubleNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateDoubleNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("value", 0.0),
@@ -18,5 +18,5 @@ ObjectHandle CreateDoubleNode(String name, vec2 pos, DataType dataType, NodeOp o
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
 }

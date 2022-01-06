@@ -75,7 +75,7 @@ void CubeOperation(Node *self)
 	};
 }
 
-ObjectHandle CreateCubeNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateCubeNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 	};
@@ -83,5 +83,5 @@ ObjectHandle CreateCubeNode(String name, vec2 pos, DataType dataType, NodeOp op,
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
 }

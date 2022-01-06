@@ -26,7 +26,7 @@ void CloneObjectOperation(Node *self)
 
 }
 
-ObjectHandle CreateCloneObjectNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateCloneObjectNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("x", 10);
@@ -38,5 +38,5 @@ ObjectHandle CreateCloneObjectNode(String name, vec2 pos, DataType dataType, Nod
 		NodeInput(DATA_RENDEROBJECT),
 	};
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
 }

@@ -4,7 +4,6 @@
 
 void CreateViewerTextureRenderObject()
 {
-	// SETUP RENDEROBJECT FOR TEXTURE QUICK VIEW
 	_viewerRenderState.baseTextureObject = AddNewRenderObject();
 	RenderObject *renderObject = GetRenderObjects()->Get(&_viewerRenderState.baseTextureObject);
 
@@ -64,7 +63,6 @@ void AddTextureToRenderQueue(ObjectHandle *handle)
 	}
 }
 
-// Takes the handle of RenderObject resource
 void AddToRenderQueue(RenderObjectInstance instance)
 {
 	if(instance.renderObjectHandle.dataType == DATA_RENDEROBJECT) {
@@ -120,11 +118,15 @@ void DrawRenderObjectInstance(RenderObjectInstance *instance, glm::mat4 model)
 	glm::mat4 rotationMatrix = glm::mat4_cast(q);
 	model = model * rotationMatrix;
 	model = glm::scale(model, renderObject->scale * instance->scale);
-	_viewerRenderState.defaultShader.SetUniformMatrix4fv("model", model);
+	_viewerRenderState.defaultShader.SetUniform("model", model);
 
 	glm::mat3 model3x3 = glm::mat3(model);
 	glm::mat3 normalMatrix = glm::inverseTranspose(model3x3);
-	_viewerRenderState.defaultShader.SetUniformMatrix3fv("normalMatrix", normalMatrix);
+	_viewerRenderState.defaultShader.SetUniform("normalMatrix", normalMatrix);
+
+	// set color
+	_viewerRenderState.defaultShader.SetUniform("objectColor", instance->color);
+	
 
 	/////////////////
 	// DRAW
@@ -264,16 +266,16 @@ void UpdateViewerRender()
 
 			// get pointlight pos uniform
 			sprintf(buffer, "pointLights[%d].pos", lightCount);
-			viewer->defaultShader.SetUniform3fv(buffer, pointLight->pos);
+			viewer->defaultShader.SetUniform(buffer, pointLight->pos);
 
 			// get pointlight color uniform
 			sprintf(buffer, "pointLights[%d].color", lightCount);
-			viewer->defaultShader.SetUniform3fv(buffer, pointLight->color);
+			viewer->defaultShader.SetUniform(buffer, pointLight->color);
 
 			lightCount++;
 		}
 	}
-	viewer->defaultShader.SetUniform1i("pointLightAmount", lightCount);
+	viewer->defaultShader.SetUniform("pointLightAmount", lightCount);
 	
 
 	/////////////////
@@ -282,12 +284,12 @@ void UpdateViewerRender()
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 											aspectRatio,
 											0.1f, 1000.0f);
-	viewer->defaultShader.SetUniformMatrix4fv("projection", projection);
+	viewer->defaultShader.SetUniform("projection", projection);
 
 	/////////////////
 	// VIEW
 	mat4 view = viewer->cam.GetViewMatrix();
-	viewer->defaultShader.SetUniformMatrix4fv("view", view);
+	viewer->defaultShader.SetUniform("view", view);
 
 	///////////////////
 	// RENDER OBJECTS

@@ -17,7 +17,7 @@ uniform PointLight pointLights[LIGHT_AMOUNT];
 uniform int pointLightAmount;
 
 uniform sampler2D outTexture;
-/* uniform vec4 objectColor; */
+uniform vec4 objectColor;
 /* uniform vec3 ambientColor; */
 
 vec3 CalcPointLight(PointLight light, vec3 fragPos, vec3 normal)
@@ -51,5 +51,6 @@ void main()
 
 	result += ambient;
 	result *= texture(outTexture, TexCoord).xyz;
+	/* result *= objectColor; */
 	color = vec4(result, 1.0);
 }

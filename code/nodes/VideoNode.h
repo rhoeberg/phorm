@@ -45,7 +45,7 @@ void VideoOperation(Node *self)
 	}
 }
 
-ObjectHandle CreateVideoNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateVideoNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("time", 0.0),
@@ -56,5 +56,5 @@ ObjectHandle CreateVideoNode(String name, vec2 pos, DataType dataType, NodeOp op
 
 	ObjectHandle extraHandle = _nodeState->videoNodes.Insert(VideoNodeState());
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs, extraHandle);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs, extraHandle);
 }

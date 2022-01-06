@@ -31,7 +31,7 @@ void DrawAddNode(Node *self)
 	ImDrawText(valuePos, valueBuf, vec3(0.3, 0, 0));
 }
 
-ObjectHandle CreateAddNode(String name, vec2 pos, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateAddNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("value", 1.0),
@@ -41,5 +41,5 @@ ObjectHandle CreateAddNode(String name, vec2 pos, DataType dataType, NodeOp op, 
 		NodeInput(DATA_DOUBLE),
 	};
 
-	return AddNode(name.buffer, pos, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
 }
