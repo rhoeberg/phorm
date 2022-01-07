@@ -151,9 +151,10 @@ void ImDrawInitialize()
 
 	// initialize layers
 	imDrawNextLayer = 2;
-	for(int i = 0; i < ARRAY_SIZE(imDrawLayers); i++) {
-		imDrawLayers[i].vertices = VMArray<GLfloat>();
-	}
+	// TODO (rhoe) cant call contstructor on VMArray which is already intialized
+	// for(int i = 0; i < ARRAY_SIZE(imDrawLayers); i++) {
+	// 	imDrawLayers[i].vertices = VMArray<GLfloat>();
+	// }
 
 	/////////////////////////
 	// INITIALIZE FONT DRAWING

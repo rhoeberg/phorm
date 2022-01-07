@@ -33,15 +33,10 @@ struct SceneObject
 
 struct Scene {
 	ObjectContainer<SceneObject> sceneObjects;
-	ObjectContainer<ObjectHandle> pointLights;
-
-	Scene() {
-		sceneObjects = ObjectContainer<SceneObject>();
-		pointLights = ObjectContainer<ObjectHandle>(HANDLE_OBJECTHANDLE, DATA_POINTLIGHT);
-	}
+	/* ObjectContainer<ObjectHandle> pointLights; */
 
 	void Free() {
 		sceneObjects.Free();
-		pointLights.Free();
+		/* pointLights.Free(); */
 	}
 };

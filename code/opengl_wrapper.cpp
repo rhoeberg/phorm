@@ -11,8 +11,8 @@
 void InitializeOpenglWrapper()
 {
 	_openglWrapperState = (OpenglWrapperState*)malloc(sizeof(OpenglWrapperState));
-	_openglWrapperState->mainContextVAO = VMArray<GLuint>();
-	_openglWrapperState->viewerContextVAO = VMArray<GLuint>();
+	new(&_openglWrapperState->mainContextVAO) VMArray<GLuint>();
+	new(&_openglWrapperState->viewerContextVAO) VMArray<GLuint>();
 
 	_openglWrapperState->viewerInMain = true;
 }

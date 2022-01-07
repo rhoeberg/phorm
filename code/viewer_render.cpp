@@ -77,12 +77,9 @@ void AddToRenderGroupQueue(RenderGroupInstance instance)
 	}
 }
 
-void AddToRenderPointLightQueue(ObjectHandle *handle)
+void AddToRenderPointLightQueue(RenderLightInstance instance)
 {
-	PointLight *light = GetPointLights()->Get(handle);
-	if(light) {
-		_viewerRenderState.renderPointLights.Insert(*handle);
-	}
+	_viewerRenderState.renderPointLights.Insert(instance);
 }
 
 void ViewerGLSettings()
@@ -259,24 +256,23 @@ void UpdateViewerRender()
 	for(i32 i = 0; i < viewer->renderPointLights.Count(); i++) {
 
 		// TODO (rhoe) here we should check for maximum light count reached
-		PointLight *pointLight = GetPointLights()->Get(&viewer->renderPointLights[i]);
-		if(pointLight) {
+		// PointLight *pointLight = GetPointLights()->Get(&viewer->renderPointLights[i].pointLightHandle);
+		// if(pointLight) {
 			
 			char buffer[128];
 
 			// get pointlight pos uniform
 			sprintf(buffer, "pointLights[%d].pos", lightCount);
-			viewer->defaultShader.SetUniform(buffer, pointLight->pos);
+			viewer->defaultShader.SetUniform(buffer, viewer->renderPointLights[i].pos);
 
 			// get pointlight color uniform
 			sprintf(buffer, "pointLights[%d].color", lightCount);
-			viewer->defaultShader.SetUniform(buffer, pointLight->color);
+			viewer->defaultShader.SetUniform(buffer, viewer->renderPointLights[i].color);
 
 			lightCount++;
-		}
+		// }
 	}
 	viewer->defaultShader.SetUniform("pointLightAmount", lightCount);
-	
 
 	/////////////////
 	// PROJECTION

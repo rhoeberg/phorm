@@ -46,6 +46,19 @@ struct RenderGroupInstance {
 	}
 };
 
+struct RenderLightInstance {
+	vec3 pos;
+	vec3 color;
+
+	RenderLightInstance(){}
+
+	RenderLightInstance(vec3 _pos, vec4 _color)
+	{
+		pos = _pos;
+		color = _color;
+	}
+};
+
 struct TransformGizmoState {
 	ObjectHandle handle;
 	bool isDragging;
@@ -57,7 +70,7 @@ struct TransformGizmoState {
 struct ViewerRenderState {
 	VMArray<RenderObjectInstance> renderList;
 	VMArray<RenderGroupInstance> renderGroupList;
- 	VMArray<ObjectHandle> renderPointLights;
+ 	VMArray<RenderLightInstance> renderPointLights;
 	ObjectHandle baseTextureObject;
 	bool wireframe;
 
@@ -89,7 +102,7 @@ void UpdateViewerRender();
 void AddToRenderQueue(RenderObjectInstance instance);
 void AddToRenderGroupQueue(RenderGroupInstance instance);
 void AddTextureToRenderQueue(ObjectHandle *textureHandle);
-void AddToRenderPointLightQueue(ObjectHandle *handle);
+void AddToRenderPointLightQueue(RenderLightInstance instance);
 void UpdateGizmos();
 
 global ViewerRenderState _viewerRenderState;

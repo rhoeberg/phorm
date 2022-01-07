@@ -5,6 +5,8 @@ void InitializeNodeConstructors()
 	new(&_nodeConstructorState->names) VMArray<String>();
 	new(&_nodeConstructorState->constructors) HashMap<NodeConstructor>(1024);
 	_nodeConstructorState->nextPos = vec2(0, 0);
+
+	SetupNodeConstructors();
 }
 
 VMArray<String>* GetNodeNames()
@@ -50,7 +52,7 @@ void AddNodeConstructor(String name, DataType dataType, NodeOp op, NodeCreateFun
 	AddNodeConstructor(name, dataType, op, BaseNodeDrawFunction, createFunc);
 }
 
-void AddNodeConstructors()
+void SetupNodeConstructors()
 {
 	/////////////////
 	// TEXTURE NODES
@@ -102,11 +104,17 @@ void AddNodeConstructors()
 	AddNodeConstructor(String("vec3"), DATA_VEC3, Vec3NodeOperation, CreateVec3Node);
 }
 
-VMArray<String> NamesBeginningWith(String typed)
+/*
+  Returns an array with results from search
+  note: clears array before use so will remove all data before
+ */
+void NamesBeginningWith(VMArray<String> *array, String typed)
 {
+
+	array->Clear();
 	NodeConstructorState *state = _nodeConstructorState;
 
-	VMArray<String> results = VMArray<String>();
+	// VMArray<String> results = VMArray<String>();
 	for(i32 i = 0; i < state->names.Count(); i++) {
 		if(state->names[i].length >= typed.length) {
 			bool match = true;
@@ -118,12 +126,13 @@ VMArray<String> NamesBeginningWith(String typed)
 				}
 			}
 			if(match) {
-				results.Insert(state->names[i]);
+				// results.Insert(state->names[i]);
+				array->Insert(state->names[i]);
 			}
 		}
 	}
 
-	return results;
+	// return results;
 }
 
 void BaseNodeDrawFunction(Node *node)

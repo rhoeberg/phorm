@@ -52,16 +52,13 @@ struct NodeConstructorState
 	vec2 nextPos;
 };
 
-/* global VMArray<String> nodeNames = VMArray<String>();; */
-/* global HashMap<NodeConstructor> nodeConstructors = HashMap<NodeConstructor>(1024);; */
-/* global vec2 nextConstructPos; */
-
 VMArray<String>* GetNodeNames();
 HashMap<NodeConstructor>* GetNodeConstructors();
 void SetNextConstructPos(vec2 pos);
 void ConstructNode(String name, NodeConstructor *nodeConstructor);
 VMArray<String>* GetNodeNames();
-VMArray<String> NamesBeginningWith(String typed);
+void NamesBeginningWith(VMArray<String> *array, String typed);
 void InitializeNodeConstructors();
+void SetupNodeConstructors();
 
 global NodeConstructorState *_nodeConstructorState;

@@ -103,7 +103,8 @@ void NodeGUI()
 			editor->promptSetFocus = false;
 		}
 		if(ImGui::InputText("##newname", editor->promptBuffer, ARRAY_SIZE(editor->promptBuffer))) {
-			editor->promptCandidates = NamesBeginningWith(editor->promptBuffer);
+			// editor->promptCandidates = NamesBeginningWith(editor->promptBuffer);
+			NamesBeginningWith(&editor->promptCandidates, editor->promptBuffer);
 			editor->promptCandidateSelected = 0;
 		}
 		for(i32 i = 0; i < editor->promptCandidates.Count(); i++) {

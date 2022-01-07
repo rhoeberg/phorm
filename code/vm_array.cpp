@@ -6,6 +6,7 @@ VMArray<T>::VMArray()
 	max = ARRAY_START_SIZE;
 	data = (T*)calloc(max, sizeof(T));
 	count = 0;
+	initialized = true;
 }
 
 template <typename T>
@@ -15,6 +16,7 @@ VMArray<T>::VMArray(const VMArray<T>& old)
 	max = old.max;
 	data = (T*)calloc(max, sizeof(T));
 	memcpy(data, old.data, sizeof(T) * max);
+	initialized = true;
 }
 
 
@@ -31,6 +33,8 @@ VMArray<T>::VMArray(std::initializer_list<T> init)
 	for(const T &t : init) {
 		Insert(t);
 	}
+
+	initialized = true;
 }
 
 
@@ -41,13 +45,15 @@ VMArray<T>::VMArray(int _max, int _count, T *_data)
 	count = _count;
 	data = (T*)calloc(max, sizeof(T));
 	memcpy(data, _data, count * sizeof(T));
+	initialized = true;
 }
 
 template <typename T>
 VMArray<T>::~VMArray()
 {
+	// TODO (rhoe) for now we call Free manually on arrays when we need to
 	// if(data != NULL)
-		// free(data);
+	//   Free();
 }
 
 template <typename T>
@@ -156,7 +162,8 @@ T& VMArray<T>::operator[](int index)
 template <typename T>
 void VMArray<T>::Free()
 {
-	free(data);
+	if(initialized && data != NULL)
+		free(data);
 }
 
 // very cheap clear.

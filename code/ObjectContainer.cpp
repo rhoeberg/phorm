@@ -1,9 +1,9 @@
 template <typename T>
 ObjectContainer<T>::ObjectContainer()
 {
-	elements = VMArray<T>();
-	isFree = VMArray<bool>();
-	slotID = VMArray<u32>();
+	// elements = VMArray<T>();
+	// isFree = VMArray<bool>();
+	// slotID = VMArray<u32>();
 
 	handleType = HANDLE_NONE;
 	dataType = DATA_NONE;
@@ -12,9 +12,9 @@ ObjectContainer<T>::ObjectContainer()
 template <typename T>
 ObjectContainer<T>::ObjectContainer(HandleType _handleType, DataType _dataType)
 {
-	elements = VMArray<T>();
-	isFree = VMArray<bool>();
-	slotID = VMArray<u32>();
+	// elements = VMArray<T>();
+	// isFree = VMArray<bool>();
+	// slotID = VMArray<u32>();
 
 	handleType = _handleType;
 	dataType = _dataType;

@@ -8,6 +8,7 @@ class VMArray {
 	T *data;
 	int max;
 	int count;
+	bool initialized;
 	void Grow();
  public:
 	VMArray();
