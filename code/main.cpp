@@ -70,7 +70,10 @@
 #include "data.cpp"
 #include "save.cpp"
 #include "debug.cpp"
-// #include "video.cpp"
+
+// Compile custom user code
+#include "../custom/CustomCompile.h"
+#include "../custom/CustomInit.cpp"
 
 void UpdateLoop()
 {
@@ -165,6 +168,10 @@ int main(int argc, char *argv[])
 	// Initialize Application
 	InitializeData();
 	InitializeNodeConstructors();
+
+	// add user nodes to system
+	CustomInit();
+
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();
@@ -222,6 +229,7 @@ void cleanup()
     imDrawClean();
     glfwTerminate();
 	CleanupNodes();
+	CleanupCustom();
 	CleanupNodeEditor();
 	CleanupSceneEditor();
 	CleanupGlobalEditor();
