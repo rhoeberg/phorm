@@ -54,7 +54,7 @@ int HashMap<T>::CalcHash(String &key)
 }
 
 template <typename T>
-void HashMap<T>::Insert(String &key, T value)
+void HashMap<T>::Insert(String key, T value)
 {
 	int hash = CalcHash(key);
 	HashNode<T> *cur = &elements[hash];
@@ -80,7 +80,7 @@ void HashMap<T>::Insert(String &key, T value)
   Returns false if the key didnt exist
 */
 template <typename T>
-bool HashMap<T>::Remove(String &key)
+bool HashMap<T>::Remove(String key)
 {
 	int hash = CalcHash(key);
 	HashNode<T> *next = &elements[hash];
@@ -128,7 +128,7 @@ T* HashMap<T>::Get(String key)
 }
 
 template <typename T>
-bool HashMap<T>::Exist(String &key)
+bool HashMap<T>::Exist(String key)
 {
 	int hash = CalcHash(key);
 	HashNode<T> *next = &elements[hash];

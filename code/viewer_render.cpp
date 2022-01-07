@@ -142,8 +142,8 @@ bool MouseInsideViewerRect()
 	viewerRect.height = VIEWER_SIZE;
 	viewerRect.pos = vec2(width - VIEWER_SIZE, 0);
 
-	if(ViewerInMain() && PointInsideRect(mouse, viewerRect) ||
-	   !ViewerInMain() && mouseInViewerWin)
+	if((ViewerInMain() && PointInsideRect(mouse, viewerRect)) ||
+	   (!ViewerInMain() && mouseInViewerWin))
 		return true;
 
 	return false;

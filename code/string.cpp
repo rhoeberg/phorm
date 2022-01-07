@@ -1,9 +1,9 @@
 #include "string.h"
 
 // TODO (rhoe) unsafe if using non terminated string
-size_t StrSize(char *str)
+size_t StrSize(const char *str)
 {
-	char *current = str;
+	const char *current = str;
 
 	int size = 0;
 	while(current[0] != '\0') {
@@ -51,7 +51,7 @@ String::String()
 	initialized = true;
 }
 
-String::String(char *str)
+String::String(const char *str)
 {
 	bufferSize = STRING_STARTING_LENGTH;
 	length = StrSize(str);
@@ -62,7 +62,7 @@ String::String(char *str)
 	initialized = true;
 }
 
-String::String(String &other)
+String::String(const String &other)
 {
 	bufferSize = other.bufferSize;
 	length = other.length;
@@ -72,7 +72,7 @@ String::String(String &other)
 	initialized = true;
 }
 
-void String::Concat(char *str)
+void String::Concat(const char *str)
 {
 	size_t strSize = StrSize(str);
 	if((length + strSize) > bufferSize) {
@@ -97,13 +97,13 @@ void String::Concat(String& other)
 	buffer[length] = '\0';
 }
 
-String& String::operator=(char *str) {
-	Free();
+String& String::operator=(const char *str) {
+	// Free();
 	*this = String(str);
 	return *this;
 }
 
-String& String::operator=(const String &other) {
+String& String::operator=(const String other) {
 	// Free();
 
 	bufferSize = other.bufferSize;
@@ -114,6 +114,13 @@ String& String::operator=(const String &other) {
 
 	return *this;
 }
+
+// String& String::operator=(String other) {
+// 	bufferSize = other.bufferSize;
+// 	length = other.length;
+// 	buffer = other.buffer;
+// 	return *this;
+// }
 
 char String::operator[](int index) {
 	if(index < 0 || index > length-1) {
@@ -127,7 +134,7 @@ void String::Print() {
 	printf("%s\n", buffer);
 }
 
-bool String::Equals(char *str)
+bool String::Equals(const char *str)
 {
 	if(StrSize(str) != length)
 		return false;
@@ -164,10 +171,10 @@ void String::Free() {
 
 void Test_String()
 {
-	String s1 = "bla bla testing";
-	String s2 = "rasmus";
-	String s3 = "rasmus";
-	String s4 = "concatme";
+	String s1("bla bla testing");
+	String s2("rasmus");
+	String s3("rasmus");
+	String s4("concatme");
 	s4.Concat(s2);
 
 	printf("=== TESTING STRING TYPE\n");

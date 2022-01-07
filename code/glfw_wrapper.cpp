@@ -110,6 +110,11 @@ void GetWindowSize(int *width, int *height)
 	glfwGetWindowSize(_win, width, height);
 }
 
+void GetFramebufferSize(int *width, int *height)
+{
+    glfwGetFramebufferSize(_win, width, height);
+}
+
 void ShowViewerOtherWindow()
 {
 	glfwShowWindow(_viewerWindow);
@@ -169,6 +174,7 @@ GLFWwindow* initGlfw()
     glfwSetWindowSizeCallback(_win, windowSizeCallback);
     int vWidth, vHeight;
     glfwGetFramebufferSize(_win, &vWidth, &vHeight);
+    printf("framebuffer size: %d %d\n", vWidth, vHeight);
     glViewport(0, 0, vWidth, vHeight);
     // enable depths testing to remove pixels which is behind other pixels
     glEnable(GL_DEPTH_TEST);  

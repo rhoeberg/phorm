@@ -2,12 +2,17 @@
 
 #define global static
 #define VIEWER_START_MAIN true
-#define SCREEN_WIDTH 1920
-#define SCREEN_HEIGHT 1080
-#define VIEWER_WIDTH 1920
-#define VIEWER_HEIGHT 1080
-/* #define SCREEN_WIDTH 2560 */
-/* #define SCREEN_HEIGHT 1440 */
+// pc settings
+// #define SCREEN_WIDTH 1920
+// #define SCREEN_HEIGHT 1080
+// #define VIEWER_WIDTH 1920
+// #define VIEWER_HEIGHT 1080
+
+// macbook settings
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+#define VIEWER_WIDTH 800
+#define VIEWER_HEIGHT 600
 
 #include "types.h"
 
@@ -25,7 +30,7 @@ global double lastFrame;
 global u64 frameCount;
 global GLFWSettings glfwSettings;
 
-#include "audio.h"
+// #include "audio.h"
 #include "opengl.h"
 #include "util.h"
 #include "simplexnoise1234.h"
@@ -34,7 +39,7 @@ global GLFWSettings glfwSettings;
 #include "vm_array.h"
 #include "vm_fixedarray.h"
 #include "imdraw.h"
-#include "Imdraw3D.h"
+#include "ImDraw3D.h"
 #include "string.h"
 #include "hashmap.h"
 #include "ObjectContainer.h"

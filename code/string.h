@@ -10,21 +10,22 @@ struct String
 	bool initialized;
 
 	String();
-	String(char *str);
-	String(String &str);
+	String(const char *str);
+	String(const String &str);
 	void ReCalc();
 	void FindBufferSize(int min);
 	void ResizeBuffer(int min);
-	void Concat(char *str);
+	void Concat(const char *str);
 	void Concat(String& other);
-	String& operator=(char *str);
-	String& operator=(const String &other);
+	String& operator=(const char *str);
+	String& operator=(const String other);
+	// String& operator=(String other);
 	char operator[](int index);
 	void Print();
-	bool Equals(char *str);
+	bool Equals(const char *str);
 	bool Equals(String &other);
 	~String();
 	void Free();
 };
 
-size_t StrSize(char *str);
+size_t StrSize(const char *str);

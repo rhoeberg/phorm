@@ -125,7 +125,7 @@ void ImDrawSetWindowSize(int width, int height)
 
 void ImDrawInitialize()
 {
-    imDrawShader = createShaderProgram("assets\\imdraw.vs", "assets\\imdraw.frag");
+    imDrawShader = createShaderProgram("assets/imdraw.vs", "assets/imdraw.frag");
 	textShader = createShaderProgram("assets/font_shader.vert", "assets/font_shader.frag");
 
     glGenVertexArrays(1, &imDrawVAO);
@@ -146,7 +146,8 @@ void ImDrawInitialize()
 	glBindVertexArray(0);
 
 	int width, height;
-	GetWindowSize(&width, &height);
+	// GetWindowSize(&width, &height);
+        GetFramebufferSize(&width, &height);
 	ImDrawSetWindowSize(width, height);
 
 	// initialize layers
@@ -158,7 +159,8 @@ void ImDrawInitialize()
 
 	/////////////////////////
 	// INITIALIZE FONT DRAWING
-	FILE *file = fopen("c:/windows/fonts/consola.ttf", "rb");
+	// FILE *file = fopen("c:/windows/fonts/consola.ttf", "rb");
+	FILE *file = fopen("assets/Consolas.ttf", "rb");
 	if(!file) {
 		printf("font file not found\n");
 	}

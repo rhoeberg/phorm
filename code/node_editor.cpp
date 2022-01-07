@@ -234,7 +234,7 @@ void DrawNode(ObjectHandle handle)
 
 void DrawNodeOutline(ObjectHandle handle)
 {
-	int outlineMargin = 0.7f;
+	float outlineMargin = 0.7f;
 	NodeEditorState *editor = _nodeEditorState;
 
 	Node *node = GetNode(handle);

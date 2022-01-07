@@ -1,4 +1,4 @@
-#include "Texture.h"
+#include "texture.h"
 
 int GetPixelIndex(int x, int y)
 {

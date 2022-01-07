@@ -56,6 +56,9 @@ void RenderViewerNode()
 				}
 				break;
 			}
+                        default: {
+                                NOT_IMPLEMENTED
+                        }
 		}
 	}
 }
@@ -161,6 +164,9 @@ void UpdateGlobalEditor()
 					}
 					break;
 				}
+                                    default: {
+                                        NOT_IMPLEMENTED
+                                    }
 			}
 		}
 	}

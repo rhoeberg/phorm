@@ -30,10 +30,10 @@ struct HashMap
 	void InitializeElements();
 	void Free();
 	int CalcHash(String &key);
-	void Insert(String &key, T value);
-	bool Remove(String &key);
+	void Insert(String key, T value);
+	bool Remove(String key);
 	T* Get(String key);
-	bool Exist(String &key);
+	bool Exist(String key);
 };
 
 template <typename T>

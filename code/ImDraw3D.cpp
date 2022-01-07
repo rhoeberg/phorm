@@ -18,7 +18,7 @@ void ImDraw3DInitialize()
 	new(&_im3D->vertices) VMArray<GLfloat>();
 
 	// SETUP SHADER
-    _im3D->shader = createShaderProgram("assets\\imdraw3d.vs", "assets\\imdraw3d.frag");
+    _im3D->shader = createShaderProgram("assets/imdraw3d.vs", "assets/imdraw3d.frag");
 
 	// SETUP GL BUFFERS
 	_im3D->vaoHandle = AddVAO();

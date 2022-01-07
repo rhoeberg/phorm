@@ -5,9 +5,12 @@
 // #define GLEW_STATIC
 #include "GL/glew.h"
 
+#ifdef WINDOWS
 #define GLFW_DLL
 #define GLFW_EXPOSE_NATIVE_WGL
 #define GLFW_EXPOSE_NATIVE_WIN32
+#endif
+
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
@@ -35,17 +38,17 @@
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtx/vector_angle.hpp"
 
-#include "portaudio.h"
-#include "stb_vorbis.c"
+// #include "portaudio.h"
+// #include "stb_vorbis.c"
 
 #define PL_MPEG_IMPLEMENTATION
 #include "pl_mpeg.h"
 
 #include "main.h"
 #include "imdraw.cpp"
-#include "imdraw3D.cpp"
+#include "ImDraw3D.cpp"
 #include "opengl.cpp"
-#include "audio.cpp"
+// #include "audio.cpp"
 #include "util.cpp"
 #include "gui.cpp"
 #include "glfw_wrapper.cpp"
@@ -131,7 +134,8 @@ void UpdateLoop()
 	///////////////
 	SetContextMain();
 	int screenWidth, screenHeight;
-	GetWindowSize(&screenWidth, &screenHeight);
+	// GetWindowSize(&screenWidth, &screenHeight);
+	GetFramebufferSize(&screenWidth, &screenHeight);
 	glViewport(0, 0, screenWidth, screenHeight);
 	ImDrawRender();
 
@@ -160,10 +164,10 @@ int main(int argc, char *argv[])
 	ImDraw3DInitialize();
 
 	// Initialize Audio
-    if(!audioInitialize()) {
-		cleanup();
-		exit(1);
-	}
+    // if(!audioInitialize()) {
+    //     	cleanup();
+    //     	exit(1);
+    //     }
 
 	// Initialize Application
 	InitializeData();
@@ -224,8 +228,8 @@ int main(int argc, char *argv[])
 
 void cleanup()
 {
-    audioClose();
-    Pa_Terminate();
+    // audioClose();
+    // Pa_Terminate();
     imDrawClean();
     glfwTerminate();
 	CleanupNodes();

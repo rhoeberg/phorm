@@ -91,7 +91,7 @@ ObjectHandle AddNewRenderObject()
 	return _nodeState->renderObjects.Insert(renderObject);
 }
 
-ObjectHandle AddString(char *value)
+ObjectHandle AddString(const char *value)
 {
 	String string = value;
 	return _nodeState->strings.Insert(string);

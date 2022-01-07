@@ -60,4 +60,4 @@ ObjectContainer<String>* GetStrings();
 
 RenderObject CreateRenderObject();
 ObjectHandle AddNewRenderObject();
-ObjectHandle AddString(char *value);
+ObjectHandle AddString(const char *value);
