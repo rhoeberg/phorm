@@ -32,14 +32,14 @@ void RenderScene()
 	for(i32 i = 0; i < editor->scene.sceneObjects.Count(); i++) {
 		SceneObject *sceneObject = editor->scene.sceneObjects.GetAt(i);
 		if(sceneObject) {
-			Node *node = GetNode(&sceneObject->handle);
+			Node *node = GetNode(sceneObject->handle);
 			if(node) {
 				if(node->type == DATA_RENDEROBJECT) {
 					RenderObjectInstance instance = sceneObject->ToRenderObjectInstance(node->GetData());
 					AddToRenderQueue(instance);
 				}
 				else if(node->type == DATA_RENDEROBJECT_GROUP) {
-					RenderObjectGroup *group = GetRenderObjectGroups()->Get(&node->GetData());
+					RenderObjectGroup *group = GetRenderObjectGroups()->Get(node->GetData());
 					RenderGroupInstance instance = RenderGroupInstance(node->GetData(), group->pos, group->scale, group->rot);
 					AddToRenderGroupQueue(instance);
 					// for(i32 j = 0; j < group->renderObjects.Count(); j++) {
@@ -51,7 +51,7 @@ void RenderScene()
 				}
 				else if(node->type == DATA_POINTLIGHT) {
 					RenderLightInstance instance = {};
-					PointLight *light = GetPointLights()->Get(&node->GetData());
+					PointLight *light = GetPointLights()->Get(node->GetData());
 					instance.pos = sceneObject->pos + light->pos;
 					instance.color = light->color;
 					AddToRenderPointLightQueue(instance);
@@ -79,7 +79,7 @@ void RenderScene()
 SceneObject* GetSelectedSceneObject()
 {
 	SceneEditorState *state = _sceneEditorState;
-	return state->scene.sceneObjects.Get(&state->selectedObject);
+	return state->scene.sceneObjects.Get(state->selectedObject);
 }
 
 void UpdateSceneEditor()
@@ -105,9 +105,9 @@ void UpdateSceneEditor()
 			ObjectHandle handle = state->scene.sceneObjects.GetHandle(i);
 			SceneObject *sceneObject = state->scene.sceneObjects.GetAt(i);
 			if(sceneObject) {
-				Node *node = GetNode(&sceneObject->handle);
+				Node *node = GetNode(sceneObject->handle);
 				if(node) {
-					String *str = GetStrings()->Get(&node->labelHandle);
+					String *str = GetStrings()->Get(node->labelHandle);
 					if(str) {
 						ImGui::Text("%d", i);
 						ImGui::SameLine(40);
@@ -125,7 +125,7 @@ void UpdateSceneEditor()
 
 					sprintf(nameBuffer, "remove##%d", i);
 					if(ImGui::Button(nameBuffer)) {
-						state->scene.sceneObjects.Remove(&handle);
+						state->scene.sceneObjects.Remove(handle);
 					}
 				}
 			}
@@ -177,10 +177,10 @@ void UpdateSceneEditor()
 		ImGui::Text("RENDER OBJECTS");
 		for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
 			ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-			Node *node = _nodeState->nodes.Get(&handle);
+			Node *node = _nodeState->nodes.Get(handle);
 			if(node) {
 				if(node->type == DATA_RENDEROBJECT || node->type == DATA_RENDEROBJECT_GROUP || node->type == DATA_POINTLIGHT) {
-					String *str = GetStrings()->Get(&node->labelHandle);
+					String *str = GetStrings()->Get(node->labelHandle);
 					if(str) {
 						ImGui::Text("%s", str->buffer);
 						ImGui::SameLine();

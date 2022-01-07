@@ -95,7 +95,7 @@ ObjectHandle ObjectContainer<T>::InsertNew()
 // we simply set the array slot to free when removing
 // insert takes care of checking for empty slots to use instead of inserting new
 template <typename T>
-void ObjectContainer<T>::Remove(ObjectHandle *handle)
+void ObjectContainer<T>::Remove(ObjectHandle handle)
 {
 	// make sure handle exist to avoid removing
 	// wrong slotID or handle with different type
@@ -103,31 +103,31 @@ void ObjectContainer<T>::Remove(ObjectHandle *handle)
 		return;
 	}
 	
-	isFree[handle->id] = true;
+	isFree[handle.id] = true;
 }
 
 template <typename T>
-bool ObjectContainer<T>::Exists(ObjectHandle *handle)
+bool ObjectContainer<T>::Exists(ObjectHandle handle)
 {
 	// wrong type
-	if(handle->handleType != handleType ||
-	   handle->dataType != dataType) {
+	if(handle.handleType != handleType ||
+	   handle.dataType != dataType) {
 		return false;
 	}
 
 	// out of bounds
-	if(handle->id > (elements.Count() - 1) ||
-	   handle->id < 0) {
+	if(handle.id > (elements.Count() - 1) ||
+	   handle.id < 0) {
 		return false;
 	}
 
 	// slot is empty
-	if(isFree[handle->id]) {
+	if(isFree[handle.id]) {
 		return false;
 	}
 
 	// wrong slot id
-	if(slotID[handle->id] != handle->slotID) {
+	if(slotID[handle.id] != handle.slotID) {
 		return false;
 	}
 
@@ -135,26 +135,25 @@ bool ObjectContainer<T>::Exists(ObjectHandle *handle)
 }
 
 template <typename T>
-T* ObjectContainer<T>::Get(ObjectHandle *handle)
+T* ObjectContainer<T>::Get(ObjectHandle handle)
 {
 	if(!Exists(handle)) {
-		handle->isset = false;
+		handle.isset = false;
 		return NULL;
 	}
 
 	// TODO (rhoe) make sure we have some kind of type validation here
-	return &elements[handle->id];
+	return &elements[handle.id];
 }
 
 template <typename T>
-T* ObjectContainer<T>::Get(NodeInput *input)
+T* ObjectContainer<T>::Get(NodeInput input)
 {
-	if(!NodeExists(&input->handle)) {
-		input->handle.isset = false;
+	if(!NodeExists(input.handle)) {
 		return NULL;
 	}
 
-	Node *inputNode = GetNode(&input->handle);
+	Node *inputNode = GetNode(input.handle);
 
 	// TODO (rhoe) make sure we have some kind of type validation here
 	return &elements[inputNode->GetData().id];
@@ -164,7 +163,7 @@ template <typename T>
 T* ObjectContainer<T>::GetAt(int index)
 {
 	ObjectHandle handle = GetHandle(index);
-	if(!Exists(&handle)) {
+	if(!Exists(handle)) {
 		return NULL;
 	}
 	return &elements[handle.id];
@@ -179,7 +178,7 @@ ObjectHandle ObjectContainer<T>::GetHandle(int index)
 	handle.handleType = handleType;
 	handle.dataType = dataType;
 
-	if(Exists(&handle)) {
+	if(Exists(handle)) {
 		handle.isset = true;
 	}
 

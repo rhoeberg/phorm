@@ -2,15 +2,15 @@
 
 void HistogramOperation(Node *self)
 {
-	double *output = GetDoubles()->Get(&self->GetDataLast());
+	double *output = GetDoubles()->Get(self->GetDataLast());
 	if(!output)
 		return;
 
-	SinWaveNodeState *state = _nodeState->sinWaveNodes.Get(&self->extraHandle);
+	SinWaveNodeState *state = _nodeState->sinWaveNodes.Get(self->extraHandle);
 	if(!state)
 		return;
 
-	double *input = GetDoubles()->Get(&self->inputs[0]);
+	double *input = GetDoubles()->Get(self->inputs[0]);
 	if(!input)
 		return;
 
@@ -24,7 +24,7 @@ void HistogramOperation(Node *self)
 
 void DrawHistogramNode(Node *self)
 {
-	SinWaveNodeState *state = _nodeState->sinWaveNodes.Get(&self->extraHandle);
+	SinWaveNodeState *state = _nodeState->sinWaveNodes.Get(self->extraHandle);
 
 	self->rect.width = 150;
 	self->rect.height = 70;
@@ -32,7 +32,7 @@ void DrawHistogramNode(Node *self)
 	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 	ImDrawRect(self->rect);
 
-	double *output = GetDoubles()->Get(&self->GetData());
+	double *output = GetDoubles()->Get(self->GetData());
 	if(output) {
 		i32 resolution = ARRAY_SIZE(state->histogram);
 		float step = self->rect.width / resolution; 

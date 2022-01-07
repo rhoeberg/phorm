@@ -36,11 +36,11 @@ ObjectHandle GetViewerNode()
 void RenderViewerNode()
 {
 	ObjectHandle handle = GetViewerNode();
-	if(handle.isset && NodeExists(&handle)) {
-		Node *node = GetNode(&handle);
+	if(handle.isset && NodeExists(handle)) {
+		Node *node = GetNode(handle);
 		switch(node->type) {
 			case DATA_TEXTURE: {
-				AddTextureToRenderQueue(&node->GetData());
+				AddTextureToRenderQueue(node->GetData());
 				break;
 			}
 			case DATA_RENDEROBJECT: {
@@ -49,7 +49,7 @@ void RenderViewerNode()
 				break;
 			}
 			case DATA_RENDEROBJECT_GROUP: {
-				RenderObjectGroup *group = GetRenderObjectGroups()->Get(&node->GetData());
+				RenderObjectGroup *group = GetRenderObjectGroups()->Get(node->GetData());
 				for(i32 i = 0; i < group->renderObjects.Count(); i++) {
 					RenderObjectInstance instance = RenderObjectInstance(node->GetData());
 					AddToRenderQueue(instance);
@@ -102,7 +102,7 @@ void UpdateGlobalEditor()
 	}
 
 	ImGui::Begin("Inspector");
-	Node *node = GetNode(&_globalEditorState->inspectorObject);
+	Node *node = GetNode(_globalEditorState->inspectorObject);
 	if(node) {
 
 		ImGui::Text("%s", node->name);
@@ -116,7 +116,7 @@ void UpdateGlobalEditor()
 		// label
 		char buffer[128];
 		sprintf(buffer, "label##label%d", _nodeEditorState->draggedNode.id);
-		String *labelStr = GetStrings()->Get(&node->labelHandle);
+		String *labelStr = GetStrings()->Get(node->labelHandle);
 		if(ImGui::InputText(buffer, labelStr->buffer, labelStr->bufferSize)) {
 			labelStr->ReCalc();
 			// node->changed = true;
@@ -154,7 +154,7 @@ void UpdateGlobalEditor()
 					break;
 				}
 				case DATA_STRING: {
-					String *str = GetStrings()->Get(&param->dataHandle);
+					String *str = GetStrings()->Get(param->dataHandle);
 					if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
 						str->ReCalc();
 						node->changed = true;

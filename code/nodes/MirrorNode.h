@@ -2,8 +2,8 @@
 
 void MirrorOperation(Node *self)
 {
-	RenderObject *output = GetRenderObjects()->Get(&self->GetDataLast());
-	RenderObject *input = GetRenderObjects()->Get(&self->inputs[0]);
+	RenderObject *output = GetRenderObjects()->Get(self->GetDataLast());
+	RenderObject *input = GetRenderObjects()->Get(self->inputs[0]);
 	if(!input)
 		return;
 

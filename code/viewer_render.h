@@ -101,7 +101,7 @@ bool MouseInsideViewerRect();
 void UpdateViewerRender();
 void AddToRenderQueue(RenderObjectInstance instance);
 void AddToRenderGroupQueue(RenderGroupInstance instance);
-void AddTextureToRenderQueue(ObjectHandle *textureHandle);
+void AddTextureToRenderQueue(ObjectHandle handle);
 void AddToRenderPointLightQueue(RenderLightInstance instance);
 void UpdateGizmos();
 

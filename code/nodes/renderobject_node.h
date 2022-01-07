@@ -2,7 +2,7 @@
 
 void RenderObjectOperation(Node *self)
 {
-	RenderObject *output = GetRenderObjects()->Get(&self->GetDataLast());
+	RenderObject *output = GetRenderObjects()->Get(self->GetDataLast());
 
 	// parameters
 	output->pos = self->params[0].Vec3();
@@ -10,7 +10,7 @@ void RenderObjectOperation(Node *self)
 	output->rot = self->params[2].Vec3();
 	output->color = self->params[2].Vec4();
 
-	Texture *inputTexture = GetTextures()->Get(&self->inputs[1]);
+	Texture *inputTexture = GetTextures()->Get(self->inputs[1]);
 	if(inputTexture) {
 		glBindTexture(GL_TEXTURE_2D, output->textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, inputTexture->pixels);
@@ -22,7 +22,7 @@ void RenderObjectOperation(Node *self)
 		output->hasTexture = false;
 	}
 
-	Mesh *inputMesh = GetMeshes()->Get(&self->inputs[0]);
+	Mesh *inputMesh = GetMeshes()->Get(self->inputs[0]);
 	if(!inputMesh)
 		return;
 

@@ -5,7 +5,7 @@
 void CreateViewerTextureRenderObject()
 {
 	_viewerRenderState.baseTextureObject = AddNewRenderObject();
-	RenderObject *renderObject = GetRenderObjects()->Get(&_viewerRenderState.baseTextureObject);
+	RenderObject *renderObject = GetRenderObjects()->Get(_viewerRenderState.baseTextureObject);
 
 	// TODO (rhoe) currently we are wasting a gl id here
 	//             perhaps we should pass vao as parameter instead of
@@ -48,11 +48,11 @@ void InitializeViewerRender()
 }
 
 // Takes the handle of texture resource
-void AddTextureToRenderQueue(ObjectHandle *handle)
+void AddTextureToRenderQueue(ObjectHandle handle)
 {
 	Texture *texture = GetTextures()->Get(handle);
 	if(texture) {
-		RenderObject *renderObject = GetRenderObjects()->Get(&_viewerRenderState.baseTextureObject);
+		RenderObject *renderObject = GetRenderObjects()->Get(_viewerRenderState.baseTextureObject);
 		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -90,7 +90,7 @@ void ViewerGLSettings()
 
 void DrawRenderObjectInstance(RenderObjectInstance *instance, glm::mat4 model)
 {
-	RenderObject *renderObject = GetRenderObjects()->Get(&instance->renderObjectHandle);
+	RenderObject *renderObject = GetRenderObjects()->Get(instance->renderObjectHandle);
 
 	///////////////
 	// TEXTURE
@@ -301,7 +301,7 @@ void UpdateViewerRender()
 	// RENDER GROUPS
 	for(int i = 0; i < viewer->renderGroupList.Count(); i++) {
 		RenderGroupInstance instance = viewer->renderGroupList[i];
-		RenderObjectGroup *group = GetRenderObjectGroups()->Get(&instance.renderGroupHandle);
+		RenderObjectGroup *group = GetRenderObjectGroups()->Get(instance.renderGroupHandle);
 		if(instance.renderGroupHandle.dataType == DATA_RENDEROBJECT_GROUP) {
 			glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 			model = glm::translate(model, group->pos);

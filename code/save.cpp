@@ -154,7 +154,7 @@ void LoadNodes()
 	// this is needed because we cannot serialize function pointers since they might change
 	for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(&handle);
+		Node *node = _nodeState->nodes.Get(handle);
 		if(node) {
 			String name = String(node->name);
 			NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(name);
@@ -168,7 +168,7 @@ void LoadNodes()
 	// mark all nodes as dirty after load so we can regenerate all resources
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(&handle);
+		Node *node = _nodeState->nodes.Get(handle);
 		if(node) {
 			node->changed = true;
 			node->initialized = false;

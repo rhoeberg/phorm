@@ -2,7 +2,7 @@
 
 void Vec3NodeOperation(Node *self)
 {
-	vec3 *output = GetVec3s()->Get(&self->GetDataLast());
+	vec3 *output = GetVec3s()->Get(self->GetDataLast());
 	if(!output)
 		return;
 

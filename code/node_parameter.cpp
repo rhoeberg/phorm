@@ -69,8 +69,8 @@ double NodeParameter::Double()
 {
 	if(nodeHandle.isset) {
 		// double *doubleFromNode = GetDoubleOutput(&nodeHandle);
-		Node *node = GetNode(&nodeHandle);
-		double *doubleFromNode = GetDoubles()->Get(&node->GetData());
+		Node *node = GetNode(nodeHandle);
+		double *doubleFromNode = GetDoubles()->Get(node->GetData());
 		if(doubleFromNode) {
 			return *doubleFromNode;
 		}
@@ -88,9 +88,9 @@ double NodeParameter::Double()
 vec3 NodeParameter::Vec3()
 {
 	if(nodeHandle.isset) {
-		Node *node = GetNode(&nodeHandle);
+		Node *node = GetNode(nodeHandle);
 		if(node) {
-			vec3 *output = GetVec3s()->Get(&node->GetData());
+			vec3 *output = GetVec3s()->Get(node->GetData());
 			if(output) {
 				return *output;
 			}
@@ -109,9 +109,9 @@ vec3 NodeParameter::Vec3()
 vec4 NodeParameter::Vec4()
 {
 	if(nodeHandle.isset) {
-		Node *node = GetNode(&nodeHandle);
+		Node *node = GetNode(nodeHandle);
 		if(node) {
-			vec4 *output = GetVec4s()->Get(&node->GetData());
+			vec4 *output = GetVec4s()->Get(node->GetData());
 			if(output) {
 				return *output;
 			}

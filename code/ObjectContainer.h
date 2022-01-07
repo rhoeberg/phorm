@@ -24,10 +24,10 @@ struct ObjectContainer {
 
 	// we simply set the array slot to free when removing
 	// insert takes care of checking for empty slots to use instead of inserting new
-	void Remove(ObjectHandle *handle);
-	bool Exists(ObjectHandle *handle);
-	T* Get(ObjectHandle *handle);
-	T* Get(NodeInput *input);
+	void Remove(ObjectHandle handle);
+	bool Exists(ObjectHandle handle);
+	T* Get(ObjectHandle handle);
+	T* Get(NodeInput input);
 	T* ObjectContainer<T>::GetAt(int index);
 
 	ObjectHandle GetHandle(int index);

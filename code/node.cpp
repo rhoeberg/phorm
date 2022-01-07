@@ -25,7 +25,7 @@ bool Node::Changed()
 	bool inputChanged = false;
 	for(int i = 0; i < inputs.Count(); i++) {
 		if(inputs[i].handle.isset) {
-			Node *inputNode = GetNode(&inputs[i].handle);
+			Node *inputNode = GetNode(inputs[i].handle);
 			if(!inputNode) {
 				inputChanged = true;
 			}
@@ -38,7 +38,7 @@ bool Node::Changed()
 
 	for(int i = 0; i < params.Count(); i++) {
 		if(params[i].nodeHandle.isset) {
-			Node *paramNode = GetNode(&params[i].nodeHandle);
+			Node *paramNode = GetNode(params[i].nodeHandle);
 			if(!paramNode) {
 				inputChanged = true;
 			}
@@ -119,7 +119,7 @@ ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc dr
 	return _nodeState->nodes.Insert(node);
 }
 
-bool ConnectNodeParameter(ObjectHandle *handle, ObjectHandle *outHandle, int paramIndex)
+bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex)
 {
 	Node *node = GetNode(handle);
 	Node *outputNode = GetNode(outHandle);
@@ -128,20 +128,20 @@ bool ConnectNodeParameter(ObjectHandle *handle, ObjectHandle *outHandle, int par
 		return false;
 	}
 
-	if(handle->id == outHandle->id ||
+	if(handle.id == outHandle.id ||
 	   node->params[paramIndex].type != outputNode->type) {
 		return false;
 	}
 
 	if(node != NULL) {
 		node->changed = true;
-		node->params[paramIndex].nodeHandle = *outHandle;
+		node->params[paramIndex].nodeHandle = outHandle;
 	}
 
 	return true;
 }
 
-bool ConnectNodeInput(ObjectHandle *handle, ObjectHandle *outHandle, int inputIndex)
+bool ConnectNodeInput(ObjectHandle handle, ObjectHandle outHandle, int inputIndex)
 {
 	Node *inputNode = GetNode(handle);
 	Node *outputNode = GetNode(outHandle);
@@ -150,25 +150,25 @@ bool ConnectNodeInput(ObjectHandle *handle, ObjectHandle *outHandle, int inputIn
 		return false;
 	}
 
-	if(handle->id == outHandle->id ||
+	if(handle.id == outHandle.id ||
 	   inputNode->inputs[inputIndex].type != outputNode->type) {
 		return false;
 	}
 
 	if(inputNode != NULL) {
 		inputNode->changed = true;
-		inputNode->inputs[inputIndex].handle = *outHandle;
+		inputNode->inputs[inputIndex].handle = outHandle;
 	}
 
 	return true;
 }
 
-bool NodeExists(ObjectHandle *handle)
+bool NodeExists(ObjectHandle handle)
 {
 	return _nodeState->nodes.Exists(handle);
 }
 
-Node* GetNode(ObjectHandle *handle)
+Node* GetNode(ObjectHandle handle)
 {
 	if(!NodeExists(handle)) {
 		return NULL;
@@ -177,7 +177,7 @@ Node* GetNode(ObjectHandle *handle)
 	return _nodeState->nodes.Get(handle);
 }
 
-void DeleteNode(ObjectHandle *handle)
+void DeleteNode(ObjectHandle handle)
 {
 	_nodeState->nodes.Remove(handle);
 }
@@ -192,7 +192,7 @@ void CleanupNodes()
 
 	for(int i = 0; i < _nodeState->strings.Count(); i++) {
 		ObjectHandle handle = _nodeState->strings.GetHandle(i);
-		String *string = _nodeState->strings.Get(&handle);
+		String *string = _nodeState->strings.Get(handle);
 		string->Free();
 	}
 	_nodeState->strings.Free();

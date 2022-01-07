@@ -111,9 +111,9 @@ private:
 
 ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle());
 
-bool NodeExists(ObjectHandle *handle);
-Node* GetNode(ObjectHandle *handle);
-void DeleteNode(ObjectHandle *handle);
+bool NodeExists(ObjectHandle handle);
+Node* GetNode(ObjectHandle handle);
+void DeleteNode(ObjectHandle handle);
 
-bool ConnectNodeParameter(ObjectHandle *handle, ObjectHandle *outHandle, int paramIndex);
-bool ConnectNodeInput(ObjectHandle *inHandle, ObjectHandle *outHandle, int inputIndex);
+bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex);
+bool ConnectNodeInput(ObjectHandle inHandle, ObjectHandle outHandle, int inputIndex);

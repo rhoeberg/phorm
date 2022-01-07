@@ -9,7 +9,7 @@ void TestUserOperation(Node *self)
 {
 	printf("hello from user node\n");
 
-	MyTestData *data = myTestDataContainer->Get(&self->extraHandle);
+	MyTestData *data = myTestDataContainer->Get(self->extraHandle);
 	if(data != NULL)
 		printf("Our custom data value is: %d\n", data->i);
 }

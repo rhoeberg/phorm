@@ -2,7 +2,7 @@
 
 void DoubleOperation(Node *self)
 {
-	double *output = GetDoubles()->Get(&self->GetDataLast());
+	double *output = GetDoubles()->Get(self->GetDataLast());
 	if(!output)
 		return;
 

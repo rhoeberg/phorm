@@ -2,13 +2,13 @@
 
 void MulOperation(Node *self)
 {
-	double *input1 = GetDoubles()->Get(&self->inputs[0]);
+	double *input1 = GetDoubles()->Get(self->inputs[0]);
 	if(!input1)
 		return;
 
 	double value = self->params[0].Double();
 
-	double *output = GetDoubles()->Get(&self->GetDataLast());
+	double *output = GetDoubles()->Get(self->GetDataLast());
 	*output = *input1 * value;
 
 }

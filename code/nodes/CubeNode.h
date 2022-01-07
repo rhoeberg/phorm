@@ -2,7 +2,7 @@
 
 void CubeOperation(Node *self)
 {
-	Mesh *output = GetMeshes()->Get(&self->GetDataLast());
+	Mesh *output = GetMeshes()->Get(self->GetDataLast());
 
 	output->vertices = {
 		// BACK FACE index 0

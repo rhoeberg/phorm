@@ -2,11 +2,11 @@
 
 void SinOperation(Node *self)
 {
-	double *input = GetDoubles()->Get(&self->inputs[0]);
+	double *input = GetDoubles()->Get(self->inputs[0]);
 	if(!input)
 		return;
 
-	double *output = GetDoubles()->Get(&self->GetDataLast());
+	double *output = GetDoubles()->Get(self->GetDataLast());
 	if(!output)
 		return;
 

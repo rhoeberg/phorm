@@ -3,13 +3,13 @@
 void BlurOperation(Node *self)
 {
 	// INPUTS
-	Texture *inputTexture = GetTextures()->Get(&self->inputs[0]);
+	Texture *inputTexture = GetTextures()->Get(self->inputs[0]);
 	if(!inputTexture)
 		return;
 
 	// SELF
 	ObjectHandle handle = self->GetDataLast();
-	Texture *output = GetTextures()->Get(&handle);
+	Texture *output = GetTextures()->Get(handle);
 	if(!output) {
 		return;
 	}

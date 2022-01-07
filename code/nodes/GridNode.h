@@ -9,7 +9,7 @@ Vertex GetGridVertex(i32 x, i32 y, i32 width, i32 height)
 
 void GridOperation(Node *self)
 {
-	Mesh *output = GetMeshes()->Get(&self->GetDataLast());
+	Mesh *output = GetMeshes()->Get(self->GetDataLast());
 	if(!output)
 		return;
 

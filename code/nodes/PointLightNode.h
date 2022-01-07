@@ -1,6 +1,6 @@
 void PointLightOperation(Node *self)
 {
-	PointLight *output = _nodeState->pointLights.Get(&self->GetDataLast());
+	PointLight *output = _nodeState->pointLights.Get(self->GetDataLast());
 	if(!output)
 		return;
 
