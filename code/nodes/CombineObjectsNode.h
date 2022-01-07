@@ -29,7 +29,7 @@ void CombineObjectsOperation(Node *self)
 
 }
 
-ObjectHandle CreateCombineObjectsNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateCombineObjectsNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("pos", vec3(0, 0, 0)),
@@ -42,5 +42,5 @@ ObjectHandle CreateCombineObjectsNode(String name, DataType dataType, NodeOp op,
 		NodeInput(DATA_RENDEROBJECT),
 	};
 
-	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, DATA_RENDEROBJECT_GROUP, op, drawFunc, params, inputs);
 }

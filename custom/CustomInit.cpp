@@ -39,7 +39,7 @@ void CustomInit()
 	//
 	//
 	// Example:
-	AddNodeConstructor(String("Test User Node"), DATA_NONE, TestUserOperation, CreateTestUserNode);
+	AddNodeConstructor(String("Test User Node"), TestUserOperation, CreateTestUserNode);
 
 }
 

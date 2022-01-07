@@ -13,7 +13,7 @@ void SinOperation(Node *self)
 	*output = Sin(*input);
 }
 
-ObjectHandle CreateSinNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateSinNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 	};
@@ -22,5 +22,5 @@ ObjectHandle CreateSinNode(String name, DataType dataType, NodeOp op, NodeDrawFu
 		NodeInput(DATA_DOUBLE),
 	};
 
-	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, DATA_DOUBLE, op, drawFunc, params, inputs);
 }

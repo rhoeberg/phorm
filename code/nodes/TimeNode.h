@@ -24,7 +24,7 @@ void DrawTimeNode(Node *self)
 	ImDrawText(timePos, timeBuf, vec3(0.3, 0, 0));
 }
 
-ObjectHandle CreateTimeNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateTimeNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 	};
@@ -33,5 +33,5 @@ ObjectHandle CreateTimeNode(String name, DataType dataType, NodeOp op, NodeDrawF
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, DATA_DOUBLE, op, drawFunc, params, inputs);
 }

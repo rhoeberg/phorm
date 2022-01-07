@@ -24,7 +24,7 @@ void MirrorOperation(Node *self)
 	output->scale = input->scale;
 }
 
-ObjectHandle CreateMirrorNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateMirrorNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("y", 1),
@@ -36,5 +36,5 @@ ObjectHandle CreateMirrorNode(String name, DataType dataType, NodeOp op, NodeDra
 		NodeInput(DATA_RENDEROBJECT),
 	};
 
-	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, DATA_RENDEROBJECT, op, drawFunc, params, inputs);
 }

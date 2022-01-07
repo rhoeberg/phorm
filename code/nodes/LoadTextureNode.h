@@ -16,7 +16,7 @@ void LoadTextureOperation(Node *self)
 	}
 }
 
-ObjectHandle CreateLoadTexture(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateLoadTexture(String name, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("path", ""),
@@ -26,5 +26,5 @@ ObjectHandle CreateLoadTexture(String name, DataType dataType, NodeOp op, NodeDr
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, DATA_TEXTURE, op, drawFunc, params, inputs);
 }

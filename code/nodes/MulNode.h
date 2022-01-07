@@ -31,7 +31,7 @@ void DrawMulNode(Node *self)
 	ImDrawText(valuePos, valueBuf, vec3(0.3, 0, 0));
 }
 
-ObjectHandle CreateMulNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateMulNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("value", 1.0),
@@ -41,5 +41,5 @@ ObjectHandle CreateMulNode(String name, DataType dataType, NodeOp op, NodeDrawFu
 		NodeInput(DATA_DOUBLE),
 	};
 
-	return AddNode(name.buffer, dataType, op, drawFunc, params, inputs);
+	return AddNode(name.buffer, DATA_DOUBLE, op, drawFunc, params, inputs);
 }

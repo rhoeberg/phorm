@@ -31,13 +31,12 @@ void BaseNodeDrawFunction(Node *node);
 #include "nodes/AddNode.h"
 /* #include "LabelNode.h" */
 
-typedef ObjectHandle (*NodeCreateFunc)(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc);
+typedef ObjectHandle (*NodeCreateFunc)(String name, NodeOp op, NodeDrawFunc drawFunc);
 
 struct NodeConstructor
 {
 	NodeOp op;
 	NodeDrawFunc drawFunc;
-	DataType dataType;
 	NodeCreateFunc createFunc;
 	vec2 pos;
 

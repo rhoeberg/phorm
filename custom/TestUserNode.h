@@ -14,9 +14,8 @@ void TestUserOperation(Node *self)
 		printf("Our custom data value is: %d\n", data->i);
 }
 
-ObjectHandle CreateTestUserNode(String name, DataType dataType, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateTestUserNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 {
-
 	FixedArray<NodeParameter> params = {
 	};
 
@@ -28,5 +27,5 @@ ObjectHandle CreateTestUserNode(String name, DataType dataType, NodeOp op, NodeD
 	testData.i = 123;
 	ObjectHandle extraHandle = myTestDataContainer->Insert(testData);
 
-	return AddNode("TestUserNode", dataType, op, drawFunc, params, inputs, extraHandle);
+	return AddNode("TestUserNode", DATA_NONE, op, drawFunc, params, inputs, extraHandle);
 }
