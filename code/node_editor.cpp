@@ -537,9 +537,9 @@ void UpdateNodeEditor()
 
 	//////////////////
 	// DRAW NODES
-	for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
+	for(i32 i = 0; i < GetNodes()->Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
-		Node *node = _nodeState->nodes.Get(handle);
+		Node *node = GetNodes()->Get(handle);
 		if(node) {
 			DrawNode(handle);
 		}

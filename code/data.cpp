@@ -33,6 +33,10 @@ void InitializeData()
 //////////
 // Resource Access
 //////////
+ObjectContainer<Node>* GetNodes()
+{
+	return &_nodeState->nodes;
+}
 
 ObjectContainer<double>* GetDoubles()
 {

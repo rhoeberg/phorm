@@ -20,6 +20,17 @@ float Max(float a, float b)
 	return (a > b) ? a : b;
 }
 
+int RandInt(int from, int to)
+{
+    int r = rand();
+    return (r % (to - from)) + from;
+}
+
+float RandFloat()
+{
+	return (1.0f / RandInt(0, 100));
+}
+
 vec2 GetRectCenter(Rect rect)
 {
 	vec2 result = {};

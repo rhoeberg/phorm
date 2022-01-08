@@ -181,6 +181,9 @@ int main(int argc, char *argv[])
 	InitializeSceneEditor();
 	InitializeGlobalEditor();
 
+	// TODO (rhoe) find place for this
+    srand(glfwGetTime());
+
 
 
 	///////////

@@ -47,7 +47,7 @@ struct NodeState {
 
 global NodeState *_nodeState;
 
-
+ObjectContainer<Node>* GetNodes();
 ObjectContainer<Texture>* GetTextures();
 ObjectContainer<Mesh>* GetMeshes();
 ObjectContainer<double>* GetDoubles();

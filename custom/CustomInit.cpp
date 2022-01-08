@@ -40,6 +40,7 @@ void CustomInit()
 	//
 	// Example:
 	AddNodeConstructor(String("Test User Node"), TestUserOperation, CreateTestUserNode);
+	AddNodeConstructor(String("Tubes"), TubeOperation, CreateTubeNode);
 
 }
 
@@ -47,4 +48,6 @@ void CleanupCustom()
 {
 	myTestDataContainer->Free();
 	free(myTestDataContainer);
+
+	myTubes.Free();
 }

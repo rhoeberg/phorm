@@ -69,8 +69,6 @@ struct NodeInput {
 	NodeInput() {}
 };
 
-/* enum NodeOp; */
-/* enum NodeDrawFunc; */
 struct Node;
 typedef void (*NodeOp)(Node *self);
 typedef void (*NodeDrawFunc)(Node *self);
