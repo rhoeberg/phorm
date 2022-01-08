@@ -14,5 +14,5 @@ xcopy 3rdparty\glfw\lib\glfw3.dll build\ /Y
 xcopy assets build\assets\ /Y/E/H/C/I
  
 pushd build
-cl -MD -FC -Zi -EHsc ..\code\main.cpp /Fetest.exe %includeFlags% %libraryFlags%
+cl /D WIN -MD -FC -Zi -EHsc ..\code\main.cpp /Fetest.exe %includeFlags% %libraryFlags%
 popd
