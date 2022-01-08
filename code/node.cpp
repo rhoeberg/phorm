@@ -113,10 +113,12 @@ ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc dr
 			dataHandle = _nodeState->vec3s.Insert(v3);
 			break;
 		}
-                    
-                default: {
-                    NOT_IMPLEMENTED
-                }
+		case DATA_NONE: {
+			break;
+		}
+		default: {
+			NOT_IMPLEMENTED;
+		}
 	}
 
 	node.SetDataHandle(dataHandle);

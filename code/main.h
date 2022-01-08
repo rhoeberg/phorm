@@ -1,18 +1,18 @@
 #pragma once
 
 #define global static
-#define VIEWER_START_MAIN true
+/* #define VIEWER_START_MAIN true */
 // pc settings
-// #define SCREEN_WIDTH 1920
-// #define SCREEN_HEIGHT 1080
-// #define VIEWER_WIDTH 1920
-// #define VIEWER_HEIGHT 1080
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+#define VIEWER_WIDTH 1920
+#define VIEWER_HEIGHT 1080
 
 // macbook settings
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-#define VIEWER_WIDTH 800
-#define VIEWER_HEIGHT 600
+/* #define SCREEN_WIDTH 800 */
+/* #define SCREEN_HEIGHT 600 */
+/* #define VIEWER_WIDTH 800 */
+/* #define VIEWER_HEIGHT 600 */
 
 #include "types.h"
 
@@ -28,7 +28,7 @@ global bool imguiWantsMouse;
 global double deltaTime;
 global double lastFrame;
 global u64 frameCount;
-global GLFWSettings glfwSettings;
+global Settings settings;
 
 // #include "audio.h"
 #include "opengl.h"

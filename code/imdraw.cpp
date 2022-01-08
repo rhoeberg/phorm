@@ -160,7 +160,8 @@ void ImDrawInitialize()
 	/////////////////////////
 	// INITIALIZE FONT DRAWING
 	// FILE *file = fopen("c:/windows/fonts/consola.ttf", "rb");
-	FILE *file = fopen("assets/Consolas.ttf", "rb");
+	// FILE *file = fopen("assets/Consolas.ttf", "rb");
+	FILE *file = fopen("assets/liberation-mono/LiberationMono-Regular.ttf", "rb");
 	if(!file) {
 		printf("font file not found\n");
 	}

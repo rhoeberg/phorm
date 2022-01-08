@@ -70,10 +70,13 @@ struct WindowSettings
 {
 	i32 posX;
 	i32 posY;
+	i32 width;
+	i32 height;
 };
 
-struct GLFWSettings
+struct Settings
 {
+	bool viewerInMain;
 	WindowSettings mainWindow;
 	WindowSettings viewerWindow;
 };

@@ -105,9 +105,19 @@ void GetViewerWindowSize(int *width, int *height)
 	glfwGetWindowSize(_viewerWindow, width, height);
 }
 
+void GetViewerWindowPos(int *x, int *y)
+{
+	glfwGetWindowPos(_viewerWindow, x, y);
+}
+
 void GetWindowSize(int *width, int *height)
 {
 	glfwGetWindowSize(_win, width, height);
+}
+
+void GetWindowPos(int *x, int *y)
+{
+	glfwGetWindowPos(_win, x, y);
 }
 
 void GetFramebufferSize(int *width, int *height)
@@ -138,6 +148,7 @@ void ResetTime()
 void SetWindowSettings(GLFWwindow *win, WindowSettings settings)
 {
 	glfwSetWindowPos(win, settings.posX, settings.posY);
+	glfwSetWindowSize(win, settings.width, settings.height);
 }
 
 GLFWwindow* initGlfw()
@@ -171,7 +182,8 @@ GLFWwindow* initGlfw()
     glfwSetMouseButtonCallback(_win, mouseButtonCallback);
     glfwSetScrollCallback(_win, MouseScrollCallback);
     glfwSetDropCallback(_win, dropCallback);
-    glfwSetWindowSizeCallback(_win, windowSizeCallback);
+    // glfwSetWindowSizeCallback(_win, windowSizeCallback);
+    glfwSetFramebufferSizeCallback(_win, windowSizeCallback);
     int vWidth, vHeight;
     glfwGetFramebufferSize(_win, &vWidth, &vHeight);
     printf("framebuffer size: %d %d\n", vWidth, vHeight);
@@ -181,7 +193,7 @@ GLFWwindow* initGlfw()
 
 	/////////////////////
 	// CREATE VIEWER WINDOW
-	if(VIEWER_START_MAIN)
+	// if(VIEWER_START_MAIN)
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     _viewerWindow = glfwCreateWindow(VIEWER_WIDTH, VIEWER_HEIGHT, "test", NULL, _win);

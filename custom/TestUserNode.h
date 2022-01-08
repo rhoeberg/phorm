@@ -27,5 +27,5 @@ ObjectHandle CreateTestUserNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 	testData.i = 123;
 	ObjectHandle extraHandle = myTestDataContainer->Insert(testData);
 
-	return AddNode("TestUserNode", DATA_NONE, op, drawFunc, params, inputs, extraHandle);
+	return AddNode(name.buffer, DATA_NONE, op, drawFunc, params, inputs, extraHandle);
 }

@@ -264,3 +264,52 @@ void LoadNodes()
 	// LoadObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
 }
+
+void SaveSettings()
+{
+	SaveFile saveFile = {};
+	saveFile.file = fopen("settings.vmsettings", "wb");
+
+	{
+		int width, height;
+		GetWindowSize(&width, &height);
+
+		settings.mainWindow.width = width;
+		settings.mainWindow.height = height;
+
+		int x, y;
+		GetWindowPos(&x, &y);
+		settings.mainWindow.posX = x;
+		settings.mainWindow.posY = y;
+	}
+
+	{
+		int width, height;
+		GetViewerWindowSize(&width, &height);
+
+		settings.viewerWindow.width = width;
+		settings.viewerWindow.height = height;
+
+		int x, y;
+		GetViewerWindowPos(&x, &y);
+		settings.viewerWindow.posX = x;
+		settings.viewerWindow.posY = y;
+	}
+
+	settings.viewerInMain = ViewerInMain();
+
+	fwrite(&settings, sizeof(settings), 1, saveFile.file);
+}
+
+bool LoadSettings()
+{
+	SaveFile saveFile = {};
+	saveFile.file = fopen("settings.vmsettings", "rb");
+	if(saveFile.file) {
+		if(fread(&settings, sizeof(Settings), 1, saveFile.file) > 0) {
+			return true;
+		}
+	}
+
+	return false;
+}

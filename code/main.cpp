@@ -5,7 +5,7 @@
 // #define GLEW_STATIC
 #include "GL/glew.h"
 
-#ifdef WINDOWS
+#ifdef WIN
 #define GLFW_DLL
 #define GLFW_EXPOSE_NATIVE_WGL
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -196,16 +196,28 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	// load viewer settings
-	SetViewerInMain(VIEWER_START_MAIN);
+	// load last settings
+	bool success = LoadSettings();
+	if(!success) {
+		// if no last settings load default settings
+		settings.mainWindow.posX = 100;
+		settings.mainWindow.posY = 100;
+		settings.mainWindow.width = 1920;
+		settings.mainWindow.height = 1080;
 
-	// load windows settings
-	glfwSettings.mainWindow.posX = 100;
-	glfwSettings.mainWindow.posY = 100;
-	glfwSettings.viewerWindow.posX = 2600;
-	glfwSettings.viewerWindow.posY = 100;
-	SetWindowSettings(_win, glfwSettings.mainWindow);
-	SetWindowSettings(_viewerWindow, glfwSettings.viewerWindow);
+		settings.viewerWindow.posX = 2600;
+		settings.viewerWindow.posY = 100;
+		settings.viewerWindow.width = 1920;
+		settings.viewerWindow.height = 1080;
+
+		settings.viewerInMain = true;
+	}
+	SetWindowSettings(_win, settings.mainWindow);
+	SetWindowSettings(_viewerWindow, settings.viewerWindow);
+
+	// load viewer settings
+	SetViewerInMain(settings.viewerInMain);
+
 
 
 	////////////
@@ -222,6 +234,10 @@ int main(int argc, char *argv[])
 	////////////
 	// DONE
 	////////////
+
+	// save last settings
+	SaveSettings();
+
     cleanup();
     return 0;
 }

@@ -56,9 +56,9 @@ void RenderViewerNode()
 				}
 				break;
 			}
-                        default: {
-                                NOT_IMPLEMENTED
-                        }
+			default: {
+				// TODO (rhoe) trying to show node type with no view 
+			}
 		}
 	}
 }
