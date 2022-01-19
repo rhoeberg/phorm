@@ -45,6 +45,7 @@ global Settings settings;
 #include "ObjectContainer.h"
 #include "glfw_wrapper.h"
 #include "opengl_wrapper.h"
+#include "GFXLayer.h"
 #include "Shader.h"
 #include "light.h"
 #include "node_parameter.h"

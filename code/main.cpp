@@ -11,6 +11,9 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #endif
 
+#ifdef VULKAN
+#define GLFW_INCLUDE_VULKAN
+#endif
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
@@ -73,6 +76,11 @@
 #include "data.cpp"
 #include "save.cpp"
 #include "debug.cpp"
+
+// GFX LAYER
+#ifdef VULKAN
+#include "VUlkanLayer.cpp"
+#endif
 
 // Compile custom user code
 #include "../custom/CustomCompile.h"
@@ -153,6 +161,9 @@ int main(int argc, char *argv[])
 	// INITIALIZATION
 	///////////
 	GLFWwindow *win = initGlfw();
+
+	// initialize GFX Backend
+	GFXLayerInit();
 
 	// initialize GUI
 	initializeGUI(win);
