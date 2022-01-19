@@ -1,8 +1,9 @@
-# PHORM
-Nodebased tool for generative and reactive visuals.
+# phorm
+Nodebased tool for generative and reactive visuals with a focus on live performances and VJ setups.
 
-### (under development, use at own risk)
+(currently under active development and not yet suitable for actual use)
 
+---
 ### Dependencies
 - PortAudio
 - glew
@@ -10,5 +11,6 @@ Nodebased tool for generative and reactive visuals.
 - tiny file dialogs
 - imgui
 
+---
 ### License
 phorm is licensed under the MIT License, see LICENSE.txt for more information
