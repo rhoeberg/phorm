@@ -1,7 +1,7 @@
-### CURRENTLY EARLY IN DEVELOPMENT USE AT OWN RISK
-
-### PHORM
+# PHORM
 Nodebased tool for generative and reactive visuals.
+
+### (under development, use at own risk)
 
 ### Dependencies
 - PortAudio
