@@ -11,4 +11,4 @@ Nodebased tool for generative and reactive visuals.
 - imgui
 
 ### License
-phorm is licensed under the MIT License, see LICENSE.txt for more information
+phorm is licensed under the zlib License, see LICENSE.txt for more information
