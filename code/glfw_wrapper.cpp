@@ -170,7 +170,7 @@ GLFWwindow* initGlfw()
 
 	/////////////////////
 	// CREATE MAIN WINDOW
-    _win = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "test", NULL, NULL);
+    _win = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, PROJ_NAME, NULL, NULL);
     if(!_win) {
         glfwTerminate();
         exit(EXIT_FAILURE);

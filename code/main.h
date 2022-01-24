@@ -3,6 +3,9 @@
 #define global static
 /* #define VIEWER_START_MAIN true */
 // pc settings
+
+#define PROJ_NAME "phorm"
+
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 #define VIEWER_WIDTH 1920
