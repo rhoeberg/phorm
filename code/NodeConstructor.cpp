@@ -60,6 +60,7 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("mix texture"), MixTextureOperation, CreateMixTexture);
 	AddNodeConstructor(String("load texture"), LoadTextureOperation, CreateLoadTexture);
 	AddNodeConstructor(String("video"), VideoOperation, CreateVideoNode);
+	AddNodeConstructor(String("scene"), SceneNodeOp, CreateSceneNode);
 
 	/////////////////
 	// MESH NODES

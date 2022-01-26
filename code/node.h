@@ -72,10 +72,12 @@ struct NodeInput {
 struct Node;
 typedef void (*NodeOp)(Node *self);
 typedef void (*NodeDrawFunc)(Node *self);
+typedef void (*NodeCustomEditor)(Node *self);
 
 struct Node {
 	NodeOp op;
 	NodeDrawFunc drawFunc;
+	NodeCustomEditor editor;
 	DataType type; //defines the return of the node operation
 	Rect rect;
 	bool changed;

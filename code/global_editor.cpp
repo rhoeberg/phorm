@@ -78,37 +78,17 @@ void ToggleViewerMode()
 	}
 }
 
-void UpdateGlobalEditor()
+void UpdateInspector()
 {
-	// SEND TO RENDER
-	// TOOD (rhoe) this should probably be moved to viewer
-	switch(_globalEditorState->viewerMode) {
-		case VIEW_OBJECT: {
-			RenderViewerNode();
-			break;
-		}
-		case VIEW_SCENE: {
-			RenderScene();
-			break;
-		}
-	}
-
-	// GLOBAL HOTKEYS
-	if(!_globalEditorState->promptActive && singleKeyPress(GLFW_KEY_V))
-		_globalEditorState->nodeEditorOn = !_globalEditorState->nodeEditorOn;
-
-	if(_globalEditorState->nodeEditorOn) {
-		UpdateNodeEditor();
-	}
-	else {
-		UpdateSceneEditor();
-	}
-
 	ImGui::Begin("Inspector");
 	Node *node = GetNode(_globalEditorState->inspectorObject);
 	if(node) {
 
 		ImGui::Text("%s", node->name);
+
+		if(node->editor != NULL) {
+			node->editor(node);
+		}
 
 		ImGui::Text("node changed: %s", (node->changed) ? "true" : "false");
 
@@ -192,6 +172,35 @@ void UpdateGlobalEditor()
 		}
 	}
 	ImGui::End();
+}
+
+void UpdateGlobalEditor()
+{
+	// SEND TO RENDER
+	// TOOD (rhoe) this should probably be moved to viewer
+	switch(_globalEditorState->viewerMode) {
+		case VIEW_OBJECT: {
+			RenderViewerNode();
+			break;
+		}
+		case VIEW_SCENE: {
+			RenderScene();
+			break;
+		}
+	}
+
+	// GLOBAL HOTKEYS
+	if(!_globalEditorState->promptActive && singleKeyPress(GLFW_KEY_V))
+		_globalEditorState->nodeEditorOn = !_globalEditorState->nodeEditorOn;
+
+	if(_globalEditorState->nodeEditorOn) {
+		UpdateNodeEditor();
+	}
+	else {
+		UpdateSceneEditor();
+	}
+
+	UpdateInspector();
 }
 
 void CleanupGlobalEditor()

@@ -68,6 +68,7 @@ ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc dr
 	node.inputs = inputs;
 	node.op = op;
 	node.drawFunc = drawFunc;
+	node.editor = NULL;
 	node.extraHandle = extraHandle;
 	node.labelHandle = AddString(name);
 	ObjectHandle dataHandle = {};
