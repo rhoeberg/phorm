@@ -34,6 +34,7 @@ struct NodeState {
 	ObjectContainer<RenderObject> renderObjects;
 	ObjectContainer<RenderObjectGroup> renderObjectGroups;
 	ObjectContainer<double> doubles;
+	ObjectContainer<int> ints;
 	ObjectContainer<vec3> vec3s;
 	ObjectContainer<vec4> vec4s;
 	// HashMap<ObjectHandle> labels;
@@ -51,6 +52,7 @@ ObjectContainer<Node>* GetNodes();
 ObjectContainer<Texture>* GetTextures();
 ObjectContainer<Mesh>* GetMeshes();
 ObjectContainer<double>* GetDoubles();
+ObjectContainer<int>* GetInts();
 ObjectContainer<RenderObject>* GetRenderObjects();
 ObjectContainer<RenderObjectGroup>* GetRenderObjectGroups();
 ObjectContainer<vec3>* GetVec3s();

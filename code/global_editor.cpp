@@ -125,6 +125,26 @@ void UpdateGlobalEditor()
 			// node->changed = true;
 		}
 
+		ImGui::Spacing();
+
+		ImGui::Text("output");
+		switch(node->type) {
+			case DATA_INT: {
+				ImGui::Text("value: %d", *GetInts()->Get(node->GetDataLast()));
+				break;
+			}
+			case DATA_DOUBLE: {
+				ImGui::Text("value: %f", *GetDoubles()->Get(node->GetDataLast()));
+				break;
+			}
+			default: {
+				ImGui::Text("no value inspector implemented for output type");
+				break;
+			}
+		}
+
+		ImGui::Spacing();
+
 		for(int i = 0; i < node->params.Count(); i++) {
 
 			NodeParameter *param = &node->params[i];
@@ -137,6 +157,7 @@ void UpdateGlobalEditor()
 
 			sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNode.id);
 
+			ImGui::Text("params");
 			switch(node->params[i].type) {
 				case DATA_INT: {
 					if(ImGui::InputInt(buffer, &param->i)) {
@@ -164,9 +185,9 @@ void UpdateGlobalEditor()
 					}
 					break;
 				}
-                                    default: {
-                                        NOT_IMPLEMENTED
-                                    }
+				default: {
+					NOT_IMPLEMENTED
+				}
 			}
 		}
 	}

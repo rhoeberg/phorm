@@ -44,6 +44,13 @@
 // #include "portaudio.h"
 // #include "stb_vorbis.c"
 
+#ifdef WIN
+#define __WINDOWS_MM__
+#endif
+
+#include "rtmidi/RtMidi.h"
+#include "rtmidi/RtMidi.cpp"
+
 #define PL_MPEG_IMPLEMENTATION
 #include "pl_mpeg.h"
 
@@ -52,7 +59,7 @@
 #include "ImDraw3D.cpp"
 #include "opengl.cpp"
 // #include "audio.cpp"
-#include "util.cpp"
+#include "phorm_util.cpp"
 #include "gui.cpp"
 #include "glfw_wrapper.cpp"
 #include "simplexnoise1234.cpp"
@@ -64,6 +71,7 @@
 #include "hashmap.cpp"
 #include "ObjectContainer.cpp"
 #include "NodeConstructor.cpp"
+#include "midi.cpp"
 #include "node_parameter.cpp"
 #include "node.cpp"
 #include "node_editor.cpp"
@@ -101,6 +109,11 @@ void UpdateLoop()
 	// INPUT
 	///////////////
 	glfwPollEvents();
+
+	//////////////
+	// MIDI
+	//////////////
+	MidiReadMessages();
 	
 	///////////////
 	// GUI
@@ -157,6 +170,7 @@ void UpdateLoop()
 
 int main(int argc, char *argv[])
 {
+
 	///////////
 	// INITIALIZATION
 	///////////
@@ -179,6 +193,7 @@ int main(int argc, char *argv[])
     //     	cleanup();
     //     	exit(1);
     //     }
+	InitializeMidi();
 
 	// Initialize Application
 	InitializeData();
@@ -252,6 +267,7 @@ int main(int argc, char *argv[])
 	// save last settings
 	SaveSettings();
 
+	// TODO (rhoe) move this to midi system
     cleanup();
     return 0;
 }
@@ -262,6 +278,7 @@ void cleanup()
     // Pa_Terminate();
     imDrawClean();
     glfwTerminate();
+	CleanupMidi();
 	CleanupNodes();
 	CleanupCustom();
 	CleanupNodeEditor();

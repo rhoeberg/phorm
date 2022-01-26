@@ -59,16 +59,9 @@ bool Node::Changed()
 
 ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
 {
-	// TODO (rhoe) since similar node type dont change name we could
-	//             store the names in a string array and just refer to the handle
 	Node node = {};
 	sprintf(node.name, "%s", name);
-	int winWidth, winHeight;
-	GetWindowSize(&winWidth, &winHeight);
-	// node.rect.pos = vec2(winWidth / 2, winHeight / 2);
 	node.rect.pos = GetNextNewNodePos();
-	// node.rect.w = NODE_BASE_WIDTH;
-	// node.rect.h = NODE_HEIGHT;
 	node.changed = true;
 	node.type = type;
 	node.params = params;
@@ -76,9 +69,8 @@ ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc dr
 	node.op = op;
 	node.drawFunc = drawFunc;
 	node.extraHandle = extraHandle;
-	node.labelHandle = AddString("new object");
+	node.labelHandle = AddString(name);
 	ObjectHandle dataHandle = {};
-	// dataHandle.type = type;
 
 	switch(node.type) {
 		case DATA_TEXTURE: {
@@ -106,6 +98,11 @@ ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc dr
 		case DATA_DOUBLE: {
 			double value = 0.0;
 			dataHandle = _nodeState->doubles.Insert(value);
+			break;
+		}
+		case DATA_INT: {
+			int value = 0;
+			dataHandle = GetInts()->Insert(value);
 			break;
 		}
 		case DATA_VEC3: {

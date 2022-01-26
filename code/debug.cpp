@@ -37,6 +37,9 @@ void UpdateDebug()
 	ImGui::Spacing();
 	ImGui::InputFloat2("mouse", glm::value_ptr(mouse));
 
+	ImGui::Spacing();
+	ImGui::Text("midi (channel 0, cc 1):%d", _midiState->channels[0].cc[1]);
+
     ImGui::End();
 
 }

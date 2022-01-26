@@ -29,6 +29,8 @@ void BaseNodeDrawFunction(Node *node);
 #include "nodes/MulNode.h"
 #include "nodes/DoubleNode.h"
 #include "nodes/AddNode.h"
+#include "nodes/IntToDouble.h"
+#include "nodes/MidiCCNode.h"
 /* #include "LabelNode.h" */
 
 typedef ObjectHandle (*NodeCreateFunc)(String name, NodeOp op, NodeDrawFunc drawFunc);

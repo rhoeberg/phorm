@@ -10,6 +10,7 @@ Nodebased tool for generative and reactive visuals with a focus on live performa
 - glm
 - tiny file dialogs
 - imgui
+- stb libs
 
 ---
 ### License

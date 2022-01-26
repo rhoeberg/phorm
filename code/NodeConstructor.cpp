@@ -80,6 +80,12 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("mul"), MulOperation, DrawMulNode, CreateMulNode);
 	AddNodeConstructor(String("add"), AddOperation, DrawAddNode, CreateAddNode);
 	AddNodeConstructor(String("time"), TimeOperation, DrawTimeNode, CreateTimeNode);
+	AddNodeConstructor(String("i2d"), I2DOp, CreateI2DNode);
+
+	/////////////////
+	// INT NODES
+	/////////////////
+	AddNodeConstructor(String("midicc"), MidiCCOperation, CreateMidiCCNode);
 
 	/////////////////
 	// RENDEROBJECT NODES

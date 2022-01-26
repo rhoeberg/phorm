@@ -35,7 +35,7 @@ global Settings settings;
 
 // #include "audio.h"
 #include "opengl.h"
-#include "util.h"
+#include "phorm_util.h"
 #include "simplexnoise1234.h"
 #include "math.h"
 /* #include "render.h" */
@@ -51,6 +51,7 @@ global Settings settings;
 #include "GFXLayer.h"
 #include "Shader.h"
 #include "light.h"
+#include "midi.h"
 #include "node_parameter.h"
 #include "node.h"
 #include "data.h"

@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 char* readFile(const char* fileName)
 {
     char* result = 0;
@@ -20,3 +22,20 @@ char* readFile(const char* fileName)
     return result;
 }
 
+void DebugLog(char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	printf(format, args);
+	// vsprintf(logs[logCount].text, format, args);
+	va_end(args);
+}
+
+void ErrorLog(char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	printf(format, args);
+	// vsprintf(logs[logCount].text, format, args);
+	va_end(args);
+}
