@@ -29,38 +29,105 @@ vec2 GetNextNewNodePos()
 	return _nodeConstructorState->nextPos;
 }
 
-void ConstructNode(String name, NodeConstructor *nodeConstructor)
+void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 {
-	nodeConstructor->createFunc(name, nodeConstructor->op, nodeConstructor->drawFunc);
+	node->op = nodeConstructor->op;
+	node->drawFunc = BaseNodeDrawFunc;
+
+	ObjectHandle dataHandle = {};
+	switch(node->type) {
+		case DATA_TEXTURE: {
+			dataHandle = _nodeState->textures.InsertNew();
+			break;
+		}
+		case DATA_MESH: {
+			Mesh mesh = {};
+			dataHandle = _nodeState->meshes.Insert(mesh);
+			break;
+		}
+		case DATA_RENDEROBJECT: {
+			dataHandle = AddNewRenderObject();
+			break;
+		}
+		case DATA_RENDEROBJECT_GROUP: {
+			dataHandle = _nodeState->renderObjectGroups.Insert(RenderObjectGroup());
+			break;
+		}
+		case DATA_POINTLIGHT: {
+			PointLight light = {};
+			dataHandle = _nodeState->pointLights.Insert(light);
+			break;
+		}
+		case DATA_DOUBLE: {
+			double value = 0.0;
+			dataHandle = _nodeState->doubles.Insert(value);
+			break;
+		}
+		case DATA_INT: {
+			int value = 0;
+			dataHandle = GetInts()->Insert(value);
+			break;
+		}
+		case DATA_VEC3: {
+			vec3 v3 = {};
+			dataHandle = _nodeState->vec3s.Insert(v3);
+			break;
+		}
+		case DATA_NONE: {
+			break;
+		}
+		default: {
+			NOT_IMPLEMENTED;
+		}
+	}
+	node->SetDataHandle(dataHandle);
+
+	if(nodeConstructor->setupFunc != NULL) 
+		nodeConstructor->setupFunc(node);
 }
 
-void AddNodeConstructor(String name, NodeOp op, NodeDrawFunc drawFunc, NodeCreateFunc createFunc)
+void ConstructNode(String name, NodeConstructor *nodeConstructor)
+{
+	// nodeConstructor->createFunc(name, nodeConstructor->op, nodeConstructor->drawFunc);
+
+	printf("construct node\n");
+	ObjectHandle handle = nodeConstructor->createFunc();
+	Node *node = GetNode(handle);
+	sprintf(node->name, "%s", name.buffer);
+	node->labelHandle = AddString(name.buffer);
+
+	SetupNode(node, nodeConstructor);
+}
+
+// void AddNodeConstructor(String name, NodeOp op, NodeDrawFunc drawFunc, NodeCreateFunc createFunc)
+void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeSetupFunc setupFunc = NULL)
 {
 	NodeConstructorState *state = _nodeConstructorState;
 
 	state->names.Insert(name);
 	NodeConstructor constructor = {};
 	constructor.op = op;
-	constructor.drawFunc = drawFunc;
+	// constructor.drawFunc = drawFunc;
 	constructor.createFunc = createFunc;
+	constructor.setupFunc = setupFunc;
 	state->constructors.Insert(name, constructor);
 }
 
-void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc)
-{
-	AddNodeConstructor(name, op, BaseNodeDrawFunction, createFunc);
-}
+// void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc)
+// {
+	// AddNodeConstructor(name, op, BaseNodeDrawFunction, createFunc);
+// }
 
 void SetupNodeConstructors()
 {
 	/////////////////
 	// TEXTURE NODES
 	/////////////////
+	AddNodeConstructor(String("load texture"), LoadTextureOp, LoadTextureCreate);
 	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture);
 	AddNodeConstructor(String("mix texture"), MixTextureOperation, CreateMixTexture);
-	AddNodeConstructor(String("load texture"), LoadTextureOperation, CreateLoadTexture);
-	AddNodeConstructor(String("video"), VideoOperation, CreateVideoNode);
-	AddNodeConstructor(String("scene"), SceneNodeOp, CreateSceneNode);
+	AddNodeConstructor(String("video"), VideoOperation, CreateVideoNode, SetupVideoNode);
+	// AddNodeConstructor(String("scene"), SceneNodeOp, CreateSceneNode);
 
 	/////////////////
 	// MESH NODES
@@ -77,10 +144,10 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("sin"), SinOperation, CreateSinNode);
 	AddNodeConstructor(String("sinwave"), SinWaveOperation, CreateSinWaveNode);
 	AddNodeConstructor(String("sawwave"), SawWaveOperation, CreateSawWaveNode);
-	AddNodeConstructor(String("histogram"), HistogramOperation, DrawHistogramNode, CreateHistogramNode);
-	AddNodeConstructor(String("mul"), MulOperation, DrawMulNode, CreateMulNode);
-	AddNodeConstructor(String("add"), AddOperation, DrawAddNode, CreateAddNode);
-	AddNodeConstructor(String("time"), TimeOperation, DrawTimeNode, CreateTimeNode);
+	AddNodeConstructor(String("histogram"), HistogramOperation, CreateHistogramNode, SetupHistogramNode);
+	AddNodeConstructor(String("mul"), MulOperation, CreateMulNode, SetupMulNode);
+	AddNodeConstructor(String("add"), AddOperation, CreateAddNode, SetupAddNode);
+	AddNodeConstructor(String("time"), TimeOperation, CreateTimeNode, SetupTimeNode);
 	AddNodeConstructor(String("i2d"), I2DOp, CreateI2DNode);
 
 	/////////////////
@@ -141,7 +208,7 @@ void NamesBeginningWith(VMArray<String> *array, String typed)
 	// return results;
 }
 
-void BaseNodeDrawFunction(Node *node)
+void BaseNodeDrawFunc(Node *node)
 {
 	// Rect rect = GetNodeRect(handle);
 	node->rect.width = NODE_BASE_WIDTH;

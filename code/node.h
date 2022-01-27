@@ -18,18 +18,28 @@ typedef void (*NodeDrawFunc)(Node *self);
 typedef void (*NodeCustomEditor)(Node *self);
 
 struct Node {
+
+	// RUNTIME SETUP
 	NodeOp op;
 	NodeDrawFunc drawFunc;
 	NodeCustomEditor editor;
-	DataType type; //defines the return of the node operation
-	Rect rect;
 	bool changed;
+	bool initialized;
+
+	// PERSISTANT
+	// TODO (rhoe) perhaps this should go in seperate struct/array
+	DataType type; // data type of output
+	Rect rect;
 	char name[128];
-	FixedArray<NodeInput> inputs;
-	FixedArray<NodeParameter> params;
 	ObjectHandle extraHandle;
 	ObjectHandle labelHandle;
-	bool initialized;
+	FixedArray<NodeInput> inputs;
+	FixedArray<NodeParameter> params;
+
+	void SetupNode()
+	{
+
+	}
 
 	void AddInput(DataType type)
 	{
@@ -52,7 +62,8 @@ private:
 	ObjectHandle dataHandle;
 };
 
-ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle());
+/* ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle()); */
+ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs);
 
 bool NodeExists(ObjectHandle handle);
 Node* GetNode(ObjectHandle handle);

@@ -8,7 +8,7 @@ void PointLightOperation(Node *self)
 	output->color = self->params[1].Vec3();
 }
 
-ObjectHandle CreatePointLightNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreatePointLightNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("pos", vec3(0, 0, 0)),
@@ -19,5 +19,5 @@ ObjectHandle CreatePointLightNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, DATA_POINTLIGHT, op, drawFunc, params, inputs);
+	return AddNode(DATA_POINTLIGHT, params, inputs);
 }

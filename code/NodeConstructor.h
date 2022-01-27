@@ -7,16 +7,17 @@ ideas for new nodes:
 
 #pragma once
 
-void BaseNodeDrawFunction(Node *node);
+/* void BaseNodeDrawFunction(Node *node); */
+void BaseNodeDrawFunc(Node *node);
 
-#include "nodes/BlurNode.h"
 #include "nodes/LoadTextureNode.h"
+#include "nodes/BlurNode.h"
 #include "nodes/MixTextureNode.h"
-#include "nodes/SceneNode.h"
+#include "nodes/VideoNode.h"
+/* #include "nodes/SceneNode.h" */
 #include "nodes/CubeNode.h"
 #include "nodes/GridNode.h"
 #include "nodes/MeshNoise.h"
-#include "nodes/VideoNode.h"
 #include "nodes/renderobject_node.h"
 #include "nodes/CombineObjectsNode.h"
 #include "nodes/MirrorNode.h"
@@ -32,19 +33,22 @@ void BaseNodeDrawFunction(Node *node);
 #include "nodes/AddNode.h"
 #include "nodes/IntToDouble.h"
 #include "nodes/MidiCCNode.h"
-/* #include "LabelNode.h" */
 
-typedef ObjectHandle (*NodeCreateFunc)(String name, NodeOp op, NodeDrawFunc drawFunc);
+/* typedef ObjectHandle (*NodeCreateFunc)(String name, NodeOp op, NodeDrawFunc drawFunc); */
+typedef ObjectHandle (*NodeCreateFunc)();
+typedef void (*NodeSetupFunc)(Node *self);
 
 struct NodeConstructor
 {
 	NodeOp op;
-	NodeDrawFunc drawFunc;
-	NodeCreateFunc createFunc;
-	vec2 pos;
+	/* NodeDrawFunc drawFunc; */
 
-	FixedArray<NodeParameter> params;
-	FixedArray<NodeInput> inputs;
+	NodeSetupFunc setupFunc;
+	NodeCreateFunc createFunc;
+
+	/* vec2 pos; */
+	/* FixedArray<NodeParameter> params; */
+	/* FixedArray<NodeInput> inputs; */
 };
 
 struct NodeConstructorState

@@ -42,7 +42,7 @@ void DrawSinWaveNode(Node *self)
 	ImDrawText(namePos, self->name);
 }
 
-ObjectHandle CreateSinWaveNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateSinWaveNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("rate", 1.0),
@@ -51,5 +51,5 @@ ObjectHandle CreateSinWaveNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, DATA_DOUBLE, op, drawFunc, params, inputs);
+	return AddNode(DATA_DOUBLE, params, inputs);
 }

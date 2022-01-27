@@ -12,7 +12,11 @@ void CreateViewerTextureRenderObject()
 	//             creating a new one
 	renderObject->VAOHandle = CreateSpriteVAO();
 	renderObject->hasTexture = true;
-	renderObject->indicesCount = 12;
+	renderObject->indicesCount = 6;
+	renderObject->pos = vec3(0, 0, 0);
+	renderObject->rot = vec3(0, 0, 0);
+	renderObject->scale = vec3(1, 1, 1);
+	renderObject->color = vec4(1, 1, 1, 1);
 
 	Pixel white = Pixel(255, 255, 255, 255);
 	glGenTextures(1, &_viewerRenderState.defaultTexture);

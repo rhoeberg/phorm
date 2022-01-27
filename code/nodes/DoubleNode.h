@@ -9,7 +9,7 @@ void DoubleOperation(Node *self)
 	*output = self->params[0].Double();
 }
 
-ObjectHandle CreateDoubleNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateDoubleNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("value", 0.0),
@@ -18,5 +18,5 @@ ObjectHandle CreateDoubleNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, DATA_DOUBLE, op, drawFunc, params, inputs);
+	return AddNode(DATA_DOUBLE, params, inputs);
 }

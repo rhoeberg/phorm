@@ -36,7 +36,7 @@ void RenderObjectOperation(Node *self)
 	output->indicesCount = inputMesh->indices.Count();
 }
 
-ObjectHandle CreateRenderObjectNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateRenderObjectNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("pos", vec3(0, 0, 0)),
@@ -50,5 +50,5 @@ ObjectHandle CreateRenderObjectNode(String name, NodeOp op, NodeDrawFunc drawFun
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode(name.buffer, DATA_RENDEROBJECT, op, drawFunc, params, inputs);
+	return AddNode(DATA_RENDEROBJECT, params, inputs);
 }

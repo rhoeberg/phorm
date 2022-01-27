@@ -6,7 +6,7 @@ void I2DOp(Node *self)
 	*out = (double)*GetInts()->Get(self->inputs[0]);
 }
 
-ObjectHandle CreateI2DNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateI2DNode()
 {
 	FixedArray<NodeParameter> params = {
 	};
@@ -15,5 +15,5 @@ ObjectHandle CreateI2DNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 		NodeInput(DATA_INT),
 	};
 
-	return AddNode(name.buffer, DATA_DOUBLE, op, drawFunc, params, inputs);
+	return AddNode(DATA_DOUBLE, params, inputs);
 }

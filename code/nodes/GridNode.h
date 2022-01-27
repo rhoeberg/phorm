@@ -93,7 +93,7 @@ void GridOperation(Node *self)
 	/* } */
 }
 
-ObjectHandle CreateGridNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateGridNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("width", 100),
@@ -103,5 +103,5 @@ ObjectHandle CreateGridNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, DATA_MESH, op, drawFunc, params, inputs);
+	return AddNode(DATA_MESH, params, inputs);
 }

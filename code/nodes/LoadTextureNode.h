@@ -1,6 +1,6 @@
 #pragma once
 
-void LoadTextureOperation(Node *self)
+void LoadTextureOp(Node *self)
 {
 	int width;
 	int height;
@@ -16,8 +16,24 @@ void LoadTextureOperation(Node *self)
 	}
 }
 
-ObjectHandle CreateLoadTexture(String name, NodeOp op, NodeDrawFunc drawFunc)
+/* // this needs to happen after node has been somehow created */
+/* // as new or loaded */
+/* void LoadTextureSetup(Node *self) */
+/* { */
+/* 	// setup OP */
+/* 	// setup DrawFunc */
+/* 	// setup edit func */
+/* 	// create data and add handles */
+
+/* 	self->op = LoadTextureOperation; */
+/* 	self->drawFunc = BaseNodeDrawFunc; */
+/* 	self->SetDataHandle(_nodeState->textures.InsertNew()); */
+/* } */
+
+/* ObjectHandle LoadTextureCreate(String name, NodeOp op, NodeDrawFunc drawFunc) */
+ObjectHandle LoadTextureCreate()
 {
+	printf("loadtexture create\n");
 	FixedArray<NodeParameter> params = {
 		NodeParameter("path", ""),
 	};
@@ -26,5 +42,5 @@ ObjectHandle CreateLoadTexture(String name, NodeOp op, NodeDrawFunc drawFunc)
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode(name.buffer, DATA_TEXTURE, op, drawFunc, params, inputs);
+	return AddNode(DATA_TEXTURE, params, inputs);
 }

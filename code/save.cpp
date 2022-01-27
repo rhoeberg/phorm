@@ -2,6 +2,27 @@ struct SaveFile {
 	FILE *file;
 };
 
+// void SaveNode(Node *node, SaveFile *saveFile)
+// {
+// 	fwrite(&node->type, sizeof(DataType), 1, saveFile->file);
+// 	fwrite(&node->rect, sizeof(Rect), 1, saveFile->file);
+// 	fwrite(&node->name, sizeof(node->name), 1, saveFile->file);
+// 	fwrite(&node->extraHandle, sizeof(ObjectHandle), 1, saveFile->file);
+// 	fwrite(&node->labelHandle, sizeof(ObjectHandle), 1, saveFile->file);
+// 	fwrite(&node->inputs, sizeof(node->inputs), 1, saveFile->file);
+// 	fwrite(&node->params, sizeof(node->params), 1, saveFile->file);
+// }
+
+// void SaveNodes(SaveFile *saveFile)
+// {
+// 	for(i32 i = 0; i < Nodes()->Count(); i++) {
+		
+// 	}
+// }
+
+// void LoadNode(Node *node
+
+
 template <typename T>
 void SaveVMArray(VMArray<T> *array, SaveFile *saveFile)
 {
@@ -111,12 +132,12 @@ void SaveNodes()
 
 	//////////////
 	// SAVE DATA
-	SaveI32(_nodeState->textures.Count(), &saveFile);
-	SaveI32(_nodeState->meshes.Count(), &saveFile);
-	SaveI32(_nodeState->renderObjects.Count(), &saveFile);
-	SaveI32(_nodeState->renderObjectGroups.Count(), &saveFile);
-	SaveI32(_nodeState->doubles.Count(), &saveFile);
-	SaveI32(_nodeState->videoNodes.Count(), &saveFile);
+	// SaveI32(_nodeState->textures.Count(), &saveFile);
+	// SaveI32(_nodeState->meshes.Count(), &saveFile);
+	// SaveI32(_nodeState->renderObjects.Count(), &saveFile);
+	// SaveI32(_nodeState->renderObjectGroups.Count(), &saveFile);
+	// SaveI32(_nodeState->doubles.Count(), &saveFile);
+	// SaveI32(_nodeState->videoNodes.Count(), &saveFile);
 	// SaveI32(_nodeState->labelNodes.Count(), &saveFile);
 
 	//strings
@@ -126,7 +147,6 @@ void SaveNodes()
 		SaveBool(_nodeState->strings.isFree[i], &saveFile);
 		SaveU32(_nodeState->strings.slotID[i], &saveFile);
 	}
-
 
 	//////////////
 	// SAVE SCENES
@@ -159,8 +179,10 @@ void LoadNodes()
 			String name = String(node->name);
 			NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(name);
 			if(nodeConstructor) {
-				node->op = nodeConstructor->op;
-				node->drawFunc = nodeConstructor->drawFunc;
+				SetupNode(node, nodeConstructor);
+				// nodeConstructor->setupFunc(node);
+				// node->op = nodeConstructor->op;
+				// node->drawFunc = nodeConstructor->drawFunc;
 			}
 		}
 	}
@@ -176,66 +198,66 @@ void LoadNodes()
 	}
 
 	// load textures
-	{
-		_nodeState->textures.Clear();
-		int count = LoadI32(&saveFile);
-		for(int i = 0; i < count; i++) {
-			_nodeState->textures.InsertNew();
-		}
-	}
+	// {
+	// 	_nodeState->textures.Clear();
+	// 	int count = LoadI32(&saveFile);
+	// 	for(int i = 0; i < count; i++) {
+	// 		_nodeState->textures.InsertNew();
+	// 	}
+	// }
 
-	// load meshes
-	{
-		_nodeState->meshes.Clear();
-		int count = LoadI32(&saveFile);
-		for(int i = 0; i < count; i++) {
-			Mesh mesh = {};
-			_nodeState->meshes.Insert(mesh);
-		}
-	}
+	// // load meshes
+	// {
+	// 	_nodeState->meshes.Clear();
+	// 	int count = LoadI32(&saveFile);
+	// 	for(int i = 0; i < count; i++) {
+	// 		Mesh mesh = {};
+	// 		_nodeState->meshes.Insert(mesh);
+	// 	}
+	// }
 
-	// load renderobjects
-	{
-		_nodeState->renderObjects.Clear();
+	// // load renderobjects
+	// {
+	// 	_nodeState->renderObjects.Clear();
 
-		// we need to re-add the base texture object for the viewer
-		// after clearing the rendereobjects array
-		// _viewerRenderState.baseTextureObject = AddNewRenderObject();
-		CreateViewerTextureRenderObject();
+	// 	// we need to re-add the base texture object for the viewer
+	// 	// after clearing the rendereobjects array
+	// 	// _viewerRenderState.baseTextureObject = AddNewRenderObject();
+	// 	CreateViewerTextureRenderObject();
 
-		int count = LoadI32(&saveFile);
-		for(int i = 0; i < count; i++) {
-			AddNewRenderObject();
-		}
-	}
+	// 	int count = LoadI32(&saveFile);
+	// 	for(int i = 0; i < count; i++) {
+	// 		AddNewRenderObject();
+	// 	}
+	// }
 
-	// load renderobject groups
-	{
-		_nodeState->renderObjectGroups.Clear();
-		int count = LoadI32(&saveFile);
-		for(int i = 0; i < count; i++) {
-			_nodeState->renderObjectGroups.Insert(RenderObjectGroup());
-		}
-	}
+	// // load renderobject groups
+	// {
+	// 	_nodeState->renderObjectGroups.Clear();
+	// 	int count = LoadI32(&saveFile);
+	// 	for(int i = 0; i < count; i++) {
+	// 		_nodeState->renderObjectGroups.Insert(RenderObjectGroup());
+	// 	}
+	// }
 
-	// load doubles
-	{
-		_nodeState->doubles.Clear();
-		int count = LoadI32(&saveFile);
-		for(int i = 0; i < count; i++) {
-			double value = 0.0;
-			_nodeState->doubles.Insert(value);
-		}
-	}
+	// // load doubles
+	// {
+	// 	_nodeState->doubles.Clear();
+	// 	int count = LoadI32(&saveFile);
+	// 	for(int i = 0; i < count; i++) {
+	// 		double value = 0.0;
+	// 		_nodeState->doubles.Insert(value);
+	// 	}
+	// }
 
-	// load video nodes
-	{
-		_nodeState->videoNodes.Clear();
-		int count = LoadI32(&saveFile);
-		for(int i = 0; i < count; i++) {
-			_nodeState->videoNodes.Insert(VideoNodeState());
-		}
-	}
+	// // load video nodes
+	// {
+	// 	_nodeState->videoNodes.Clear();
+	// 	int count = LoadI32(&saveFile);
+	// 	for(int i = 0; i < count; i++) {
+	// 		_nodeState->videoNodes.Insert(VideoNodeState());
+	// 	}
+	// }
 
 	// // load label nodes
 	// {

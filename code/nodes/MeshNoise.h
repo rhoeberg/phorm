@@ -48,7 +48,7 @@ void MeshNoiseOperation(Node *self)
 	}
 }
 
-ObjectHandle CreateMeshNoise(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateMeshNoise()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("amount", 1.0),
@@ -61,5 +61,5 @@ ObjectHandle CreateMeshNoise(String name, NodeOp op, NodeDrawFunc drawFunc)
 		NodeInput(DATA_MESH),
 	};
 
-	return AddNode(name.buffer, DATA_MESH, op, drawFunc, params, inputs);
+	return AddNode(DATA_MESH, params, inputs);
 }

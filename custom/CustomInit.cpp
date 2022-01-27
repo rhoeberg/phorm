@@ -8,8 +8,8 @@ void CustomInit()
 
 	/////////////
 	// You can allocate memory for custom data here
-	myTestDataContainer = (ObjectContainer<MyTestData>*)malloc(sizeof(ObjectContainer<MyTestData>));
-	new(myTestDataContainer) ObjectContainer<MyTestData>();
+	// myTestDataContainer = (ObjectContainer<MyTestData>*)malloc(sizeof(ObjectContainer<MyTestData>));
+	// new(myTestDataContainer) ObjectContainer<MyTestData>();
 
 
 	/////////////
@@ -39,15 +39,14 @@ void CustomInit()
 	//
 	//
 	// Example:
-	AddNodeConstructor(String("Test User Node"), TestUserOperation, CreateTestUserNode);
-	AddNodeConstructor(String("Tubes"), TubeOperation, CreateTubeNode);
+	// AddNodeConstructor(String("Test User Node"), TestUserOperation, CreateTestUserNode);
+	// AddNodeConstructor(String("Tubes"), TubeOperation, CreateTubeNode);
 
 }
 
 void CleanupCustom()
 {
-	myTestDataContainer->Free();
-	free(myTestDataContainer);
-
-	myTubes.Free();
+	// myTestDataContainer->Free();
+	// free(myTestDataContainer);
+	// myTubes.Free();
 }

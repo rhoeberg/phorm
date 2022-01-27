@@ -11,7 +11,7 @@ void Vec3NodeOperation(Node *self)
 	output->z = self->params[2].Double();
 }
 
-ObjectHandle CreateVec3Node(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateVec3Node()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("x", 0.0),
@@ -22,5 +22,5 @@ ObjectHandle CreateVec3Node(String name, NodeOp op, NodeDrawFunc drawFunc)
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, DATA_VEC3, op, drawFunc, params, inputs);
+	return AddNode(DATA_VEC3, params, inputs);
 }

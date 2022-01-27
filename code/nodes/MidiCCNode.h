@@ -11,7 +11,7 @@ void MidiCCOperation(Node *self)
 	self->changed = true;
 }
 
-ObjectHandle CreateMidiCCNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateMidiCCNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("channel", 0),
@@ -21,5 +21,5 @@ ObjectHandle CreateMidiCCNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 	FixedArray<NodeInput> inputs = {
 	};
 	
-	return AddNode(name.buffer, DATA_INT, op, drawFunc, params, inputs);
+	return AddNode(DATA_INT, params, inputs);
 }

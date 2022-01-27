@@ -42,7 +42,7 @@ void DrawSawWaveNode(Node *self)
 	ImDrawText(namePos, self->name);
 }
 
-ObjectHandle CreateSawWaveNode(String name, NodeOp op, NodeDrawFunc drawFunc)
+ObjectHandle CreateSawWaveNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("rate", 1.0),
@@ -51,5 +51,5 @@ ObjectHandle CreateSawWaveNode(String name, NodeOp op, NodeDrawFunc drawFunc)
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(name.buffer, DATA_DOUBLE, op, drawFunc, params, inputs);
+	return AddNode(DATA_DOUBLE, params, inputs);
 }
