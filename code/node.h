@@ -62,7 +62,6 @@ private:
 	ObjectHandle dataHandle;
 };
 
-/* ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle = ObjectHandle()); */
 ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs);
 
 bool NodeExists(ObjectHandle handle);

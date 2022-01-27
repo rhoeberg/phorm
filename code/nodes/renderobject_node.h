@@ -13,7 +13,7 @@ void RenderObjectOperation(Node *self)
 	Texture *inputTexture = GetTextures()->Get(self->inputs[1]);
 	if(inputTexture) {
 		glBindTexture(GL_TEXTURE_2D, output->textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, inputTexture->pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, inputTexture->width, inputTexture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, inputTexture->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		output->hasTexture = true;

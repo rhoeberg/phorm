@@ -5,13 +5,15 @@ void LoadTextureOp(Node *self)
 	int width;
 	int height;
 	int nrChannels;
-	unsigned char *data = stbi_load("assets/pica.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+	/* unsigned char *data = stbi_load("assets/pica.png", &width, &height, &nrChannels, STBI_rgb_alpha); */
+	unsigned char *data = stbi_load("assets/picahigh.jpg", &width, &height, &nrChannels, STBI_rgb_alpha);
 	if(data) {
 		Texture *output = GetTextures()->Get(self->GetDataLast());
+		output->Create(width, height);
 		printf("width:%d\n", width);
 		printf("height:%d\n", height);
 		printf("nrChannels:%d\n", nrChannels);
-		memcpy(output->pixels, data, sizeof(output->pixels));
+		memcpy(output->pixels, data, sizeof(Pixel) * output->width * output->height);
 		free(data);
 	}
 }

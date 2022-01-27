@@ -14,7 +14,8 @@ void BlurOperation(Node *self)
 		return;
 	}
 
-	/* Texture *output = GetTexture(self->GetDataLast()); */
+
+	output->Create(inputTexture->width, inputTexture->height);
 
 	// OPERATION
 	// int kernel[] = { 1, 2, 1 };

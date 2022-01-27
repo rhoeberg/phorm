@@ -58,7 +58,7 @@ void AddTextureToRenderQueue(ObjectHandle handle)
 	if(texture) {
 		RenderObject *renderObject = GetRenderObjects()->Get(_viewerRenderState.baseTextureObject);
 		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);
 

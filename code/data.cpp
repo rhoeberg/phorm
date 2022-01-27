@@ -118,3 +118,13 @@ RenderObject CreateRenderObject()
 
 	return result;
 }
+
+//////////////////
+// CLEANUP
+/////////////////
+void CleanupData()
+{
+	for(i32 i = 0; i < _nodeState->textures.Count(); i++) {
+		free(_nodeState->textures.GetAt(i)->pixels);
+	}
+}

@@ -284,5 +284,6 @@ void cleanup()
 	CleanupNodeEditor();
 	CleanupSceneEditor();
 	CleanupGlobalEditor();
+	CleanupData();
 }
 

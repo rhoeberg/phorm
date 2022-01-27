@@ -63,3 +63,5 @@ ObjectContainer<String>* GetStrings();
 RenderObject CreateRenderObject();
 ObjectHandle AddNewRenderObject();
 ObjectHandle AddString(const char *value);
+ObjectHandle AddNewTexture(u32 width, u32 height);
+void CleanupData();

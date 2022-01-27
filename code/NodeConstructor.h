@@ -1,13 +1,5 @@
-/*
-  
-ideas for new nodes:
-- mirror effect (takes a renderobject and mirrors position?)
-
- */
-
 #pragma once
 
-/* void BaseNodeDrawFunction(Node *node); */
 void BaseNodeDrawFunc(Node *node);
 
 #include "nodes/LoadTextureNode.h"
@@ -34,21 +26,14 @@ void BaseNodeDrawFunc(Node *node);
 #include "nodes/IntToDouble.h"
 #include "nodes/MidiCCNode.h"
 
-/* typedef ObjectHandle (*NodeCreateFunc)(String name, NodeOp op, NodeDrawFunc drawFunc); */
 typedef ObjectHandle (*NodeCreateFunc)();
 typedef void (*NodeSetupFunc)(Node *self);
 
 struct NodeConstructor
 {
 	NodeOp op;
-	/* NodeDrawFunc drawFunc; */
-
 	NodeSetupFunc setupFunc;
 	NodeCreateFunc createFunc;
-
-	/* vec2 pos; */
-	/* FixedArray<NodeParameter> params; */
-	/* FixedArray<NodeInput> inputs; */
 };
 
 struct NodeConstructorState

@@ -23,7 +23,12 @@ struct Pixel {
 };
 
 struct Texture {
-	Pixel pixels[PIXEL_AMOUNT];
+	bool initialized;
+	u32 width;
+	u32 height;
+	Pixel *pixels;
+
+	void Create(u32 _width, u32 _height);
 };
 
 int GetPixelIndex(int x, int y);

@@ -57,70 +57,14 @@ bool Node::Changed()
 	return false;
 }
 
-// ObjectHandle AddNode(const char *name, DataType type, NodeOp op, NodeDrawFunc drawFunc, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs, ObjectHandle extraHandle)
 ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs)
 {
 	Node node = {};
-	// sprintf(node.name, "%s", name);
 	node.rect.pos = GetNextNewNodePos();
 	node.changed = true;
 	node.type = type;
 	node.params = params;
 	node.inputs = inputs;
-	// node.op = op;
-	// node.drawFunc = drawFunc;
-	// node.editor = NULL;
-	// node.extraHandle = extraHandle;
-	// node.labelHandle = AddString(name);
-
-	// ObjectHandle dataHandle = {};
-	// switch(node.type) {
-	// 	case DATA_TEXTURE: {
-	// 		dataHandle = _nodeState->textures.InsertNew();
-	// 		break;
-	// 	}
-	// 	case DATA_MESH: {
-	// 		Mesh mesh = {};
-	// 		dataHandle = _nodeState->meshes.Insert(mesh);
-	// 		break;
-	// 	}
-	// 	case DATA_RENDEROBJECT: {
-	// 		dataHandle = AddNewRenderObject();
-	// 		break;
-	// 	}
-	// 	case DATA_RENDEROBJECT_GROUP: {
-	// 		dataHandle = _nodeState->renderObjectGroups.Insert(RenderObjectGroup());
-	// 		break;
-	// 	}
-	// 	case DATA_POINTLIGHT: {
-	// 		PointLight light = {};
-	// 		dataHandle = _nodeState->pointLights.Insert(light);
-	// 		break;
-	// 	}
-	// 	case DATA_DOUBLE: {
-	// 		double value = 0.0;
-	// 		dataHandle = _nodeState->doubles.Insert(value);
-	// 		break;
-	// 	}
-	// 	case DATA_INT: {
-	// 		int value = 0;
-	// 		dataHandle = GetInts()->Insert(value);
-	// 		break;
-	// 	}
-	// 	case DATA_VEC3: {
-	// 		vec3 v3 = {};
-	// 		dataHandle = _nodeState->vec3s.Insert(v3);
-	// 		break;
-	// 	}
-	// 	case DATA_NONE: {
-	// 		break;
-	// 	}
-	// 	default: {
-	// 		NOT_IMPLEMENTED;
-	// 	}
-	// }
-	// node.SetDataHandle(dataHandle);
-
 	return _nodeState->nodes.Insert(node);
 }
 

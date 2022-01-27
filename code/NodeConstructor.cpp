@@ -37,7 +37,10 @@ void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 	ObjectHandle dataHandle = {};
 	switch(node->type) {
 		case DATA_TEXTURE: {
-			dataHandle = _nodeState->textures.InsertNew();
+			// dataHandle = _nodeState->textures.InsertNew();
+			Texture texture = {};
+			// dataHandle = AddNewTexture(TEXTURE_SIZE, TEXTURE_SIZE);
+			dataHandle = GetTextures()->Insert(texture);
 			break;
 		}
 		case DATA_MESH: {
@@ -88,18 +91,13 @@ void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 
 void ConstructNode(String name, NodeConstructor *nodeConstructor)
 {
-	// nodeConstructor->createFunc(name, nodeConstructor->op, nodeConstructor->drawFunc);
-
-	printf("construct node\n");
 	ObjectHandle handle = nodeConstructor->createFunc();
 	Node *node = GetNode(handle);
 	sprintf(node->name, "%s", name.buffer);
 	node->labelHandle = AddString(name.buffer);
-
 	SetupNode(node, nodeConstructor);
 }
 
-// void AddNodeConstructor(String name, NodeOp op, NodeDrawFunc drawFunc, NodeCreateFunc createFunc)
 void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeSetupFunc setupFunc = NULL)
 {
 	NodeConstructorState *state = _nodeConstructorState;
@@ -107,16 +105,10 @@ void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeS
 	state->names.Insert(name);
 	NodeConstructor constructor = {};
 	constructor.op = op;
-	// constructor.drawFunc = drawFunc;
 	constructor.createFunc = createFunc;
 	constructor.setupFunc = setupFunc;
 	state->constructors.Insert(name, constructor);
 }
-
-// void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc)
-// {
-	// AddNodeConstructor(name, op, BaseNodeDrawFunction, createFunc);
-// }
 
 void SetupNodeConstructors()
 {
