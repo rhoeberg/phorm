@@ -2,9 +2,9 @@
 
 void LoadTextureOp(Node *self)
 {
-	int width;
-	int height;
-	int nrChannels;
+	i32 width;
+	i32 height;
+	i32 nrChannels;
 	String *path = GetStrings()->Get(self->params[0].dataHandle);
 	unsigned char *data = stbi_load(path->buffer, &width, &height, &nrChannels, STBI_rgb_alpha);
 	if(data) {
