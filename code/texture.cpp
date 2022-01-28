@@ -22,7 +22,7 @@ void Texture::Create(u32 _width, u32 _height)
 	}
 }
 
-int GetPixelIndex(int x, int y)
+int GetPixelIndex(i32 x, i32 y, i32 width)
 {
-	return ((y * TEXTURE_SIZE) + x);
+	return ((y * width) + x);
 }

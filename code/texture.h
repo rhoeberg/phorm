@@ -1,8 +1,8 @@
 #pragma once
 
-#define TEXTURE_SIZE 512
+/* #define TEXTURE_SIZE 512 */
 #define TEXTURE_CHANNEL_AMOUNT 4
-#define PIXEL_AMOUNT (TEXTURE_SIZE * TEXTURE_SIZE)
+/* #define PIXEL_AMOUNT (TEXTURE_SIZE * TEXTURE_SIZE) */
 
 struct Pixel {
 	unsigned char r;
@@ -31,4 +31,4 @@ struct Texture {
 	void Create(u32 _width, u32 _height);
 };
 
-int GetPixelIndex(int x, int y);
+int GetPixelIndex(i32 x, i32 y, i32 height);

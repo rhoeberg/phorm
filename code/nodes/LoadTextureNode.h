@@ -5,8 +5,9 @@ void LoadTextureOp(Node *self)
 	int width;
 	int height;
 	int nrChannels;
-	/* unsigned char *data = stbi_load("assets/pica.png", &width, &height, &nrChannels, STBI_rgb_alpha); */
-	unsigned char *data = stbi_load("assets/picahigh.jpg", &width, &height, &nrChannels, STBI_rgb_alpha);
+	String *path = GetStrings()->Get(self->params[0].dataHandle);
+	/* unsigned char *data = stbi_load("assets/picahigh.jpg", &width, &height, &nrChannels, STBI_rgb_alpha); */
+	unsigned char *data = stbi_load(path->buffer, &width, &height, &nrChannels, STBI_rgb_alpha);
 	if(data) {
 		Texture *output = GetTextures()->Get(self->GetDataLast());
 		output->Create(width, height);
