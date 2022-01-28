@@ -6,7 +6,6 @@ void LoadTextureOp(Node *self)
 	int height;
 	int nrChannels;
 	String *path = GetStrings()->Get(self->params[0].dataHandle);
-	/* unsigned char *data = stbi_load("assets/picahigh.jpg", &width, &height, &nrChannels, STBI_rgb_alpha); */
 	unsigned char *data = stbi_load(path->buffer, &width, &height, &nrChannels, STBI_rgb_alpha);
 	if(data) {
 		Texture *output = GetTextures()->Get(self->GetDataLast());
@@ -19,21 +18,6 @@ void LoadTextureOp(Node *self)
 	}
 }
 
-/* // this needs to happen after node has been somehow created */
-/* // as new or loaded */
-/* void LoadTextureSetup(Node *self) */
-/* { */
-/* 	// setup OP */
-/* 	// setup DrawFunc */
-/* 	// setup edit func */
-/* 	// create data and add handles */
-
-/* 	self->op = LoadTextureOperation; */
-/* 	self->drawFunc = BaseNodeDrawFunc; */
-/* 	self->SetDataHandle(_nodeState->textures.InsertNew()); */
-/* } */
-
-/* ObjectHandle LoadTextureCreate(String name, NodeOp op, NodeDrawFunc drawFunc) */
 ObjectHandle LoadTextureCreate()
 {
 	printf("loadtexture create\n");
