@@ -10,9 +10,9 @@ void LoadTextureOp(Node *self)
 	if(data) {
 		Texture *output = GetTextures()->Get(self->GetDataLast());
 		output->Create(width, height);
-		printf("width:%d\n", width);
-		printf("height:%d\n", height);
-		printf("nrChannels:%d\n", nrChannels);
+		DebugLog("width:%d\n", width);
+		DebugLog("height:%d\n", height);
+		DebugLog("nrChannels:%d\n", nrChannels);
 		memcpy(output->pixels, data, sizeof(Pixel) * output->width * output->height);
 		free(data);
 	}
