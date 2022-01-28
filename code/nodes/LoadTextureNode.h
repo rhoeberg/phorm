@@ -20,7 +20,6 @@ void LoadTextureOp(Node *self)
 
 ObjectHandle LoadTextureCreate()
 {
-	printf("loadtexture create\n");
 	FixedArray<NodeParameter> params = {
 		NodeParameter("path", ""),
 	};

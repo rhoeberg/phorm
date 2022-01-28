@@ -26,7 +26,6 @@ void InitializeData()
 	// Specific node state
 	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
 	new(&_nodeState->sinWaveNodes) ObjectContainer<SinWaveNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
-	// new(&_nodeState->labels) HashMap<NodeHandle>();
 }
 
 
