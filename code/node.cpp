@@ -1,5 +1,13 @@
 #include "node.h"
 
+void Node::AddInput(DataType type)
+{
+	NodeInput input = {};
+	input.type = type;
+	input.handle = {};
+	inputs.Insert(input);
+}
+
 ObjectHandle Node::GetData()
 {
 	if(Changed()) {

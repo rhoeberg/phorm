@@ -32,11 +32,14 @@ struct SceneObject
 };
 
 struct Scene {
+	vec3 bgColor;
 	ObjectContainer<SceneObject> sceneObjects;
-	/* ObjectContainer<ObjectHandle> pointLights; */
+	ObjectContainer<ObjectHandle> pointLights;
 
 	void Free() {
 		sceneObjects.Free();
 		/* pointLights.Free(); */
 	}
 };
+
+void RenderScene2(ObjectHandle sceneHandle, ObjectHandle textureHandle);

@@ -51,6 +51,7 @@ void main()
 
 	result += ambient;
 	result *= texture(outTexture, TexCoord).xyz;
+	/* result = texture(outTexture, TexCoord).xyz; */
 	/* result *= objectColor; */
 	color = vec4(result, 1.0);
 }

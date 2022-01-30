@@ -36,26 +36,12 @@ struct Node {
 	FixedArray<NodeInput> inputs;
 	FixedArray<NodeParameter> params;
 
-	void SetupNode()
-	{
-
-	}
-
-	void AddInput(DataType type)
-	{
-		NodeInput input = {};
-		input.type = type;
-		input.handle = {};
-		inputs.Insert(input);
-	}
-
+	void AddInput(DataType type);
 	void SetDataHandle(ObjectHandle handle) { dataHandle = handle; }
-
 	ObjectHandle GetDataLast() { return dataHandle; }
 	ObjectHandle GetData();
 	void CallOp();
 	void CallDraw();
-
 	bool Changed();
 
 private:

@@ -41,6 +41,7 @@ struct NodeState {
 	// ObjectContainer<LabelNodeState> labelNodes;
 	ObjectContainer<String> strings;
 	ObjectContainer<PointLight> pointLights;
+	ObjectContainer<Scene> scenes;
 
 	ObjectContainer<VideoNodeState> videoNodes;
 	ObjectContainer<SinWaveNodeState> sinWaveNodes;
@@ -59,6 +60,7 @@ ObjectContainer<vec3>* GetVec3s();
 ObjectContainer<vec4>* GetVec4s();
 ObjectContainer<PointLight>* GetPointLights();
 ObjectContainer<String>* GetStrings();
+ObjectContainer<Scene>* GetScenes();
 
 RenderObject CreateRenderObject();
 ObjectHandle AddNewRenderObject();

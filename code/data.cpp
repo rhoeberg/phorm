@@ -22,6 +22,7 @@ void InitializeData()
 	new(&_nodeState->vec4s) ObjectContainer<vec4>(HANDLE_DATA, DATA_VEC4);
 	new(&_nodeState->strings) ObjectContainer<String>(HANDLE_DATA, DATA_STRING);
 	new(&_nodeState->pointLights) ObjectContainer<PointLight>(HANDLE_DATA, DATA_POINTLIGHT);
+	new(&_nodeState->scenes) ObjectContainer<Scene>(HANDLE_DATA, DATA_SCENE);
 
 	// Specific node state
 	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
@@ -83,10 +84,16 @@ ObjectContainer<PointLight>* GetPointLights()
 	return &_nodeState->pointLights;
 }
 
+ObjectContainer<Scene>* GetScenes()
+{
+	return &_nodeState->scenes;
+}
+
 ObjectContainer<String>* GetStrings()
 {
 	return &_nodeState->strings;
 }
+
 
 
 

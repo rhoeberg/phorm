@@ -6,7 +6,7 @@ void BaseNodeDrawFunc(Node *node);
 #include "nodes/BlurNode.h"
 #include "nodes/MixTextureNode.h"
 #include "nodes/VideoNode.h"
-/* #include "nodes/SceneNode.h" */
+#include "nodes/SceneNode.h"
 #include "nodes/CubeNode.h"
 #include "nodes/GridNode.h"
 #include "nodes/MeshNoise.h"

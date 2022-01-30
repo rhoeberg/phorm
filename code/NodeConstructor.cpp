@@ -119,7 +119,7 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture);
 	AddNodeConstructor(String("mix texture"), MixTextureOperation, CreateMixTexture);
 	AddNodeConstructor(String("video"), VideoOperation, CreateVideoNode, SetupVideoNode);
-	// AddNodeConstructor(String("scene"), SceneNodeOp, CreateSceneNode);
+	AddNodeConstructor(String("scene"), SceneNodeOp, CreateSceneNode, SetupSceneNode);
 
 	/////////////////
 	// MESH NODES

@@ -79,6 +79,7 @@
 #include "global_editor.cpp"
 #include "opengl_wrapper.cpp"
 #include "viewer_render.cpp"
+#include "scene.cpp"
 #include "texture.cpp"
 #include "mesh.cpp"
 #include "data.cpp"
