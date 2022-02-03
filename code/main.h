@@ -38,7 +38,6 @@ global Settings settings;
 #include "phorm_util.h"
 #include "simplexnoise1234.h"
 #include "math.h"
-/* #include "render.h" */
 #include "vm_array.h"
 #include "vm_fixedarray.h"
 #include "imdraw.h"
@@ -56,13 +55,15 @@ global Settings settings;
 #include "node.h"
 #include "data.h"
 #include "node_editor.h"
+#include "Camera.h"
+#include "SceneRender.h"
 #include "scene.h"
 #include "NodeConstructor.h"
 #include "global_editor.h"
 #include "scene_editor.h"
-#include "viewer_render.h"
+/* #include "viewer_render.h" */
+#include "ViewerRender.h"
 #include "save.h"
-#include "Camera.h"
 
 /* #include "node/texture.h" */
 /* #include "node/mesh.h" */

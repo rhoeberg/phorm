@@ -29,10 +29,12 @@ void UpdateDebug()
 	ImGui::Text("deltaTime: %f", deltaTime);
 
 	ImGui::Text("CAMERA");
-	ImGui::InputFloat3("pos", glm::value_ptr(_viewerRenderState.cam.pos));
-	ImGui::InputFloat3("front", glm::value_ptr(_viewerRenderState.cam.front));
-	ImGui::Text("speed: %f", _viewerRenderState.cam.moveSpeed);
-	ImGui::Text("orbitdist: %f", _viewerRenderState.cam.orbitDist);
+	Camera *cam = &_viewerRenderState->freeCam;
+	ImGui::InputFloat3("pos", glm::value_ptr(cam->pos));
+	ImGui::InputFloat3("front", glm::value_ptr(cam->front));
+	ImGui::Text("speed: %f", cam->moveSpeed);
+	ImGui::Text("orbitdist: %f", cam->orbitDist);
+	ImGui::Text("magnitude: %f", glm::length(cam->front));
 
 	ImGui::Spacing();
 	ImGui::InputFloat2("mouse", glm::value_ptr(mouse));

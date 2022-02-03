@@ -64,7 +64,6 @@
 #include "glfw_wrapper.cpp"
 #include "simplexnoise1234.cpp"
 #include "math.cpp"
-// #include "render.cpp"
 #include "vm_array.cpp"
 #include "vm_fixedarray.cpp"
 #include "string.cpp"
@@ -76,9 +75,11 @@
 #include "node.cpp"
 #include "node_editor.cpp"
 #include "scene_editor.cpp"
+#include "SceneRender.cpp"
 #include "global_editor.cpp"
 #include "opengl_wrapper.cpp"
-#include "viewer_render.cpp"
+// #include "viewer_render.cpp"
+#include "ViewerRender.cpp"
 #include "scene.cpp"
 #include "texture.cpp"
 #include "mesh.cpp"
@@ -133,7 +134,7 @@ void UpdateLoop()
 	///////////////
 	// VIEWER RENDERING
 	///////////////
-	UpdateViewerRenderGUI();
+	// UpdateViewerRenderGUI();
 
 	///////////////
 	// GLOBAL EDITOR
@@ -149,6 +150,7 @@ void UpdateLoop()
 	///////////////
 	// RENDERING
 	///////////////
+	UpdateSceneRender();
 	UpdateViewerRender();
 
 	///////////////
@@ -206,7 +208,9 @@ int main(int argc, char *argv[])
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();
+	InitializeSceneRender();
 	InitializeGlobalEditor();
+	
 
 	// TODO (rhoe) find place for this
     srand(glfwGetTime());
@@ -284,6 +288,8 @@ void cleanup()
 	CleanupCustom();
 	CleanupNodeEditor();
 	CleanupSceneEditor();
+	CleanupSceneRender();
+	CleanupViewerRender();
 	CleanupGlobalEditor();
 	CleanupData();
 }

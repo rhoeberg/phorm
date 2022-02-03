@@ -45,30 +45,28 @@ NodeParameter::NodeParameter(const char *_name, ObjectHandle handle)
 	exposed = false;
 }
 
-// int NodeParameter::Int()
-// {
-// 	if(nodeHandle.isset) {
-// 		// double *doubleFromNode = GetDoubleOutput(&nodeHandle);
-// 		Node *node = GetNode(&nodeHandle);
-// 		double *doubleFromNode = GetInts()->Get(&node->GetData());
-// 		if(doubleFromNode) {
-// 			return *doubleFromNode;
-// 		}
-// 		else {
-// 			return 0.0;
-// 		}
-// 	}
+int NodeParameter::Int()
+{
+	if(nodeHandle.isset) {
+		Node *node = GetNode(nodeHandle);
+		i32 *intFromNode = GetInts()->Get(node->GetData());
+		if(intFromNode) {
+			return *intFromNode;
+		}
+		else {
+			return 0;
+		}
+	}
 
-// 	if(type == DATA_INT)
-// 		return i;
+	if(type == DATA_INT)
+		return i;
 
-// 	return 0;
-// }
+	return 0;
+}
 
 double NodeParameter::Double()
 {
 	if(nodeHandle.isset) {
-		// double *doubleFromNode = GetDoubleOutput(&nodeHandle);
 		Node *node = GetNode(nodeHandle);
 		double *doubleFromNode = GetDoubles()->Get(node->GetData());
 		if(doubleFromNode) {

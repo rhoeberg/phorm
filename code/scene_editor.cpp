@@ -7,47 +7,47 @@ void InitializeSceneEditor()
 	_sceneEditorState->selectedObject.isset = false;
 }
 
-void RenderScene()
-{
-	SceneEditorState *editor = _sceneEditorState;
+// void RenderScene()
+// {
+// 	SceneEditorState *editor = _sceneEditorState;
 
-	/////////////
-	// RENDER SCENE OBJECTS
-	for(i32 i = 0; i < editor->scene.sceneObjects.Count(); i++) {
-		SceneObject *sceneObject = editor->scene.sceneObjects.GetAt(i);
-		if(sceneObject) {
-			Node *node = GetNode(sceneObject->handle);
-			if(node) {
-				switch(node->type) {
-					case DATA_RENDEROBJECT: {
-						RenderObjectInstance instance = sceneObject->ToRenderObjectInstance(node->GetData());
-						AddToRenderQueue(instance);
-						break;
-					}
-					case DATA_RENDEROBJECT_GROUP: {
-						RenderObjectGroup *group = GetRenderObjectGroups()->Get(node->GetData());
-						RenderGroupInstance instance = RenderGroupInstance(node->GetData(), group->pos, group->scale, group->rot);
-						AddToRenderGroupQueue(instance);
-						break;
-					}
-					case DATA_POINTLIGHT: {
-						RenderLightInstance instance = {};
-						PointLight *light = GetPointLights()->Get(node->GetData());
-						instance.pos = sceneObject->pos + light->pos;
-						instance.color = light->color;
-						AddToRenderPointLightQueue(instance);
-						break;
-					}
-					default: {
+// 	/////////////
+// 	// RENDER SCENE OBJECTS
+// 	for(i32 i = 0; i < editor->scene.sceneObjects.Count(); i++) {
+// 		SceneObject *sceneObject = editor->scene.sceneObjects.GetAt(i);
+// 		if(sceneObject) {
+// 			Node *node = GetNode(sceneObject->handle);
+// 			if(node) {
+// 				switch(node->type) {
+// 					case DATA_RENDEROBJECT: {
+// 						RenderObjectInstance instance = sceneObject->ToRenderObjectInstance(node->GetData());
+// 						AddToRenderQueue(instance);
+// 						break;
+// 					}
+// 					case DATA_RENDEROBJECT_GROUP: {
+// 						RenderObjectGroup *group = GetRenderObjectGroups()->Get(node->GetData());
+// 						RenderGroupInstance instance = RenderGroupInstance(node->GetData(), group->pos, group->scale, group->rot);
+// 						AddToRenderGroupQueue(instance);
+// 						break;
+// 					}
+// 					case DATA_POINTLIGHT: {
+// 						RenderLightInstance instance = {};
+// 						PointLight *light = GetPointLights()->Get(node->GetData());
+// 						instance.pos = sceneObject->pos + light->pos;
+// 						instance.color = light->color;
+// 						AddToRenderPointLightQueue(instance);
+// 						break;
+// 					}
+// 					default: {
 
-						// if its not a renderobject or light just update
-						node->CallOp();
-					}
-				}
-			}
-		}
-	}
-}
+// 						// if its not a renderobject or light just update
+// 						node->CallOp();
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
 SceneObject* GetSelectedSceneObject()
 {

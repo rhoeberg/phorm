@@ -23,6 +23,7 @@ struct NodeParameter {
 	NodeParameter(const char *_name, vec3 _v3);
 	NodeParameter(const char *_name, const char *str);
 	NodeParameter(const char *_name, ObjectHandle handle);
+	int Int();
 	double Double();
 	vec3 Vec3();
 	vec4 Vec4();

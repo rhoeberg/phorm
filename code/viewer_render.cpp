@@ -481,6 +481,7 @@ void TransformGizmo(vec3 pos)
 	TransformPlaneGizmo(pos, vec3(0, 0, 1), vec3(1, 1, 0));
 
 	// handle dragging
+
 	vec3 rayDir = GetViewerMouseRay();
 	vec3 seStart  =_viewerRenderState.cam.pos;
 	vec3 seEnd = seStart + (rayDir * 1000.0f);

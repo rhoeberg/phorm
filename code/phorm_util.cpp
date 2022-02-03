@@ -29,6 +29,8 @@ void DebugLog(char *format, ...)
 	printf(format, args);
 	// vsprintf(logs[logCount].text, format, args);
 	va_end(args);
+
+	printf("\n");
 }
 
 void ErrorLog(char *format, ...)
@@ -38,4 +40,6 @@ void ErrorLog(char *format, ...)
 	printf(format, args);
 	// vsprintf(logs[logCount].text, format, args);
 	va_end(args);
+
+	printf("\n");
 }

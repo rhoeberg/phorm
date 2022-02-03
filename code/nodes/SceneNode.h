@@ -2,10 +2,10 @@
 
 void SceneNodeOp(Node *self)
 {
-	Scene *scene = GetScenes()->Get(self->extraHandle);
-	scene->bgColor = self->params[0].Vec3();
+	/* Scene *scene = GetScenes()->Get(self->extraHandle); */
+	/* scene->bgColor = self->params[0].Vec3(); */
 
-	RenderScene2(self->extraHandle, self->GetDataLast());
+	/* RenderScene2(self->extraHandle, self->GetDataLast()); */
 
 	self->changed = true;
 }
@@ -14,7 +14,8 @@ void SceneNodeEditor(Node *self)
 {
 	ImGui::Begin("scene editor");
 
-	Scene *scene = GetScenes()->Get(self->extraHandle);
+	/* Scene *scene = GetScenes()->Get(self->extraHandle); */
+	Scene *scene = GetScenes()->Get(self->GetDataLast());
 
 	for(i32 i = 0; i < scene->sceneObjects.Count(); i++) {
 		char nameBuffer[128];
@@ -122,5 +123,5 @@ ObjectHandle CreateSceneNode()
 		NodeInput(DATA_TEXTURE),
 	};
 
-	return AddNode(DATA_TEXTURE, params, inputs);
+	return AddNode(DATA_SCENE, params, inputs);
 }

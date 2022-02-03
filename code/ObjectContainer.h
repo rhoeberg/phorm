@@ -10,7 +10,6 @@ struct ObjectContainer {
 	VMArray<bool> isFree;
 	VMArray<u32> slotID;
 
-	// TODO put back type here
 	HandleType handleType;
 	DataType dataType;
 

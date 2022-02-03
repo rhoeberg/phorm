@@ -4,7 +4,7 @@
   Allocated a texture of size width & height
   if texture of same size is already allocated then dont do anything
 */
-void Texture::Create(u32 _width, u32 _height)
+void Texture::Create(i32 _width, i32 _height)
 {
 	if(!initialized) {
 		width = _width;

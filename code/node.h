@@ -53,6 +53,7 @@ ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray
 bool NodeExists(ObjectHandle handle);
 Node* GetNode(ObjectHandle handle);
 void DeleteNode(ObjectHandle handle);
+ObjectHandle GetInputData(NodeInput input);
 
 bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex);
 bool ConnectNodeInput(ObjectHandle inHandle, ObjectHandle outHandle, int inputIndex);

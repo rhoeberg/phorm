@@ -18,6 +18,24 @@
 //     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 // }
 
+bool MouseInsideViewerRect()
+{
+	// int width, height;
+	// GetWindowSize(&width, &height);
+	// Rect viewerRect = {};
+	// viewerRect.width = VIEWER_SIZE;
+	// viewerRect.height = VIEWER_SIZE;
+	// viewerRect.pos = vec2(width - VIEWER_SIZE, 0);
+
+	// if((ViewerInMain() && PointInsideRect(mouse, viewerRect)) ||
+	//    (!ViewerInMain() && mouseInViewerWin))
+	// 	return true;
+
+	// return false;
+
+	return false;
+}
+
 void InitializeNodeEditor()
 {
 
@@ -43,6 +61,28 @@ void InitializeNodeEditor()
 	// int winWidth, winHeight;
 	// GetWindowSize(&winWidth, &winHeight);
 	// NodeEditorSetWindowSize(winWidth, winHeight);
+
+	// CREATE OUTPUT NODE
+	NodeConstructor outputConstructor = {};
+	outputConstructor.op = OutputNodeOp;
+	outputConstructor.createFunc = CreateOutputNode;
+	outputConstructor.setupFunc = NULL;
+
+	i32 width, height;
+	GetWindowSize(&width, &height);
+	SetNextConstructPos(vec2((float)width / 2.0f, (float)height / 2.0f));
+
+	editor->output = ConstructNode(String("output"), &outputConstructor);
+}
+
+Node *GetOutputNode()
+{
+	return GetNode(GetOutputHandle());
+}
+
+ObjectHandle GetOutputHandle()
+{
+	return _nodeEditorState->output;
 }
 
 void NodeGUI()

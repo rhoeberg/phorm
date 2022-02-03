@@ -28,7 +28,7 @@ struct Texture {
 	u32 height;
 	Pixel *pixels;
 
-	void Create(u32 _width, u32 _height);
+	void Create(i32 _width, i32 _height);
 };
 
 int GetPixelIndex(i32 x, i32 y, i32 height);

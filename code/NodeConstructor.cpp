@@ -76,6 +76,9 @@ void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 			dataHandle = _nodeState->vec3s.Insert(v3);
 			break;
 		}
+		case DATA_SCENE: {
+			dataHandle = GetScenes()->Insert(Scene());
+		}
 		case DATA_NONE: {
 			break;
 		}
@@ -89,13 +92,15 @@ void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 		nodeConstructor->setupFunc(node);
 }
 
-void ConstructNode(String name, NodeConstructor *nodeConstructor)
+ObjectHandle ConstructNode(String name, NodeConstructor *nodeConstructor)
 {
 	ObjectHandle handle = nodeConstructor->createFunc();
 	Node *node = GetNode(handle);
 	sprintf(node->name, "%s", name.buffer);
 	node->labelHandle = AddString(name.buffer);
 	SetupNode(node, nodeConstructor);
+
+	return handle;
 }
 
 void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeSetupFunc setupFunc = NULL)
@@ -119,6 +124,11 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture);
 	AddNodeConstructor(String("mix texture"), MixTextureOperation, CreateMixTexture);
 	AddNodeConstructor(String("video"), VideoOperation, CreateVideoNode, SetupVideoNode);
+	AddNodeConstructor(String("s2t"), SceneRenderNodeOp, CreateSceneRenderNode, SetupSceneRenderNode);
+
+	/////////////////
+	// SCENE NODES
+	/////////////////
 	AddNodeConstructor(String("scene"), SceneNodeOp, CreateSceneNode, SetupSceneNode);
 
 	/////////////////

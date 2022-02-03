@@ -35,32 +35,45 @@ ObjectHandle GetViewerNode()
 
 void RenderViewerNode()
 {
-	ObjectHandle handle = GetViewerNode();
-	if(handle.isset && NodeExists(handle)) {
-		Node *node = GetNode(handle);
-		switch(node->type) {
-			case DATA_TEXTURE: {
-				AddTextureToRenderQueue(node->GetData());
-				break;
-			}
-			case DATA_RENDEROBJECT: {
-				RenderObjectInstance instance = RenderObjectInstance(node->GetData());
-				AddToRenderQueue(instance);
-				break;
-			}
-			case DATA_RENDEROBJECT_GROUP: {
-				RenderObjectGroup *group = GetRenderObjectGroups()->Get(node->GetData());
-				for(i32 i = 0; i < group->renderObjects.Count(); i++) {
-					RenderObjectInstance instance = RenderObjectInstance(node->GetData());
-					AddToRenderQueue(instance);
-				}
-				break;
-			}
-			default: {
-				// TODO (rhoe) trying to show node type with no view 
-			}
-		}
-	}
+	// ObjectHandle handle = GetViewerNode();
+	// if(handle.isset && NodeExists(handle)) {
+	// 	Node *node = GetNode(handle);
+	// 	switch(node->type) {
+	// 		case DATA_TEXTURE: {
+	// 			AddTextureToRenderQueue(node->GetData());
+	// 			break;
+	// 		}
+	// 		case DATA_RENDEROBJECT: {
+	// 			RenderObjectInstance instance = RenderObjectInstance(node->GetData());
+	// 			AddToRenderQueue(instance);
+	// 			break;
+	// 		}
+	// 		case DATA_RENDEROBJECT_GROUP: {
+	// 			RenderObjectGroup *group = GetRenderObjectGroups()->Get(node->GetData());
+	// 			for(i32 i = 0; i < group->renderObjects.Count(); i++) {
+	// 				RenderObjectInstance instance = RenderObjectInstance(node->GetData());
+	// 				AddToRenderQueue(instance);
+	// 			}
+	// 			break;
+	// 		}
+	// 		case DATA_SCENE: {
+	// 			Scene *scene = GetScenes()->Get(node->GetData());
+	// 			if(scene) {
+	// 				for(i32 i = 0; i < scene->sceneObjects.Count(); i++) {
+	// 					SceneObject *sceneObj = scene->sceneObjects.GetAt(i);
+	// 					if(sceneObj) {
+	// 						Node *node = GetNode(sceneObj->handle);
+	// 						RenderObjectInstance instance = RenderObjectInstance(node->GetData());
+	// 						AddToRenderQueue(instance);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 		default: {
+	// 			// TODO (rhoe) trying to show node type with no view 
+	// 		}
+	// 	}
+	// }
 }
 
 void SetViewerMode(i32 mode)
@@ -184,7 +197,7 @@ void UpdateGlobalEditor()
 			break;
 		}
 		case VIEW_SCENE: {
-			RenderScene();
+			// RenderScene();
 			break;
 		}
 	}

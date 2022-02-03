@@ -6,6 +6,7 @@ void BaseNodeDrawFunc(Node *node);
 #include "nodes/BlurNode.h"
 #include "nodes/MixTextureNode.h"
 #include "nodes/VideoNode.h"
+#include "nodes/SceneRenderNode.h"
 #include "nodes/SceneNode.h"
 #include "nodes/CubeNode.h"
 #include "nodes/GridNode.h"
@@ -25,6 +26,9 @@ void BaseNodeDrawFunc(Node *node);
 #include "nodes/AddNode.h"
 #include "nodes/IntToDouble.h"
 #include "nodes/MidiCCNode.h"
+
+// output node
+#include "nodes/OutputNode.h"
 
 typedef ObjectHandle (*NodeCreateFunc)();
 typedef void (*NodeSetupFunc)(Node *self);
@@ -46,7 +50,7 @@ struct NodeConstructorState
 VMArray<String>* GetNodeNames();
 HashMap<NodeConstructor>* GetNodeConstructors();
 void SetNextConstructPos(vec2 pos);
-void ConstructNode(String name, NodeConstructor *nodeConstructor);
+ObjectHandle ConstructNode(String name, NodeConstructor *nodeConstructor);
 VMArray<String>* GetNodeNames();
 void NamesBeginningWith(VMArray<String> *array, String typed);
 void InitializeNodeConstructors();

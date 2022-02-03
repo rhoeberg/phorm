@@ -44,6 +44,11 @@ struct NodeEditorState {
 	char promptBuffer[128];
 	VMArray<String> promptCandidates;
 	int promptCandidateSelected;
+
+
+	////////////////
+	// GLOBAL OUTPUT NODE
+	ObjectHandle output;
 };
 
 /* void NodeEditorSetWindowSize(int width, int height); */
@@ -51,3 +56,6 @@ struct NodeEditorState {
 global NodeEditorState *_nodeEditorState;
 
 void ViewSelectedNode();
+
+ObjectHandle GetOutputHandle();
+Node *GetOutputNode();

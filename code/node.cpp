@@ -139,6 +139,16 @@ void DeleteNode(ObjectHandle handle)
 	_nodeState->nodes.Remove(handle);
 }
 
+ObjectHandle GetInputData(NodeInput input)
+{
+	Node *node = GetNode(input.handle);
+	if(node) {
+		return node->GetData();
+	}
+
+	return ObjectHandle();
+}
+
 void CleanupNodes()
 {
 	// TODO (rhoe) freeing moar stuff

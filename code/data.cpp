@@ -25,6 +25,7 @@ void InitializeData()
 	new(&_nodeState->scenes) ObjectContainer<Scene>(HANDLE_DATA, DATA_SCENE);
 
 	// Specific node state
+	new(&_nodeState->sceneRenderDatas) ObjectContainer<SceneRenderData>(HANDLE_DATA, DATA_NONE);
 	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
 	new(&_nodeState->sinWaveNodes) ObjectContainer<SinWaveNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
 }
@@ -84,16 +85,20 @@ ObjectContainer<PointLight>* GetPointLights()
 	return &_nodeState->pointLights;
 }
 
-ObjectContainer<Scene>* GetScenes()
-{
-	return &_nodeState->scenes;
-}
-
 ObjectContainer<String>* GetStrings()
 {
 	return &_nodeState->strings;
 }
 
+ObjectContainer<Scene>* GetScenes()
+{
+	return &_nodeState->scenes;
+}
+
+ObjectContainer<SceneRenderData>* GetSceneRenderDatas()
+{
+	return &_nodeState->sceneRenderDatas;
+}
 
 
 
