@@ -120,7 +120,6 @@ ObjectHandle CreateSceneNode()
 	};
 
 	FixedArray<NodeInput> inputs = {
-		NodeInput(DATA_TEXTURE),
 	};
 
 	return AddNode(DATA_SCENE, params, inputs);

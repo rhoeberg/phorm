@@ -108,7 +108,7 @@ void NodeGUI()
 	/////////////////
 	// INPUT PROMPT
 	/////////////////
-	if(singleKeyPress(GLFW_KEY_N)) {
+	if(singleKeyPress(GLFW_KEY_N) && !imguiWantsKeyboard) {
 		if(!editor->promptOpen) {
 			editor->promptOpen = true;
 			editor->promptSetFocus = true;
