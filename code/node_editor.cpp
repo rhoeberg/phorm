@@ -69,6 +69,10 @@ void InitializeNodeEditor()
 
 	NodeConstructor *constructor = GetNodeConstructors()->Get(name);
 	editor->output = ConstructNode(name, constructor);
+
+	editor->currentPage = 0;
+	new(&editor->pages) VMArray<String>();
+	editor->pages.Insert(AddString("main"));
 }
 
 Node *GetOutputNode()
@@ -81,22 +85,61 @@ ObjectHandle GetOutputHandle()
 	return _nodeEditorState->output;
 }
 
+u32 GetCurrentPage()
+{
+	return _nodeEditorState->currentPage;
+}
+
 void NodeGUI()
 {
 	NodeEditorState *editor = _nodeEditorState;
 
 	/////////////////
+	// PAGES
+	/////////////////
+
+
+	/////////////////
 	// NODE LIST
 	/////////////////
-	VMArray<String>* names = GetNodeNames();
+	ImGui::Begin("editor");
 
-	ImGui::Begin("nodes");
-	for(i32 i = 0; i < names->Count(); i++) {
-		if(ImGui::Button((*names)[i].buffer)) {
-			NodeConstructor *nodeConstructor = GetNodeConstructors()->Get((*names)[i]);
-			ConstructNode((*names)[i], nodeConstructor);
+	ImGui::InputInt("page", &editor->currentPage);
+
+	// ImGui::Spacing();
+	// VMArray<String>* names = GetNodeNames();
+	// for(i32 i = 0; i < names->Count(); i++) {
+	// 	if(ImGui::Button((*names)[i].buffer)) {
+	// 		NodeConstructor *nodeConstructor = GetNodeConstructors()->Get((*names)[i]);
+	// 		ConstructNode((*names)[i], nodeConstructor);
+	// 	}
+	// }
+	if(ImGui::Button("add page")) {
+		editor->pages.Insert(AddString(""));
+	}
+
+	char buffer[128];
+	for(i32 i = 0; i < editor->pages.Count(); i++) {
+		sprintf(buffer, "%d:", i);
+		if(ImGui::Button(buffer)) {
+			editor->currentPage = i;
+		}
+		ImGui::SameLine();
+		String *pageName = GetStrings()->Get(editor->pages[i]);
+		if(pageName) {
+			if(i != 0) {
+				sprintf(buffer, "##pagename%d", i);
+				if(ImGui::InputText(buffer, pageName->buffer, pageName->bufferSize)) {
+					pageName->ReCalc();
+				}
+			}
+			else {
+				ImGui::Text(pageName->buffer);
+			}
 		}
 	}
+
+
 	ImGui::End();
 
 
@@ -274,7 +317,7 @@ void DrawNodeOutline(ObjectHandle handle)
 	NodeEditorState *editor = _nodeEditorState;
 
 	Node *node = GetNode(handle);
-	if(node) {
+	if(node && node->page == editor->currentPage) {
 		Rect outline= {};
 		outline.pos = node->rect.pos - vec2(outlineMargin, outlineMargin);
 		outline.width = node->rect.width + outlineMargin;
@@ -295,7 +338,7 @@ void UpdateHoverState()
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = _nodeState->nodes.Get(handle);
-		if(node) {
+		if(node && node->page == editor->currentPage) {
 			// CHECK INPUTS
 			for(int j = 0; j < node->inputs.Count(); j++) {
 				Rect inputRect = GetNodeInputRect(handle, j);
@@ -509,7 +552,7 @@ void UpdateNodeStopDragging()
 			for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
 				ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 				Node *node = _nodeState->nodes.Get(handle);
-				if(node) {
+				if(node && node->page == editor->currentPage) {
 					vec2 center = GetRectCenter(node->rect);
 					if(center.x > a.x && center.x < b.x &&
 					   center.y > a.y && center.y < b.y) {
@@ -576,7 +619,7 @@ void UpdateNodeEditor()
 	for(i32 i = 0; i < GetNodes()->Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = GetNodes()->Get(handle);
-		if(node) {
+		if(node && node->page == editor->currentPage) {
 			DrawNode(handle);
 		}
 	}

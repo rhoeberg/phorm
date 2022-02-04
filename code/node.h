@@ -30,6 +30,7 @@ struct Node {
 	// TODO (rhoe) perhaps this should go in seperate struct/array
 	DataType type; // data type of output
 	Rect rect;
+	i32 page;
 	char name[128];
 	ObjectHandle extraHandle;
 	ObjectHandle labelHandle;

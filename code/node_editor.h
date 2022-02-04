@@ -47,6 +47,13 @@ struct NodeEditorState {
 
 
 	////////////////
+	// CURRENT PAGE
+	i32 currentPage;
+	/* VMArray<String> pages; */
+	VMArray<ObjectHandle> pages;
+
+
+	////////////////
 	// GLOBAL OUTPUT NODE
 	ObjectHandle output;
 };
@@ -57,5 +64,6 @@ global NodeEditorState *_nodeEditorState;
 
 void ViewSelectedNode();
 
+u32 GetCurrentPage();
 ObjectHandle GetOutputHandle();
 Node *GetOutputNode();

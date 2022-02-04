@@ -73,6 +73,7 @@ ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray
 	node.type = type;
 	node.params = params;
 	node.inputs = inputs;
+	node.page = GetCurrentPage();
 	return _nodeState->nodes.Insert(node);
 }
 

@@ -154,6 +154,10 @@ void SaveNodes()
 	// SaveObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
 
+	//////////////
+	// SAVE PAGES
+	SaveVMArray<ObjectHandle>(&_nodeEditorState->pages, &saveFile);
+
 	fclose(saveFile.file);
 }
 
@@ -285,6 +289,9 @@ void LoadNodes()
 	LoadObjectContainer<SceneObject>(&_sceneEditorState->scene.sceneObjects, &saveFile);
 	// LoadObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
+	/////////////
+	// LOAD PAGES
+	LoadNextVMArray<ObjectHandle>(&_nodeEditorState->pages, &saveFile);
 }
 
 void SaveSettings()

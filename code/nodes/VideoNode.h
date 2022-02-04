@@ -33,7 +33,7 @@ void VideoOperation(Node *self)
 
 	plm_frame_t *frame = NULL;
 
-	if(!plm_seek(state->plm, time, true)) {
+	if(!plm_seek(state->plm, time, false)) {
 		DebugLog("couldn't seek frame\n");
 	}
 	else {

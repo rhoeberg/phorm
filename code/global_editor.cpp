@@ -120,6 +120,11 @@ void UpdateInspector()
 
 		ImGui::Spacing();
 
+		sprintf(buffer, "page##page%d", _nodeEditorState->draggedNode.id);
+		ImGui::InputInt(buffer, &node->page);
+
+		ImGui::Spacing();
+
 		ImGui::Text("output");
 		switch(node->type) {
 			case DATA_INT: {

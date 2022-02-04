@@ -124,9 +124,9 @@ void UpdateLoop()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	// gui();
-	bool show = true;
-	ImGui::ShowDemoWindow(&show);
+
+	// bool show = true;
+	// ImGui::ShowDemoWindow(&show);
 
 	glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
