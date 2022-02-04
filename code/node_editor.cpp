@@ -58,21 +58,17 @@ void InitializeNodeEditor()
 
 	int promptCandidateFocus;
 
-	// int winWidth, winHeight;
-	// GetWindowSize(&winWidth, &winHeight);
-	// NodeEditorSetWindowSize(winWidth, winHeight);
-
 	// CREATE OUTPUT NODE
-	NodeConstructor outputConstructor = {};
-	outputConstructor.op = OutputNodeOp;
-	outputConstructor.createFunc = CreateOutputNode;
-	outputConstructor.setupFunc = NULL;
+	// TODO (rhoe) move this to another place
+	String name("output");
+	AddNodeConstructor(name, OutputNodeOp, CreateOutputNode);
 
 	i32 width, height;
 	GetWindowSize(&width, &height);
 	SetNextConstructPos(vec2((float)width / 2.0f, (float)height / 2.0f));
 
-	editor->output = ConstructNode(String("output"), &outputConstructor);
+	NodeConstructor *constructor = GetNodeConstructors()->Get(name);
+	editor->output = ConstructNode(name, constructor);
 }
 
 Node *GetOutputNode()
