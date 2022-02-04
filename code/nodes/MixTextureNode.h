@@ -57,15 +57,9 @@ void MixTextureOperation(Node *self)
 			i32 index2 = GetPixelIndex(tex2X, tex2Y, tex2->width);
 			Pixel result = {};
 
-			/* if(x > (tex2->width - 1) || */
-			/*    y > (tex2->height - 1)) { */
-			/* 	result = tex1->pixels[index1]; */
-			/* } */
-			/* else { */
 			result.r = ((tex1->pixels[index1].r * inputMul1) + (tex2->pixels[index2].r * inputMul2));
 			result.g = ((tex1->pixels[index1].g * inputMul1) + (tex2->pixels[index2].g * inputMul2));
 			result.b = ((tex1->pixels[index1].b * inputMul1) + (tex2->pixels[index2].b * inputMul2));
-			/* } */
 
 			output->pixels[index1] = result;
 		}
