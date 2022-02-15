@@ -78,9 +78,9 @@
 #include "SceneRender.cpp"
 #include "global_editor.cpp"
 #include "opengl_wrapper.cpp"
-// #include "viewer_render.cpp"
 #include "ViewerRender.cpp"
 #include "scene.cpp"
+#include "RenderObject.cpp"
 #include "texture.cpp"
 #include "mesh.cpp"
 #include "data.cpp"
@@ -150,6 +150,7 @@ void UpdateLoop()
 	///////////////
 	// RENDERING
 	///////////////
+	SetContextViewer();
 	UpdateSceneRender();
 	UpdateViewerRender();
 

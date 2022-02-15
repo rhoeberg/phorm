@@ -33,9 +33,7 @@ void SceneRenderNodeOp(Node *self)
 
 void SetupSceneRenderNode(Node *self)
 {
-	SceneRenderData sceneRenderData = {};
-	sceneRenderData.Initialize();
-	self->extraHandle = GetSceneRenderDatas()->Insert(sceneRenderData);
+	self->extraHandle = GetSceneRenderDatas()->Insert(SceneRenderData());
 }
 
 ObjectHandle CreateSceneRenderNode()

@@ -58,6 +58,10 @@ void InitializeNodeEditor()
 
 	int promptCandidateFocus;
 
+	editor->currentPage = 0;
+	new(&editor->pages) VMArray<String>();
+	editor->pages.Insert(AddString("main"));
+
 	// CREATE OUTPUT NODE
 	// TODO (rhoe) move this to another place
 	String name("output");
@@ -70,9 +74,6 @@ void InitializeNodeEditor()
 	NodeConstructor *constructor = GetNodeConstructors()->Get(name);
 	editor->output = ConstructNode(name, constructor);
 
-	editor->currentPage = 0;
-	new(&editor->pages) VMArray<String>();
-	editor->pages.Insert(AddString("main"));
 }
 
 Node *GetOutputNode()

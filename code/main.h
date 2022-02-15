@@ -61,12 +61,8 @@ global Settings settings;
 #include "NodeConstructor.h"
 #include "global_editor.h"
 #include "scene_editor.h"
-/* #include "viewer_render.h" */
 #include "ViewerRender.h"
 #include "save.h"
-
-/* #include "node/texture.h" */
-/* #include "node/mesh.h" */
 
 GLuint createRectVAO(float w, float h);
 bool singleKeyPress(int GLFW_KEY);

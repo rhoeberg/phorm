@@ -1,6 +1,7 @@
 #pragma once
 /* #include "viewer_render.h" */
 /* #include "ViewerRender.h" */
+
 struct RenderObjectInstance {
 	ObjectHandle renderObjectHandle;
 	vec3 pos;
@@ -27,11 +28,13 @@ struct RenderObjectInstance {
 		rot = _rot;
 		color = _color;
 	}
+
+	void Render();
 };
 
 struct SceneObject
 {
-	ObjectHandle handle; // handle to node (can be renderobject or renderobjectgroup)
+	ObjectHandle handle; // handle to node
 	vec3 pos;
 	vec3 scale;
 	vec3 rot;

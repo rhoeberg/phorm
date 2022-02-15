@@ -1,15 +1,4 @@
 template <typename T>
-ObjectContainer<T>::ObjectContainer()
-{
-	// elements = VMArray<T>();
-	// isFree = VMArray<bool>();
-	// slotID = VMArray<u32>();
-
-	handleType = HANDLE_NONE;
-	dataType = DATA_NONE;
-}
-
-template <typename T>
 ObjectContainer<T>::ObjectContainer(HandleType _handleType, DataType _dataType)
 {
 	// elements = VMArray<T>();
@@ -30,6 +19,7 @@ ObjectHandle ObjectContainer<T>::InsertRaw(T e, bool _free, u32 _slotID)
 	slotID.Insert(_slotID);
 	result.handleType = handleType;
 	result.dataType = dataType;
+	result.isset = true;
 	return result;
 }
 
@@ -48,6 +38,7 @@ ObjectHandle ObjectContainer<T>::Insert(T e)
 			result.slotID = slotID[i];
 			result.handleType = handleType;
 			result.dataType = dataType;
+			result.isset = true;
 			return result;
 		}
 	}
@@ -59,6 +50,7 @@ ObjectHandle ObjectContainer<T>::Insert(T e)
 	slotID.Insert(result.slotID);
 	result.handleType = handleType;
 	result.dataType = dataType;
+	result.isset = true;
 
 	return result;
 }
@@ -77,6 +69,7 @@ ObjectHandle ObjectContainer<T>::InsertNew()
 			result.slotID = slotID[i];
 			result.handleType = handleType;
 			result.dataType = dataType;
+			result.isset = true;
 			return result;
 		}
 	}
@@ -88,6 +81,7 @@ ObjectHandle ObjectContainer<T>::InsertNew()
 	slotID.Insert(result.slotID);
 	result.handleType = handleType;
 	result.dataType = dataType;
+	result.isset = true;
 
 	return result;
 }

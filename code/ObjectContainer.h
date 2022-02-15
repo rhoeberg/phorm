@@ -13,7 +13,7 @@ struct ObjectContainer {
 	HandleType handleType;
 	DataType dataType;
 
-	ObjectContainer();
+	ObjectContainer(){}
 	ObjectContainer(HandleType _handleType, DataType _dataType = DATA_NONE);
 
 	// Used for serialization

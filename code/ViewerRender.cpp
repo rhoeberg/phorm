@@ -73,82 +73,68 @@ void InitializeViewerRender()
 	_viewerRenderState->freeCam = Camera();
 
 	// Initialize default viewer FBO and attached buffers
-	_viewerRenderState->sceneRenderData.Initialize();
+	// _viewerRenderState->sceneRenderData.Initialize();
+	_viewerRenderState->sceneRenderData = GetSceneRenderDatas()->Insert(SceneRenderData());
+
+
+	_viewerRenderState->baseTextureObject = AddNewRenderObject();
+	RenderObject *renderObject = GetRenderObjects()->Get(_viewerRenderState->baseTextureObject);
+	// renderObject->VAOHandle = CreateSpriteVAO();
+	renderObject->VAOHandle = CreateViewerQuad();
+	renderObject->hasTexture = true;
+	renderObject->indicesCount = 6;
+	renderObject->pos = vec3(0, 0, 0);
+	renderObject->rot = vec3(0, 0, 0);
+	renderObject->scale = vec3(1, 1, 1);
+	renderObject->color = vec4(1, 1, 1, 1);
 }
  
-void ViewRenderObject()
+void ViewRenderObject(ObjectHandle renderObject)
 {
 	// render to general FBO
 	// attach general texture (size of window?)
 	// render texture on viewer quad
 
-	Node *viewerNode = GetNode(GetViewerNode());
-	ObjectHandle renderObjectHandle = viewerNode->GetData();
-	RenderObject *renderObject = GetRenderObjects()->Get(renderObjectHandle);
-
-	// glfwMakeContextCurrent(_viewerWindow);
-	SetContextViewer();
-	// SetContextMain();
-
 	int width, height;
 	GetViewerWindowSize(&width, &height);
-	_viewerRenderState->sceneRenderData.SetSize(width, height);
-
+	SceneRenderData *renderData = GetSceneRenderDatas()->Get(_viewerRenderState->sceneRenderData);
+	renderData->SetSize(width, height);
 	glViewport(0, 0, width, height);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, _viewerRenderState->sceneRenderData.fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, renderData->fbo);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-	if(renderObject) {
 
-		defaultShader.Use();
+	// TODO (rhoe) needs to set these uniforms on the
+	//             shader attached to specific renderojbect
+	defaultShader.Use();
+	float aspectRatio = (float)width / (float)height;
+	mat4 projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
+	mat4 view = _viewerRenderState->freeCam.GetViewMatrix();
+	defaultShader.SetUniform("projection", projection);
+	defaultShader.SetUniform("view", view);
+	defaultShader.SetUniform("pointLightAmount", 0);
 
-		glActiveTexture(GL_TEXTURE0);
-		if(renderObject->hasTexture)
-			glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
-		else
-			glBindTexture(GL_TEXTURE_2D, defaultTexture);
+	// RenderObject *renderObject = GetRenderObjects()->Get(handle);
+	// if(renderObject) {
 
+	// ObjectHandle renderObjectHandle = viewerNode->GetData();
+	// RenderObject *renderObject = GetRenderObjects()->Get(renderObjectHandle);
 
-		float aspectRatio = (float)width / (float)height;
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
+	Node *viewerNode = GetNode(GetViewerNode());
+	RenderObjectInstance instance = renderObject;
+	instance.Render();
 
-		mat4 view = _viewerRenderState->freeCam.GetViewMatrix();
-
-		mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-		model = glm::translate(model, renderObject->pos);
-		quat q = quat(renderObject->rot);
-		glm::mat4 rotationMatrix = glm::mat4_cast(q);
-		model = model * rotationMatrix;
-		model = glm::scale(model, renderObject->scale);
-
-		glm::mat3 model3x3 = glm::mat3(model);
-		glm::mat3 normalMatrix = glm::inverseTranspose(model3x3);
-		defaultShader.SetUniform("normalMatrix", normalMatrix);
-
-		// set color
-		defaultShader.SetUniform("objectColor", vec3(1, 0, 0));
-		defaultShader.SetUniform("pointLightAmount", 0);
-
-		defaultShader.SetUniform("projection", projection);
-		defaultShader.SetUniform("view", view);
-		defaultShader.SetUniform("model", model);
-
-		/////////////////
-		// DRAW
-		GLuint VAO = GetCurrentContextVAO(renderObject->VAOHandle);
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-
-	}
+	// SceneObject sceneObject(GetViewerNode(), renderObject);
+	// sceneObject.Render();
+	// }
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// set viewer texture handle to fbo texture
-	_viewerRenderState->currentViewTextureID = _viewerRenderState->sceneRenderData.textureID;
+	_viewerRenderState->currentViewTextureID = renderData->textureID;
 }
 
 void UpdateViewerRender()
@@ -191,37 +177,41 @@ void UpdateViewerRender()
 		_viewerRenderState->freeCam.Reset();
 	}
 
-	glfwMakeContextCurrent(_viewerWindow);
-
-	
 	Node *viewerNode = GetNode(GetViewerNode());
-	if(viewerNode != NULL && viewerNode->type == DATA_RENDEROBJECT) {
-		ViewRenderObject();
-	}
-	// else {
-	// 	glBindTexture(GL_TEXTURE_2D, _viewerRenderState->outputTextureID);
-	// 	Pixel white = Pixel(255, 255, 255, 255);
-	// 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
-	// 	_viewerRenderState->currentViewTextureID = _viewerRenderState->outputTextureID;
-	// }
-	// RenderView((float)width / 2.0f, 0, (float)width / 2.0f, height);
-
-	else {
-	////////////
-	// SET VIEWER TO OUTPUT TEXTURE
-	////////////
-		Node *output = GetOutputNode();
-		Texture *texture = GetTextures()->Get(output->inputs[0]);
-		glBindTexture(GL_TEXTURE_2D, _viewerRenderState->outputTextureID);
-		if(texture) {
+	if(viewerNode) {
+		if(viewerNode->type == DATA_RENDEROBJECT) {
+			ObjectHandle handle = viewerNode->GetData();
+			ViewRenderObject(handle);
+		}
+		else if(viewerNode->type == DATA_TEXTURE) {
+			Texture *texture = GetTextures()->Get(viewerNode->GetData());
+			RenderObject *renderObject = GetRenderObjects()->Get(_viewerRenderState->baseTextureObject);
+			glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			ViewRenderObject(_viewerRenderState->baseTextureObject);
 		}
-		else {
-			Pixel white = Pixel(255, 255, 255, 255);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
+		else if(viewerNode->type == DATA_SCENE) {
+			AddSceneRenderCommand(viewerNode->GetData(),
+								  ObjectHandle(),
+								  _viewerRenderState->sceneRenderData);
 		}
-		glBindTexture(GL_TEXTURE_2D, 0);
-		_viewerRenderState->currentViewTextureID = _viewerRenderState->outputTextureID;
+		else if(viewerNode->type == DATA_NONE) {
+			// OUTPUT NODE
+			Node *output = GetOutputNode();
+			Texture *texture = GetTextures()->Get(output->inputs[0]);
+			glBindTexture(GL_TEXTURE_2D, _viewerRenderState->outputTextureID);
+			if(texture) {
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
+			}
+			else {
+				Pixel white = Pixel(255, 255, 255, 255);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
+			}
+			glBindTexture(GL_TEXTURE_2D, 0);
+			_viewerRenderState->currentViewTextureID = _viewerRenderState->outputTextureID;
+		}
 	}
 
 	int width, height;
@@ -229,11 +219,13 @@ void UpdateViewerRender()
 	RenderView(0, 0, width, height);
 
 	glfwSwapBuffers(_viewerWindow);
-	glfwMakeContextCurrent(_win);
+	// glfwMakeContextCurrent(_win);
+	// SetContextMain();
 }
 
 void RenderView(i32 x, i32 y, i32 width, i32 height)
 {
+	// SetContextViewer();
 	glViewport(x, y, width, height);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  

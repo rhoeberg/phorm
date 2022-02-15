@@ -30,8 +30,8 @@ struct SceneRenderData
 	i32 width;
 	i32 height;
 
-	void Initialize()
-	{
+	SceneRenderData() {
+		SetContextViewer();
 		glGenFramebuffers(1, &fbo);
 		glGenRenderbuffers(1, &rbo);
 		glGenTextures(1, &textureID);

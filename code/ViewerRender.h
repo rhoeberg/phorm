@@ -6,14 +6,15 @@ struct ViewerRenderState
 	Shader shader;
 	u32 outputTextureID;
 
-
-	SceneRenderData sceneRenderData;
+	ObjectHandle sceneRenderData;
 	Scene defaultScene;
 
 	Camera freeCam;
 	vec2 lastDragPos;
 
 	u32 currentViewTextureID;
+
+	ObjectHandle baseTextureObject;
 };
 
 global ViewerRenderState *_viewerRenderState;

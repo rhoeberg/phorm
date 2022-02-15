@@ -125,7 +125,7 @@ void UpdateSceneEditor()
 						static char buf[32];
 						sprintf(buf, "add##%d", i);
 						if(ImGui::Button(buf)) {
-							SceneObject sceneObject = SceneObject(handle);
+							SceneObject sceneObject(handle);
 							state->scene.sceneObjects.Insert(sceneObject);
 						}
 					}

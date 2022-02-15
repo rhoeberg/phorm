@@ -2,30 +2,30 @@
 
 void CombineObjectsOperation(Node *self)
 {
-	RenderObjectGroup *output = GetRenderObjectGroups()->Get(self->GetDataLast());
-	output->pos = self->params[0].Vec3();
-	output->scale = self->params[1].Vec3();
-	output->rot = self->params[2].Vec3();
+	/* RenderObjectGroup *output = GetRenderObjectGroups()->Get(self->GetDataLast()); */
+	/* output->pos = self->params[0].Vec3(); */
+	/* output->scale = self->params[1].Vec3(); */
+	/* output->rot = self->params[2].Vec3(); */
 
-	output->renderObjects.Clear();
+	/* output->renderObjects.Clear(); */
 
-	Node *inputNode1 = GetNode(self->inputs[0].handle);
-	if(inputNode1) {
-		ObjectHandle handle = inputNode1->GetData();
-		if(handle.dataType == DATA_RENDEROBJECT) {
-			RenderObjectInstance instance = RenderObjectInstance(handle);
-			output->renderObjects.Insert(instance);
-		}
-	}
+	/* Node *inputNode1 = GetNode(self->inputs[0].handle); */
+	/* if(inputNode1) { */
+	/* 	ObjectHandle handle = inputNode1->GetData(); */
+	/* 	if(handle.dataType == DATA_RENDEROBJECT) { */
+	/* 		RenderObjectInstance instance = RenderObjectInstance(handle); */
+	/* 		output->renderObjects.Insert(instance); */
+	/* 	} */
+	/* } */
 
-	Node *inputNode2 = GetNode(self->inputs[1].handle);
-	if(inputNode2) {
-		ObjectHandle handle = inputNode2->GetData();
-		if(handle.dataType == DATA_RENDEROBJECT) {
-			RenderObjectInstance instance = RenderObjectInstance(handle);
-			output->renderObjects.Insert(instance);
-		}
-	}
+	/* Node *inputNode2 = GetNode(self->inputs[1].handle); */
+	/* if(inputNode2) { */
+	/* 	ObjectHandle handle = inputNode2->GetData(); */
+	/* 	if(handle.dataType == DATA_RENDEROBJECT) { */
+	/* 		RenderObjectInstance instance = RenderObjectInstance(handle); */
+	/* 		output->renderObjects.Insert(instance); */
+	/* 	} */
+	/* } */
 
 }
 

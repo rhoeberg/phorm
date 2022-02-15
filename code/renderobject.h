@@ -12,4 +12,6 @@ struct RenderObject {
 	/* quat rot; */
 	vec3 rot;
 	vec4 color;
+
+	/* void Render(); */
 };

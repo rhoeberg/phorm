@@ -17,6 +17,9 @@ void SceneNodeEditor(Node *self)
 	/* Scene *scene = GetScenes()->Get(self->extraHandle); */
 	Scene *scene = GetScenes()->Get(self->GetDataLast());
 
+	//////////////////
+	// LIST SCENE OBJECTS
+	//////////////////
 	for(i32 i = 0; i < scene->sceneObjects.Count(); i++) {
 		char nameBuffer[128];
 		ObjectHandle handle = scene->sceneObjects.GetHandle(i);
@@ -77,6 +80,9 @@ void SceneNodeEditor(Node *self)
 	ImGui::Spacing();
 	ImGui::Separator();
 
+	//////////////////
+	// ADD OBJECTS
+	//////////////////
 	if(scene) {
 		for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
 			ObjectHandle handle = _nodeState->nodes.GetHandle(i);
@@ -93,8 +99,7 @@ void SceneNodeEditor(Node *self)
 							scene->pointLights.Insert(handle);
 						}
 						else if(node->type == DATA_RENDEROBJECT) {
-							SceneObject sceneObject = SceneObject(handle);
-							scene->sceneObjects.Insert(sceneObject);
+							scene->sceneObjects.Insert(SceneObject(handle));
 						}
 					}
 				}

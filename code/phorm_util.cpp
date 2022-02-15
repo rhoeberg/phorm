@@ -22,10 +22,12 @@ char* readFile(const char* fileName)
     return result;
 }
 
-void DebugLog(char *format, ...)
+void _DebugLog(char *format, char *filename, i32 linenumber, ...)
 {
 	va_list args;
 	va_start(args, format);
+
+	printf("%s(%d): warning, ", filename, linenumber);
 	printf(format, args);
 	// vsprintf(logs[logCount].text, format, args);
 	va_end(args);
@@ -33,12 +35,13 @@ void DebugLog(char *format, ...)
 	printf("\n");
 }
 
-void ErrorLog(char *format, ...)
+void _ErrorLog(char *format, char *filename, i32 linenumber, ...)
 {
 	va_list args;
 	va_start(args, format);
+
+	printf("%s(%d): error, ", filename, linenumber);
 	printf(format, args);
-	// vsprintf(logs[logCount].text, format, args);
 	va_end(args);
 
 	printf("\n");

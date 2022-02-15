@@ -84,6 +84,11 @@ void SaveU32(u32 u, SaveFile *saveFile)
 	fwrite(&u, sizeof(u32), 1, saveFile->file);
 }
 
+void SaveVec3(vec3 v, SaveFile *saveFile)
+{
+	fwrite(&v, sizeof(vec3), 1, saveFile->file);
+}
+
 int LoadI32(SaveFile *saveFile)
 {
 	int result;
@@ -102,6 +107,13 @@ u32 LoadU32(SaveFile *saveFile)
 {
 	u32 result;
 	fread(&result, sizeof(u32), 1, saveFile->file);
+	return result;
+}
+
+vec3 LoadVec3(vec3 v, SaveFile *saveFile)
+{
+	vec3 result;
+	fread(&result, sizeof(vec3), 1, saveFile->file);
 	return result;
 }
 
@@ -150,7 +162,16 @@ void SaveNodes()
 
 	//////////////
 	// SAVE SCENES
-	SaveObjectContainer<SceneObject>(&_sceneEditorState->scene.sceneObjects, &saveFile);
+	SaveObjectContainer<Scene>(&_nodeState->scenes, &saveFile);
+	for(i32 i = 0; i < _nodeState->scenes.Count(); i++) {
+		Scene *scene = _nodeState->scenes.GetAt(i);
+		if(scene) {
+			SaveVec3(scene->bgColor, &saveFile);
+			SaveObjectContainer<SceneObject>(&scene->sceneObjects, &saveFile);
+			SaveObjectContainer<ObjectHandle>(&scene->pointLights, &saveFile);
+		}
+	}
+	// SaveObjectContainer<SceneObject>(&_sceneEditorState->scene.sceneObjects, &saveFile);
 	// SaveObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
 
@@ -286,7 +307,16 @@ void LoadNodes()
 
 	//////////////
 	// LOAD SCENES
-	LoadObjectContainer<SceneObject>(&_sceneEditorState->scene.sceneObjects, &saveFile);
+	LoadObjectContainer<Scene>(&_nodeState->scenes, &saveFile);
+	for(i32 i = 0; i < _nodeState->scenes.Count(); i++) {
+		Scene *scene = _nodeState->scenes.GetAt(i);
+		if(scene) {
+			LoadVec3(scene->bgColor, &saveFile);
+			LoadObjectContainer<SceneObject>(&scene->sceneObjects, &saveFile);
+			LoadObjectContainer<ObjectHandle>(&scene->pointLights, &saveFile);
+		}
+	}
+	// LoadObjectContainer<SceneObject>(&_sceneEditorState->scene.sceneObjects, &saveFile);
 	// LoadObjectContainer<ObjectHandle>(&_sceneEditorState->scene.pointLights, &saveFile);
 
 	/////////////

@@ -35,7 +35,7 @@ enum DataType {
 };
 
 enum HandleType {
-	HANDLE_NONE,
+	/* HANDLE_NULL, // used to mark handle as unset/null */
 	HANDLE_NODE,
 	HANDLE_DATA,
 	HANDLE_OBJECTHANDLE,
