@@ -49,6 +49,15 @@ VMArray<T>::VMArray(int _max, int _count, T *_data)
 }
 
 template <typename T>
+VMArray<T>::VMArray(int _size)
+{
+	max = _size;
+	count = _size;
+	data = (T*)calloc(max, sizeof(T));
+	initialized = true;
+}
+
+template <typename T>
 VMArray<T>::~VMArray()
 {
 	// TODO (rhoe) for now we call Free manually on arrays when we need to

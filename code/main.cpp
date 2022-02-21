@@ -57,7 +57,7 @@
 #include "main.h"
 #include "imdraw.cpp"
 #include "ImDraw3D.cpp"
-#include "opengl.cpp"
+// #include "opengl.cpp"
 // #include "audio.cpp"
 #include "phorm_util.cpp"
 #include "gui.cpp"
@@ -81,7 +81,7 @@
 #include "ViewerRender.cpp"
 #include "scene.cpp"
 #include "RenderObject.cpp"
-#include "texture.cpp"
+#include "Bitmap.cpp"
 #include "mesh.cpp"
 #include "data.cpp"
 #include "save.cpp"
@@ -111,11 +111,6 @@ void UpdateLoop()
 	// INPUT
 	///////////////
 	glfwPollEvents();
-
-	//////////////
-	// MIDI
-	//////////////
-	MidiReadMessages();
 	
 	///////////////
 	// GUI

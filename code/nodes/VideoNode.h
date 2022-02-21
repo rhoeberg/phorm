@@ -3,7 +3,7 @@
 void VideoOperation(Node *self)
 {
 	// SELF
-	Texture *output = GetTextures()->Get(self->GetDataLast());
+	Bitmap *output = GetBitmaps()->Get(self->GetDataLast());
 	double time = self->params[0].Double();
 
 	VideoNodeState *state = _nodeState->videoNodes.Get(self->extraHandle);
@@ -56,5 +56,5 @@ ObjectHandle CreateVideoNode()
 	FixedArray<NodeInput> inputs = {
 	};
 
-	return AddNode(DATA_TEXTURE, params, inputs);
+	return AddNode(DATA_BITMAP, params, inputs);
 }

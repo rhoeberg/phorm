@@ -35,7 +35,6 @@ ObjectHandle CreateTimeNode()
 	};
 
 	FixedArray<NodeInput> inputs = {
-		NodeInput(DATA_TEXTURE),
 	};
 
 	return AddNode(DATA_DOUBLE, params, inputs);

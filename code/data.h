@@ -1,7 +1,7 @@
 #pragma once
 
 #include "light.h"
-#include "texture.h"
+#include "Bitmap.h"
 #include "mesh.h"
 #include "renderobject.h"
 #include "RenderObjectGroup.h"
@@ -76,7 +76,7 @@ struct NodeState {
 	ObjectContainer<Node> nodes;
 
 	// data arrays
-	ObjectContainer<Texture> textures;
+	ObjectContainer<Bitmap> bitmaps;
 	ObjectContainer<Mesh> meshes;
 	ObjectContainer<RenderObject> renderObjects;
 	ObjectContainer<RenderObjectGroup> renderObjectGroups;
@@ -98,7 +98,7 @@ struct NodeState {
 global NodeState *_nodeState;
 
 ObjectContainer<Node>* GetNodes();
-ObjectContainer<Texture>* GetTextures();
+ObjectContainer<Bitmap>* GetBitmaps();
 ObjectContainer<Mesh>* GetMeshes();
 ObjectContainer<double>* GetDoubles();
 ObjectContainer<int>* GetInts();

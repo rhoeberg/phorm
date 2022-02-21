@@ -1,7 +1,8 @@
 #pragma once
 struct RenderObject {
 	bool hasTexture;
-	GLuint textureID;
+	/* GLuint textureID; */
+	i32 textureHandle;
 	int VAOHandle; // not a direct VAO id but an abstract handle
 	GLuint VBO;
 	GLuint EBO;

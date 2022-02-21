@@ -9,7 +9,16 @@ struct Shader
 	Shader(const char *vPath, const char *fPath)
 	{
 		// TODO (rhoe) move all shader gl code here
-		id = createShaderProgram(vPath, fPath);
+		id = CreateShaderProgram(vPath, fPath);
+	}
+
+	// create a compute shader
+	Shader(const char *cPath)
+	{
+		id = glCreateProgram();
+		GLuint computeShader = CreateShader(cPath, GL_COMPUTE_SHADER);
+		glAttachShader(id, computeShader);
+		glLinkProgram(id);
 	}
 
 	void Use()

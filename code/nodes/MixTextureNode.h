@@ -18,48 +18,48 @@ void MixTextureOperation(Node *self)
 	i32 order = self->params[1].Int();
 
 	// GET INPUTS
-	Texture *tex1 = NULL;
-	Texture *tex2 = NULL;
+	Bitmap *input1 = NULL;
+	Bitmap *input2 = NULL;
 	if(order == 0) {
-		tex1 = GetTextures()->Get(self->inputs[0]);
-		tex2 = GetTextures()->Get(self->inputs[1]);
+		input1 = GetBitmaps()->Get(self->inputs[0]);
+		input2 = GetBitmaps()->Get(self->inputs[1]);
 	}
 	else {
-		tex1 = GetTextures()->Get(self->inputs[1]);
-		tex2 = GetTextures()->Get(self->inputs[0]);
+		input1 = GetBitmaps()->Get(self->inputs[1]);
+		input2 = GetBitmaps()->Get(self->inputs[0]);
 	}
 
-	if(!tex1 || !tex2) {
+	if(!input1 || !input2) {
 		ErrorLog("MixTextureNode: could not find inputs");
 		return;
 	}
 
-	Texture *output = GetTextures()->Get(self->GetDataLast());
+	Bitmap *output = GetBitmaps()->Get(self->GetDataLast());
 	if(!output) {
 		ErrorLog("MixTextureNode: could not find output");
 		return;
 	}
 
-	output->Create(tex1->width, tex1->height);
+	output->Create(input1->width, input1->height);
 
 	// OPERATION
 	float inputMul1 = 1.0f - mix;
 	float inputMul2 = mix;
-	float stepX = (float)tex2->width / (float)tex1->width;
-	float stepY = (float)tex2->height / (float)tex1->height;
+	float stepX = (float)input2->width / (float)input1->width;
+	float stepY = (float)input2->height / (float)input1->height;
 	for(int x = 0; x < output->width; x++) {
 		for(i32 y = 0; y < output->height; y++) {
-			i32 index1 = GetPixelIndex(x, y, tex1->width);
+			i32 index1 = GetPixelIndex(x, y, input1->width);
 
-			i32 tex2X = (i32)(x * stepX);
-			i32 tex2Y = (i32)(y * stepY);
+			i32 input2X = (i32)(x * stepX);
+			i32 input2Y = (i32)(y * stepY);
 
-			i32 index2 = GetPixelIndex(tex2X, tex2Y, tex2->width);
+			i32 index2 = GetPixelIndex(input2X, input2Y, input2->width);
 			Pixel result = {};
 
-			result.r = ((tex1->pixels[index1].r * inputMul1) + (tex2->pixels[index2].r * inputMul2));
-			result.g = ((tex1->pixels[index1].g * inputMul1) + (tex2->pixels[index2].g * inputMul2));
-			result.b = ((tex1->pixels[index1].b * inputMul1) + (tex2->pixels[index2].b * inputMul2));
+			result.r = ((input1->pixels[index1].r * inputMul1) + (input2->pixels[index2].r * inputMul2));
+			result.g = ((input1->pixels[index1].g * inputMul1) + (input2->pixels[index2].g * inputMul2));
+			result.b = ((input1->pixels[index1].b * inputMul1) + (input2->pixels[index2].b * inputMul2));
 
 			output->pixels[index1] = result;
 		}
@@ -74,9 +74,9 @@ ObjectHandle CreateMixTexture()
 	};
 
 	FixedArray<NodeInput> inputs = {
-		NodeInput(DATA_TEXTURE),
-		NodeInput(DATA_TEXTURE),
+		NodeInput(DATA_BITMAP),
+		NodeInput(DATA_BITMAP),
 	};
 
-	return AddNode(DATA_TEXTURE, params, inputs);
+	return AddNode(DATA_BITMAP, params, inputs);
 }

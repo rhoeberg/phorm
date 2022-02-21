@@ -2,7 +2,7 @@
 
 void SceneRenderNodeOp(Node *self)
 {
-	Texture *output = GetTextures()->Get(self->GetDataLast());
+	Bitmap *output = GetBitmaps()->Get(self->GetDataLast());
 	if(!output) {
 		ErrorLog("SceneRenderNode: could not find texture output");
 		return;
@@ -48,5 +48,5 @@ ObjectHandle CreateSceneRenderNode()
 		NodeInput(DATA_SCENE),
 	};
 
-	return AddNode(DATA_TEXTURE, params, inputs);
+	return AddNode(DATA_BITMAP, params, inputs);
 }

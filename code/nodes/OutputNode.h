@@ -2,7 +2,7 @@
 
 void OutputNodeOp(Node *self)
 {
-	Texture *input = GetTextures()->Get(self->inputs[0]);
+	Bitmap *input = GetBitmaps()->Get(self->inputs[0]);
 	if(!input) {
 		ErrorLog("Output node: invalid input texture\n");
 		return;
@@ -23,7 +23,7 @@ ObjectHandle CreateOutputNode()
 	};
 
 	FixedArray<NodeInput> inputs = {
-		NodeInput(DATA_TEXTURE),
+		NodeInput(DATA_BITMAP),
 	};
 
 	return AddNode(DATA_NONE, params, inputs);

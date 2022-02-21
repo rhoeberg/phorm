@@ -125,8 +125,8 @@ void ImDrawSetWindowSize(int width, int height)
 
 void ImDrawInitialize()
 {
-    imDrawShader = createShaderProgram("assets/shaders/imdraw.vs", "assets/shaders/imdraw.frag");
-	textShader = createShaderProgram("assets/shaders/font_shader.vert", "assets/shaders/font_shader.frag");
+    imDrawShader = CreateShaderProgram("assets/shaders/imdraw.vs", "assets/shaders/imdraw.frag");
+	textShader = CreateShaderProgram("assets/shaders/font_shader.vert", "assets/shaders/font_shader.frag");
 
     glGenVertexArrays(1, &imDrawVAO);
     glGenBuffers(1, &imDrawVBO);

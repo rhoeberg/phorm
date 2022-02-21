@@ -156,7 +156,7 @@ void CleanupNodes()
 	// we should also free all the arrays in the node
 	// like input and param
 	_nodeState->nodes.Free();
-	_nodeState->textures.Free();
+	_nodeState->bitmaps.Free();
 
 	for(int i = 0; i < _nodeState->strings.Count(); i++) {
 		ObjectHandle handle = _nodeState->strings.GetHandle(i);

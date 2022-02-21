@@ -34,7 +34,7 @@ global u64 frameCount;
 global Settings settings;
 
 // #include "audio.h"
-#include "opengl.h"
+/* #include "opengl.h" */
 #include "phorm_util.h"
 #include "simplexnoise1234.h"
 #include "math.h"

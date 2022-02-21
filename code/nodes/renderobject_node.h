@@ -10,12 +10,9 @@ void RenderObjectOperation(Node *self)
 	output->rot = self->params[2].Vec3();
 	output->color = self->params[2].Vec4();
 
-	Texture *inputTexture = GetTextures()->Get(self->inputs[1]);
-	if(inputTexture) {
-		glBindTexture(GL_TEXTURE_2D, output->textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, inputTexture->width, inputTexture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, inputTexture->pixels);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
+	Bitmap *inputBitmap = GetBitmaps()->Get(self->inputs[1]);
+	if(inputBitmap) {
+		GFXTextureUploadBitmap(output->textureHandle, inputBitmap);
 		output->hasTexture = true;
 	}
 	else {
@@ -47,7 +44,7 @@ ObjectHandle CreateRenderObjectNode()
 
 	FixedArray<NodeInput> inputs = {
 		NodeInput(DATA_MESH),
-		NodeInput(DATA_TEXTURE),
+		NodeInput(DATA_BITMAP),
 	};
 
 	return AddNode(DATA_RENDEROBJECT, params, inputs);

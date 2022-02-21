@@ -258,9 +258,9 @@ void RenderObjectInstance::Render()
 
 	glActiveTexture(GL_TEXTURE0);
 	if(renderObject->hasTexture)
-		glBindTexture(GL_TEXTURE_2D, renderObject->textureID);
+		GFXBindTexture(renderObject->textureHandle);
 	else
-		glBindTexture(GL_TEXTURE_2D, defaultTexture);
+		GFXBindDefaultTexture();
 
 
 	mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);

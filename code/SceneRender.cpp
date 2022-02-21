@@ -2,7 +2,6 @@
 global Shader defaultShader;
 // global Camera cam;
 global vec2 lastDragPos;
-global GLuint defaultTexture;
 
 void InitializeSceneRender()
 {
@@ -11,13 +10,6 @@ void InitializeSceneRender()
 
     defaultShader = Shader("assets/shaders/texture.vert", "assets/shaders/texture.frag");
 
-	// create default texture
-	Pixel white = Pixel(255, 255, 255, 255);
-	glGenTextures(1, &defaultTexture);
-	glBindTexture(GL_TEXTURE_2D, defaultTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void AddSceneRenderCommand(ObjectHandle scene, ObjectHandle texture, ObjectHandle sceneRenderData)
@@ -99,15 +91,15 @@ void RenderSceneCommand(SceneRenderCommand command)
 	// GetViewerWindowSize(&width, &height);
 	// texture->Create(width, height);
 	// renderData->SetSize(width, height);
-
-	glViewport(0, 0, renderData->width, renderData->height);
+	GFXSetViewport(0, 0, renderData->width, renderData->height);
 
 	// render scene to framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, renderData->fbo);
+
     glDisable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
-	glClearColor(scene->bgColor.r, scene->bgColor.g, scene->bgColor.b, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+
+	GFXClear(scene->bgColor);
 
 	// SHADER
 	// testShader.Use();
@@ -187,14 +179,14 @@ void RenderSceneCommand(SceneRenderCommand command)
 
 	// get texture from GPU
 	if(command.texture.isset) {
-		Texture *texture = GetTextures()->Get(command.texture);
-		if(!texture) {
+		Bitmap *bitmap = GetBitmaps()->Get(command.texture);
+		if(!bitmap) {
 			ErrorLog("SceneDataToTexture: could not find texture from handle");
 			return;
 		}
 
-		if(texture->width != renderData->width ||
-		   texture->height != renderData->height) {
+		if(bitmap->width != renderData->width ||
+		   bitmap->height != renderData->height) {
 			ErrorLog("SceneDataToTexture: size mismatch between SceneData and Texture");
 			return;
 		}
@@ -204,7 +196,7 @@ void RenderSceneCommand(SceneRenderCommand command)
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		void *mappedBuffer = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
 		if(mappedBuffer) {
-			memcpy(texture->pixels, mappedBuffer, sizeof(Pixel) * texture->width * texture->height);
+			memcpy(bitmap->pixels, mappedBuffer, sizeof(Pixel) * bitmap->width * bitmap->height);
 			glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 		}
 	}

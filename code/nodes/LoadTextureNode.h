@@ -8,8 +8,9 @@ void LoadTextureOp(Node *self)
 	String *path = GetStrings()->Get(self->params[0].dataHandle);
 	unsigned char *data = stbi_load(path->buffer, &width, &height, &nrChannels, STBI_rgb_alpha);
 	if(data) {
-		Texture *output = GetTextures()->Get(self->GetDataLast());
+		Bitmap *output = GetBitmaps()->Get(self->GetDataLast());
 		output->Create(width, height);
+
 		DebugLog("width:%d\n", width);
 		DebugLog("height:%d\n", height);
 		DebugLog("nrChannels:%d\n", nrChannels);
@@ -25,8 +26,8 @@ ObjectHandle LoadTextureCreate()
 	};
 
 	FixedArray<NodeInput> inputs = {
-		NodeInput(DATA_TEXTURE),
+		NodeInput(DATA_BITMAP),
 	};
 
-	return AddNode(DATA_TEXTURE, params, inputs);
+	return AddNode(DATA_BITMAP, params, inputs);
 }

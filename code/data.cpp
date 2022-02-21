@@ -12,7 +12,7 @@ void InitializeData()
 	new(&_nodeState->nodes) ObjectContainer<Node>(HANDLE_NODE);
 
 	// data containers
-	new(&_nodeState->textures) ObjectContainer<Texture>(HANDLE_DATA, DATA_TEXTURE);
+	new(&_nodeState->bitmaps) ObjectContainer<Bitmap>(HANDLE_DATA, DATA_BITMAP);
 	new(&_nodeState->meshes) ObjectContainer<Mesh>(HANDLE_DATA, DATA_MESH);
 	new(&_nodeState->renderObjects) ObjectContainer<RenderObject>(HANDLE_DATA, DATA_RENDEROBJECT);
 	new(&_nodeState->renderObjectGroups) ObjectContainer<RenderObjectGroup>(HANDLE_DATA, DATA_RENDEROBJECT_GROUP);
@@ -55,9 +55,9 @@ ObjectContainer<Mesh>* GetMeshes()
 	return &_nodeState->meshes;
 }
 
-ObjectContainer<Texture>* GetTextures()
+ObjectContainer<Bitmap>* GetBitmaps()
 {
-	return &_nodeState->textures;
+	return &_nodeState->bitmaps;
 }
 
 ObjectContainer<RenderObject>* GetRenderObjects()
@@ -125,7 +125,7 @@ RenderObject CreateRenderObject()
 	result.VAOHandle = AddVAO();
 	glGenBuffers(1, &result.EBO);
 	glGenBuffers(1, &result.VBO);
-	glGenTextures(1, &result.textureID);
+	result.textureHandle = GFXAddTexture();
 
 	return result;
 }
@@ -135,7 +135,7 @@ RenderObject CreateRenderObject()
 /////////////////
 void CleanupData()
 {
-	for(i32 i = 0; i < _nodeState->textures.Count(); i++) {
-		free(_nodeState->textures.GetAt(i)->pixels);
+	for(i32 i = 0; i < _nodeState->bitmaps.Count(); i++) {
+		free(_nodeState->bitmaps.GetAt(i)->pixels);
 	}
 }

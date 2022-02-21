@@ -22,26 +22,29 @@ char* readFile(const char* fileName)
     return result;
 }
 
-void _DebugLog(char *format, char *filename, i32 linenumber, ...)
+void _DebugLog(char *filename, i32 linenumber, char *format, ...)
 {
+	printf("%s(%d): warning, ", filename, linenumber);
+
 	va_list args;
 	va_start(args, format);
 
-	printf("%s(%d): warning, ", filename, linenumber);
-	printf(format, args);
-	// vsprintf(logs[logCount].text, format, args);
+	// cannot use normal printf when using varargs, have to use vprintf
+	//                   (for sprintf we use vsprintf)
+	vprintf(format, args);
 	va_end(args);
 
 	printf("\n");
 }
 
-void _ErrorLog(char *format, char *filename, i32 linenumber, ...)
+void _ErrorLog(char *filename, i32 linenumber, char *format, ...)
 {
+	printf("%s(%d): error, ", filename, linenumber);
+
 	va_list args;
 	va_start(args, format);
 
-	printf("%s(%d): error, ", filename, linenumber);
-	printf(format, args);
+	vprintf(format, args);
 	va_end(args);
 
 	printf("\n");

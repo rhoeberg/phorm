@@ -36,11 +36,9 @@ void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 
 	ObjectHandle dataHandle = {};
 	switch(node->type) {
-		case DATA_TEXTURE: {
-			// dataHandle = _nodeState->textures.InsertNew();
-			Texture texture = {};
-			// dataHandle = AddNewTexture(TEXTURE_SIZE, TEXTURE_SIZE);
-			dataHandle = GetTextures()->Insert(texture);
+		case DATA_BITMAP: {
+			Bitmap bitmap = {};
+			dataHandle = GetBitmaps()->Insert(bitmap);
 			break;
 		}
 		case DATA_MESH: {
@@ -185,11 +183,9 @@ void SetupNodeConstructors()
  */
 void NamesBeginningWith(VMArray<String> *array, String typed)
 {
-
 	array->Clear();
 	NodeConstructorState *state = _nodeConstructorState;
 
-	// VMArray<String> results = VMArray<String>();
 	for(i32 i = 0; i < state->names.Count(); i++) {
 		if(state->names[i].length >= typed.length) {
 			bool match = true;
@@ -201,23 +197,18 @@ void NamesBeginningWith(VMArray<String> *array, String typed)
 				}
 			}
 			if(match) {
-				// results.Insert(state->names[i]);
 				array->Insert(state->names[i]);
 			}
 		}
 	}
-
-	// return results;
 }
 
 void BaseNodeDrawFunc(Node *node)
 {
-	// Rect rect = GetNodeRect(handle);
 	node->rect.width = NODE_BASE_WIDTH;
 	node->rect.width += node->params.Count() * PARAM_WIDTH;
 	node->rect.width += node->inputs.Count() * PARAM_WIDTH;
 	node->rect.height = NODE_HEIGHT;
-	// Rect rect = node->rect;
 	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 	ImDrawRect(node->rect);
 
