@@ -184,6 +184,11 @@ void SaveNodes()
 
 void LoadNodes()
 {
+
+	// TODO (rhoe) we need to clear data when loading
+	// CLEAR DATA BEFORE LOADING NEW PROJECT
+	GetBitmaps()->Clear();
+
 	SaveFile saveFile = {};
 	saveFile.file = fopen("testsave.octo", "rb");
 
@@ -221,9 +226,6 @@ void LoadNodes()
 			node->initialized = false;
 		}
 	}
-
-	// TODO (rhoe) we need to clear data when loading
-	GetBitmaps()->Clear();
 
 	// load textures
 	// {

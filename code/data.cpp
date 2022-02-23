@@ -124,6 +124,7 @@ RenderObject CreateRenderObject()
 	glGenBuffers(1, &result.EBO);
 	glGenBuffers(1, &result.VBO);
 	result.textureHandle = GFXTextureAdd();
+	result.wireframe = false;
 
 	return result;
 }
@@ -134,6 +135,9 @@ RenderObject CreateRenderObject()
 void CleanupData()
 {
 	for(i32 i = 0; i < _nodeState->bitmaps.Count(); i++) {
-		free(_nodeState->bitmaps.GetAt(i)->pixels);
+		Bitmap *bitmap = _nodeState->bitmaps.GetAt(i);
+		if(bitmap && bitmap->initialized) {
+			free(bitmap->pixels);
+		}
 	}
 }

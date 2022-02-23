@@ -240,18 +240,22 @@ global Shader testShader;
 
 
 // TODO (rhoe) passing shader as arg is a tmp hack
+//             will be replaced once we have materials
 void RenderObjectInstance::Render(Shader *shader)
 {
-	// Node *node = GetNode(handle);
-	// if(!node) {
-	// 	DebugLog("SceneObject: node handle not set");
-	// 	return;
-	// }
-
 	RenderObject *renderObject = GetRenderObjects()->Get(renderObjectHandle);
 	if(!renderObject) {
 		DebugLog("SceneObject: tried to render sceneobject without renderobject");
 		return;
+	}
+
+	///////////////////
+	// WIREFRAME MODE
+	if(renderObject->wireframe) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
 	// TODO (rhoe) change default shader to material shader attached to renderobject
@@ -287,5 +291,7 @@ void RenderObjectInstance::Render(Shader *shader)
 	glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	shader->End();
 }
