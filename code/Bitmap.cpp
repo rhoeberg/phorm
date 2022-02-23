@@ -1,5 +1,10 @@
 #include "Bitmap.h"
 
+Bitmap::Bitmap()
+{
+	initialized = false;
+}
+
 Bitmap::Bitmap(i32 _width, i32 _height, Pixel *inputPixels)
 {
 	width = _width;
@@ -47,6 +52,11 @@ void Bitmap::Create(i32 _width, i32 _height, Pixel *inputPixels)
 			memcpy(pixels, inputPixels, sizeof(Pixel) * width * height);
 		}
 	}
+}
+
+u64 Bitmap::GetMemSize()
+{
+	return width * height * sizeof(Pixel);
 }
 
 int GetPixelIndex(i32 x, i32 y, i32 width)

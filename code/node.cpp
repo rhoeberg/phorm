@@ -77,6 +77,19 @@ ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray
 	return _nodeState->nodes.Insert(node);
 }
 
+// TODO (rhoe) perhaps we should allow auto casting of int and doubles
+// bool ValidInputType(DataType a, DataType b)
+// {
+// 	if(a == b)
+// 		return true;
+
+// 	if(a == DATA_DOUBLE && b == DATA_INT ||
+// 	   a == DATA_INT && b == DATA_DOUBLE)
+// 		return true;
+
+// 	return false;
+// }
+
 bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int paramIndex)
 {
 	Node *node = GetNode(handle);
@@ -88,6 +101,7 @@ bool ConnectNodeParameter(ObjectHandle handle, ObjectHandle outHandle, int param
 
 	if(handle.id == outHandle.id ||
 	   node->params[paramIndex].type != outputNode->type) {
+	   // !ValidInputType(node->params[paramIndex].type, outputNode->type)) {
 		return false;
 	}
 

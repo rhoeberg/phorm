@@ -26,10 +26,11 @@ struct Bitmap {
 	u32 height;
 	Pixel *pixels;
 
-	Bitmap(){};
+	Bitmap();
 	Bitmap(i32 _width, i32 _height, Pixel *_pixels);
 	void Create(i32 _width, i32 _height);
 	void Create(i32 _width, i32 _height, Pixel *_pixels);
+	u64 GetMemSize();
 };
 
 int GetPixelIndex(i32 x, i32 y, i32 height);

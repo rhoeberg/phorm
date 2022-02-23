@@ -222,6 +222,9 @@ void LoadNodes()
 		}
 	}
 
+	// TODO (rhoe) we need to clear data when loading
+	GetBitmaps()->Clear();
+
 	// load textures
 	// {
 	// 	_nodeState->textures.Clear();

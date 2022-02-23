@@ -29,7 +29,7 @@ struct RenderObjectInstance {
 		color = _color;
 	}
 
-	void Render();
+	void Render(Shader *shader);
 };
 
 struct SceneObject

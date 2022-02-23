@@ -239,7 +239,8 @@ global Shader testShader;
 // }
 
 
-void RenderObjectInstance::Render()
+// TODO (rhoe) passing shader as arg is a tmp hack
+void RenderObjectInstance::Render(Shader *shader)
 {
 	// Node *node = GetNode(handle);
 	// if(!node) {
@@ -254,11 +255,11 @@ void RenderObjectInstance::Render()
 	}
 
 	// TODO (rhoe) change default shader to material shader attached to renderobject
-	defaultShader.Use();
+	shader->Begin();
 
 	glActiveTexture(GL_TEXTURE0);
 	if(renderObject->hasTexture)
-		GFXBindTexture(renderObject->textureHandle);
+		GFXTextureBind(renderObject->textureHandle);
 	else
 		GFXBindDefaultTexture();
 
@@ -273,11 +274,11 @@ void RenderObjectInstance::Render()
 
 	glm::mat3 model3x3 = glm::mat3(model);
 	glm::mat3 normalMatrix = glm::inverseTranspose(model3x3);
-	defaultShader.SetUniform("normalMatrix", normalMatrix);
+	shader->SetUniform("normalMatrix", normalMatrix);
 
 	// set color
-	defaultShader.SetUniform("objectColor", vec3(1, 0, 0));
-	defaultShader.SetUniform("model", model);
+	shader->SetUniform("objectColor", vec3(1, 0, 0));
+	shader->SetUniform("model", model);
 
 	/////////////////
 	// DRAW
@@ -285,4 +286,6 @@ void RenderObjectInstance::Render()
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	shader->End();
 }

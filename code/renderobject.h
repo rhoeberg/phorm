@@ -2,7 +2,7 @@
 struct RenderObject {
 	bool hasTexture;
 	/* GLuint textureID; */
-	i32 textureHandle;
+	u32 textureHandle;
 	int VAOHandle; // not a direct VAO id but an abstract handle
 	GLuint VBO;
 	GLuint EBO;

@@ -65,6 +65,7 @@ void InitializeViewerRender()
 	_viewerRenderState = (ViewerRenderState*)malloc(sizeof(ViewerRenderState));
 	_viewerRenderState->quadVAO = CreateViewerQuad();
 	_viewerRenderState->shader = Shader("assets/shaders/viewer.vert", "assets/shaders/viewer.frag");
+	_viewerRenderState->objectShader = Shader("assets/shaders/base.vert", "assets/shaders/base.frag");
 	glGenTextures(1, &_viewerRenderState->outputTextureID);
 	glBindTexture(GL_TEXTURE_2D, _viewerRenderState->outputTextureID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -109,13 +110,16 @@ void ViewRenderObject(ObjectHandle renderObject)
 
 	// TODO (rhoe) needs to set these uniforms on the
 	//             shader attached to specific renderojbect
-	defaultShader.Use();
+	_viewerRenderState->objectShader.Begin();
 	float aspectRatio = (float)width / (float)height;
 	mat4 projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 	mat4 view = _viewerRenderState->freeCam.GetViewMatrix();
-	defaultShader.SetUniform("projection", projection);
-	defaultShader.SetUniform("view", view);
-	defaultShader.SetUniform("pointLightAmount", 0);
+	_viewerRenderState->objectShader.SetUniform("projection", projection);
+	_viewerRenderState->objectShader.SetUniform("view", view);
+	// defaultShader.SetUniform("projection", projection);
+	// defaultShader.SetUniform("view", view);
+	// _viewerRenderState->objectShader.End();
+	// defaultShader.SetUniform("pointLightAmount", 0);
 
 	// RenderObject *renderObject = GetRenderObjects()->Get(handle);
 	// if(renderObject) {
@@ -125,7 +129,7 @@ void ViewRenderObject(ObjectHandle renderObject)
 
 	Node *viewerNode = GetNode(GetViewerNode());
 	RenderObjectInstance instance = renderObject;
-	instance.Render();
+	instance.Render(&_viewerRenderState->objectShader);
 
 	// SceneObject sceneObject(GetViewerNode(), renderObject);
 	// sceneObject.Render();
@@ -135,6 +139,7 @@ void ViewRenderObject(ObjectHandle renderObject)
 
 	// set viewer texture handle to fbo texture
 	_viewerRenderState->currentViewTextureID = renderData->textureID;
+
 }
 
 void UpdateViewerRender()
@@ -227,7 +232,7 @@ void RenderView(i32 x, i32 y, i32 width, i32 height)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
-	_viewerRenderState->shader.Use();
+	_viewerRenderState->shader.Begin();
 
 	///////////////////
 	// SETUP OUTPUT TEXTURE
@@ -238,6 +243,8 @@ void RenderView(i32 x, i32 y, i32 width, i32 height)
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	_viewerRenderState->shader.End();
 
 }
 

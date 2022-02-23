@@ -1,31 +1,6 @@
-/*
-  
-  optimise using compute shaders.
-
-  approach:
-  1. create compute shader
-  2. create buffer object to match input texture (recreate when input changes)
-       (mapped buffer object so we can read back data)
-  3. use compute shader 
-  4. bind buffer object
-  5. dispatch
-  6. memory barrier
-  7. memcpy from mapped buffer to output texture
-  
-
-  todos:
-  - create texture for the blurnode state
-  - create pbo
-  - upload texture before compute
-  - compute
-  - copy from pbo to output pixels
-  
-
- */
-
 #pragma once
 
-void BlurOperation(Node *self)
+void WaveyOp(Node *self)
 {
 	// INPUTS
 	Bitmap *inputBitmap = GetBitmaps()->Get(self->inputs[0]);
@@ -49,6 +24,10 @@ void BlurOperation(Node *self)
 		return;
 	}
 
+	int amount = self->params[0].Int();
+	int offset = self->params[1].Int();
+	double freq = self->params[2].Double();
+
 	output->Create(inputBitmap->width, inputBitmap->height);
 
 	if(state->width != inputBitmap->width ||
@@ -63,12 +42,16 @@ void BlurOperation(Node *self)
 	GFXTextureUploadBitmap(state->textureHandle, inputBitmap);
 
 	state->compute.Begin();
+	state->compute.SetUniform("offset", offset);
+	state->compute.SetUniform("amount", amount);
+	state->compute.SetUniform("freq", (float)freq);
 
 	GFXTextureBindBase(state->textureHandle, 0);
 
 	GFXCompute(inputBitmap->width, inputBitmap->height, 1);
 	GFXMemBarrier(GFX_BARRIER_IMAGE);
 	state->compute.End();
+	/* GFXFinish(); */
 
 	GFXTextureGetImage(state->textureHandle, state->pboHandle);
 	void *mappedBuffer = GFXBufferMap(state->pboHandle);
@@ -78,26 +61,21 @@ void BlurOperation(Node *self)
 	}
 }
 
-/* void AddBlurNodeConstructor() */
-/* { */
-/* 	// 1. create global blur shader */
-
-/* 	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture, SetupBlurNode); */
-/* } */
-
-void SetupBlurNode(Node *self)
+void SetupWaveyNode(Node *self)
 {
 	BlurNodeState state = {};
-	state.compute = Shader("assets/shaders/blur.comp");
-	/* state.bufferHandle = GFXBufferAdd(GFX_BUFFER_STORAGE); */
+	state.compute = Shader("assets/shaders/wavey.comp");
 	state.pboHandle = GFXBufferAdd(GFX_BUFFER_PBO);
 	state.textureHandle = GFXTextureAdd();
 	self->extraHandle = GetBlurNodes()->Insert(state);
 }
 
-ObjectHandle CreateBlurTexture()
+ObjectHandle CreateWaveyNode()
 {
 	FixedArray<NodeParameter> params = {
+		NodeParameter("amount", 20),
+		NodeParameter("offset", 0),
+		NodeParameter("freq", 0.0),
 	};
 
 	FixedArray<NodeInput> inputs = {

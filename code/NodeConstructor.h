@@ -4,6 +4,7 @@ void BaseNodeDrawFunc(Node *node);
 
 #include "nodes/LoadTextureNode.h"
 #include "nodes/BlurNode.h"
+#include "nodes/WaveyNode.h"
 #include "nodes/MixTextureNode.h"
 #include "nodes/VideoNode.h"
 #include "nodes/SceneRenderNode.h"

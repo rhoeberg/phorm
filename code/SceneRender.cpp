@@ -103,7 +103,7 @@ void RenderSceneCommand(SceneRenderCommand command)
 
 	// SHADER
 	// testShader.Use();
-	defaultShader.Use();
+	defaultShader.Begin();
 
 	float aspectRatio = renderData->width / renderData->height;
 	// float aspectRatio = (float)VIEWER_SIZE / (float)VIEWER_SIZE;
@@ -155,7 +155,7 @@ void RenderSceneCommand(SceneRenderCommand command)
 					//             should call OP?
 					ObjectHandle renderObjectHandle = node->GetData();
 					RenderObjectInstance instance = sceneObject->ToRenderObjectInstance(renderObjectHandle);
-					instance.Render();
+					instance.Render(&defaultShader);
 					break;
 				}
 			}
@@ -174,6 +174,7 @@ void RenderSceneCommand(SceneRenderCommand command)
 			// }
 		}
 	}
+	defaultShader.End();
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

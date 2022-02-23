@@ -13,12 +13,12 @@ void InitializeOpenglWrapper()
 	_openglWrapperState = (OpenglWrapperState*)malloc(sizeof(OpenglWrapperState));
 	new(&_openglWrapperState->mainContextVAO) VMArray<GLuint>();
 	new(&_openglWrapperState->viewerContextVAO) VMArray<GLuint>();
-	new(&_openglWrapperState->buffers) VMArray<Buffer>();
+	new(&_openglWrapperState->buffers) VMArray<GFXBuffer>();
 	new(&_openglWrapperState->textures) VMArray<GFXTexture>();
 
 	_openglWrapperState->viewerInMain = true;
 
-	_openglWrapperState->defaultTexture = GFXAddTexture();
+	_openglWrapperState->defaultTexture = GFXTextureAdd();
 
 	// create default texture
 	// glGenTextures(1, &defaultTexture);
@@ -26,7 +26,7 @@ void InitializeOpenglWrapper()
 	Pixel white = Pixel(255, 255, 255, 255);
 	Bitmap whiteBitmap(1, 1, &white);
 
-	GFXBindTexture(_openglWrapperState->defaultTexture);
+	GFXTextureBind(_openglWrapperState->defaultTexture);
 	// glBindTexture(GL_TEXTURE_2D, defaultTexture);
 	GFXTextureUploadBitmap(_openglWrapperState->defaultTexture, &whiteBitmap);
 	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
@@ -80,17 +80,6 @@ int AddVAO()
 	ASSERT(viewerResult == mainResult);
 
 	return mainResult;
-}
-
-
-i32 AddStorageBuffer(u64 size)
-{
-	Buffer result;
-	glGenBuffers(1, &result.id);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, result.id);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, size, NULL, GL_DYNAMIC_READ);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	return _openglWrapperState->buffers.Insert(result);
 }
 
 bool ViewerInMain()
@@ -267,14 +256,92 @@ void GFXSetViewport(i32 x, i32 y, i32 width, i32 height)
 	glViewport(x, y, width, height);
 }
 
+void GFXCompute(u32 x, u32 y, u32 z)
+{
+	glDispatchCompute(x, y, z);
+}
+
+void GFXMemBarrier(GFXBarrierType type)
+{
+	glMemoryBarrier(GetBarrierType(type));
+}
+
+void GFXFinish()
+{
+	glFinish();
+}
+
 
 ///////////////
 // RESOURCES
 ///////////////
 
+// STORAGE BUFFER
+i32 GFXBufferAdd(GFXBufferType type)
+{
+	GFXBuffer result;
+	result.type = type;
+	glGenBuffers(1, &result.id);
+	return _openglWrapperState->buffers.Insert(result);
+}
+
+void GFXBufferSetData(u32 handle, u64 size, GFXBufferUsageType usage, void *data)
+{
+	GFXBuffer buffer = _openglWrapperState->buffers[handle];
+	GLenum glBufferType = GetBufferType(buffer.type);
+	GLenum glUsageType = GetBufferUsageType(usage);
+	glBindBuffer(glBufferType, buffer.id);
+	glBufferData(glBufferType, size, data, glUsageType);
+	glBindBuffer(glBufferType, 0);
+}
+
+void GFXBufferBind(u32 handle)
+{
+	GFXBuffer buffer = _openglWrapperState->buffers[handle];
+	GLenum glBufferType = GetBufferType(buffer.type);
+	glBindBuffer(glBufferType, buffer.id);
+}
+
+void GFXBufferUnbind()
+{
+	glBindBuffer(GL_TEXTURE_2D, 0);
+}
+
+void GFXBufferBindBase(u32 handle, i32 base)
+{
+	GFXBuffer buffer = _openglWrapperState->buffers[handle];
+	GLenum glBufferType = GetBufferType(buffer.type);
+	glBindBufferBase(glBufferType, base, buffer.id);
+}
+
+// TODO (rhoe) currently hardcoded to map as GL_READ_ONLY
+void* GFXBufferMap(u32 handle)
+{
+	GFXBuffer buffer = _openglWrapperState->buffers[handle];
+	GLenum glBufferType = GetBufferType(buffer.type);
+	glBindBuffer(glBufferType, buffer.id);
+	return glMapBuffer(glBufferType, GL_READ_ONLY);
+}
+
+void GFXBufferUnmap(u32 handle)
+{
+	GFXBuffer buffer = _openglWrapperState->buffers[handle];
+	GLenum glBufferType = GetBufferType(buffer.type);
+	glUnmapBuffer(glBufferType);
+}
+
+void* GFXBufferMapRange(u32 handle, u64 size)
+{
+	GLint bufMask = GL_MAP_READ_BIT;
+	GFXBuffer buffer = _openglWrapperState->buffers[handle];
+	GLenum glBufferType = GetBufferType(buffer.type);
+	glBindBuffer(glBufferType, buffer.id);
+	return glMapBufferRange(glBufferType, 0, size, bufMask);
+}
+
 
 // TEXTURES
-i32 GFXAddTexture()
+i32 GFXTextureAdd()
 {
 	GFXTexture result;
 	glGenTextures(1, &result.id);
@@ -285,16 +352,16 @@ i32 GFXAddTexture()
 	return _openglWrapperState->textures.Insert(result);
 }
 
-void GFXTextureUploadBitmap(i32 handle, Bitmap *bitmap)
+void GFXTextureUploadBitmap(u32 handle, Bitmap *bitmap)
 {
-	GFXTexture *texture = &_openglWrapperState->textures[handle];
+	GFXTexture texture = _openglWrapperState->textures[handle];
 	
-	glBindTexture(GL_TEXTURE_2D, texture->id);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap->width, bitmap->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap->pixels);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, bitmap->width, bitmap->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap->pixels);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void GFXBindTexture(i32 handle)
+void GFXTextureBind(u32 handle)
 {
 	GFXTexture *texture = &_openglWrapperState->textures[handle];
 	glBindTexture(GL_TEXTURE_2D, texture->id);
@@ -302,12 +369,30 @@ void GFXBindTexture(i32 handle)
 
 void GFXBindDefaultTexture()
 {
-	GFXBindTexture(_openglWrapperState->defaultTexture);
+	GFXTextureBind(_openglWrapperState->defaultTexture);
 }
 
 void GFXUnbindTexture()
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+// TODO (rhoe) currently hardcoded to READ_WRITE access
+//             with texture format rgba32f
+void GFXTextureBindBase(u32 handle, i32 base)
+{
+	GFXTexture texture = _openglWrapperState->textures[handle];
+	glBindImageTexture(0, texture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+}
+
+void GFXTextureGetImage(u32 textureHandle, u32 pboHandle)
+{
+	GFXTexture texture = _openglWrapperState->textures[textureHandle];
+	GFXBuffer pbo = _openglWrapperState->buffers[pboHandle];
+
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo.id);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 }
 
 void CleanupOpenglWrapper()
@@ -316,3 +401,4 @@ void CleanupOpenglWrapper()
 	_openglWrapperState->viewerContextVAO.Free();
 	free(_openglWrapperState);
 }
+

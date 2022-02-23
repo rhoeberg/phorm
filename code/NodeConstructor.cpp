@@ -120,6 +120,7 @@ void SetupNodeConstructors()
 	/////////////////
 	AddNodeConstructor(String("load texture"), LoadTextureOp, LoadTextureCreate);
 	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture, SetupBlurNode);
+	AddNodeConstructor(String("wavey"), WaveyOp, CreateWaveyNode, SetupWaveyNode);
 	AddNodeConstructor(String("mix texture"), MixTextureOperation, CreateMixTexture);
 	AddNodeConstructor(String("video"), VideoOperation, CreateVideoNode, SetupVideoNode);
 	AddNodeConstructor(String("s2t"), SceneRenderNodeOp, CreateSceneRenderNode, SetupSceneRenderNode);

@@ -11,9 +11,10 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #endif
 
-#ifdef VULKAN
+/*#ifdef VULKAN
 #define GLFW_INCLUDE_VULKAN
-#endif
+#endif*/
+
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
@@ -88,9 +89,9 @@
 #include "debug.cpp"
 
 // GFX LAYER
-#ifdef VULKAN
+/*#ifdef VULKAN
 #include "VUlkanLayer.cpp"
-#endif
+#endif*/
 
 // Compile custom user code
 #include "../custom/CustomCompile.h"
@@ -176,7 +177,7 @@ int main(int argc, char *argv[])
 	GLFWwindow *win = initGlfw();
 
 	// initialize GFX Backend
-	GFXLayerInit();
+	//GFXLayerInit();
 
 	// initialize GUI
 	initializeGUI(win);
@@ -240,7 +241,7 @@ int main(int argc, char *argv[])
 		settings.viewerWindow.width = 1920;
 		settings.viewerWindow.height = 1080;
 
-		settings.viewerInMain = true;
+		settings.viewerInMain = false;
 	}
 	SetWindowSettings(_win, settings.mainWindow);
 	SetWindowSettings(_viewerWindow, settings.viewerWindow);
@@ -277,14 +278,17 @@ void cleanup()
 {
     // audioClose();
     // Pa_Terminate();
+
     imDrawClean();
     glfwTerminate();
 	CleanupMidi();
 	CleanupNodes();
 	CleanupCustom();
 	CleanupNodeEditor();
+
 	CleanupSceneEditor();
 	CleanupSceneRender();
+
 	CleanupViewerRender();
 	CleanupGlobalEditor();
 	CleanupData();

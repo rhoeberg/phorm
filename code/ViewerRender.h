@@ -4,6 +4,7 @@ struct ViewerRenderState
 {
 	i32 quadVAO;
 	Shader shader;
+	Shader objectShader;
 	u32 outputTextureID;
 
 	ObjectHandle sceneRenderData;

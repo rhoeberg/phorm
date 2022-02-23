@@ -2,16 +2,10 @@ void InitializeData()
 {
 	_nodeState = (NodeState*)malloc(sizeof(NodeState));
 
-	// TODO (rhoe) replace placement new
-	// apparently we need to use "placement new" syntax here
-	// because we want to call the constructor on a object
-	// which has already been allocated with malloc
-	// not very pretty syntax maybe we should just use a custom
-	// init function instead of constructor
-
+	// NODES
 	new(&_nodeState->nodes) ObjectContainer<Node>(HANDLE_NODE);
 
-	// data containers
+	// DATA
 	new(&_nodeState->bitmaps) ObjectContainer<Bitmap>(HANDLE_DATA, DATA_BITMAP);
 	new(&_nodeState->meshes) ObjectContainer<Mesh>(HANDLE_DATA, DATA_MESH);
 	new(&_nodeState->renderObjects) ObjectContainer<RenderObject>(HANDLE_DATA, DATA_RENDEROBJECT);
@@ -24,13 +18,12 @@ void InitializeData()
 	new(&_nodeState->pointLights) ObjectContainer<PointLight>(HANDLE_DATA, DATA_POINTLIGHT);
 	new(&_nodeState->scenes) ObjectContainer<Scene>(HANDLE_DATA, DATA_SCENE);
 
-	// Specific node state
+	// NODE SPECIFIC STATE
 	new(&_nodeState->sceneRenderDatas) ObjectContainer<SceneRenderData>(HANDLE_DATA, DATA_NONE);
-	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
-	new(&_nodeState->sinWaveNodes) ObjectContainer<SinWaveNodeState>(HANDLE_DATA, DATA_VIDEO_STATE);
+	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_NONE);
+	new(&_nodeState->sinWaveNodes) ObjectContainer<SinWaveNodeState>(HANDLE_DATA, DATA_NONE);
+	new(&_nodeState->blurNodes) ObjectContainer<BlurNodeState>(HANDLE_DATA, DATA_NONE);
 }
-
-
 
 //////////
 // Resource Access
@@ -100,6 +93,11 @@ ObjectContainer<SceneRenderData>* GetSceneRenderDatas()
 	return &_nodeState->sceneRenderDatas;
 }
 
+ObjectContainer<BlurNodeState>* GetBlurNodes()
+{
+	return &_nodeState->blurNodes;
+}
+
 
 
 //////////
@@ -125,7 +123,7 @@ RenderObject CreateRenderObject()
 	result.VAOHandle = AddVAO();
 	glGenBuffers(1, &result.EBO);
 	glGenBuffers(1, &result.VBO);
-	result.textureHandle = GFXAddTexture();
+	result.textureHandle = GFXTextureAdd();
 
 	return result;
 }

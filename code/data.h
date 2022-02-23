@@ -19,6 +19,16 @@ struct SinWaveNodeState {
 	i32 last;
 };
 
+struct BlurNodeState
+{
+	Shader compute;
+	u32 textureHandle;
+	u32 pboHandle;
+	/* u32 bufferHandle; */
+	i32 width;
+	i32 height;
+};
+
 // TODO (rhoe) change this name to something better
 struct SceneRenderData
 {
@@ -71,11 +81,10 @@ struct SceneRenderData
 };
 
 struct NodeState {
-	// base node array
-	// VMArray<Node> nodes;
+	// NODES
 	ObjectContainer<Node> nodes;
 
-	// data arrays
+	// DATA
 	ObjectContainer<Bitmap> bitmaps;
 	ObjectContainer<Mesh> meshes;
 	ObjectContainer<RenderObject> renderObjects;
@@ -84,15 +93,15 @@ struct NodeState {
 	ObjectContainer<int> ints;
 	ObjectContainer<vec3> vec3s;
 	ObjectContainer<vec4> vec4s;
-	// HashMap<ObjectHandle> labels;
-	// ObjectContainer<LabelNodeState> labelNodes;
 	ObjectContainer<String> strings;
 	ObjectContainer<PointLight> pointLights;
 	ObjectContainer<Scene> scenes;
 
+	// NODE SPECIFIC STATE
 	ObjectContainer<SceneRenderData> sceneRenderDatas;
 	ObjectContainer<VideoNodeState> videoNodes;
 	ObjectContainer<SinWaveNodeState> sinWaveNodes;
+	ObjectContainer<BlurNodeState> blurNodes;
 };
 
 global NodeState *_nodeState;
@@ -110,6 +119,7 @@ ObjectContainer<PointLight>* GetPointLights();
 ObjectContainer<String>* GetStrings();
 ObjectContainer<Scene>* GetScenes();
 ObjectContainer<SceneRenderData>* GetSceneRenderDatas();
+ObjectContainer<BlurNodeState>* GetBlurNodes();
 
 RenderObject CreateRenderObject();
 ObjectHandle AddNewRenderObject();

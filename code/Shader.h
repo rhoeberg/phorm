@@ -19,11 +19,17 @@ struct Shader
 		GLuint computeShader = CreateShader(cPath, GL_COMPUTE_SHADER);
 		glAttachShader(id, computeShader);
 		glLinkProgram(id);
+		glDeleteShader(computeShader);
 	}
 
-	void Use()
+	void Begin()
 	{
 		glUseProgram(id);
+	}
+
+	void End()
+	{
+		glUseProgram(0);
 	}
 
 	GLuint GetUniformLoc(const char *name)
@@ -36,6 +42,12 @@ struct Shader
 	{
 		GLuint loc = GetUniformLoc(name);
 		glUniform1i(loc, value);
+	}
+
+	void SetUniform(const char *name, float value)
+	{
+		GLuint loc = GetUniformLoc(name);
+		glUniform1f(loc, value);
 	}
 
 	void SetUniform(const char *name, mat3 value)
