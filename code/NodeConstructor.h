@@ -26,6 +26,7 @@ void BaseNodeDrawFunc(Node *node);
 #include "nodes/AddNode.h"
 #include "nodes/IntToDouble.h"
 #include "nodes/MidiCCNode.h"
+#include "nodes/DoubleToInt.h"
 
 // output node
 #include "nodes/OutputNode.h"

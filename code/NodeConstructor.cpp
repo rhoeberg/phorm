@@ -119,7 +119,7 @@ void SetupNodeConstructors()
 	// TEXTURE NODES
 	/////////////////
 	AddNodeConstructor(String("load texture"), LoadTextureOp, LoadTextureCreate);
-	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture);
+	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture, SetupBlurNode);
 	AddNodeConstructor(String("mix texture"), MixTextureOperation, CreateMixTexture);
 	AddNodeConstructor(String("video"), VideoOperation, CreateVideoNode, SetupVideoNode);
 	AddNodeConstructor(String("s2t"), SceneRenderNodeOp, CreateSceneRenderNode, SetupSceneRenderNode);
@@ -154,6 +154,7 @@ void SetupNodeConstructors()
 	// INT NODES
 	/////////////////
 	AddNodeConstructor(String("midicc"), MidiCCOperation, CreateMidiCCNode);
+	AddNodeConstructor(String("d2i"), D2IOp, CreateD2INode);
 
 	/////////////////
 	// RENDEROBJECT NODES
