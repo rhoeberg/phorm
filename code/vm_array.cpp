@@ -37,13 +37,22 @@ VMArray<T>::VMArray(std::initializer_list<T> init)
 	initialized = true;
 }
 
-
 template <typename T>
 VMArray<T>::VMArray(int _max, int _count, T *_data)
 {
 	max = _max;
 	count = _count;
 	data = (T*)calloc(max, sizeof(T));
+	memcpy(data, _data, count * sizeof(T));
+	initialized = true;
+}
+
+template <typename T>
+VMArray<T>::VMArray(u64 _size, T *_data)
+{
+	max = _size;
+	count = _size;
+	data = (T*)calloc(_size, sizeof(T));
 	memcpy(data, _data, count * sizeof(T));
 	initialized = true;
 }

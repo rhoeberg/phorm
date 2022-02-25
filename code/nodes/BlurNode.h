@@ -43,7 +43,7 @@ void BlurOperation(Node *self)
 	}
 
 	// STATE
-	BlurNodeState *state = GetBlurNodes()->Get(self->extraHandle);
+	BitmapComputeState *state = GetBitmapComputeStates()->Get(self->extraHandle);
 	if(!state) {
 		ErrorLog("BlurNode: cannot find BlurNodeState");
 		return;
@@ -87,12 +87,12 @@ void BlurOperation(Node *self)
 
 void SetupBlurNode(Node *self)
 {
-	BlurNodeState state = {};
+	BitmapComputeState state = {};
 	state.compute = Shader("assets/shaders/blur.comp");
 	/* state.bufferHandle = GFXBufferAdd(GFX_BUFFER_STORAGE); */
 	state.pboHandle = GFXBufferAdd(GFX_BUFFER_PBO);
 	state.textureHandle = GFXTextureAdd();
-	self->extraHandle = GetBlurNodes()->Insert(state);
+	self->extraHandle = GetBitmapComputeStates()->Insert(state);
 }
 
 ObjectHandle CreateBlurTexture()

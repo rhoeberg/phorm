@@ -18,7 +18,7 @@ void WaveyOp(Node *self)
 	}
 
 	// STATE
-	BlurNodeState *state = GetBlurNodes()->Get(self->extraHandle);
+	BitmapComputeState *state = GetBitmapComputeStates()->Get(self->extraHandle);
 	if(!state) {
 		ErrorLog("BlurNode: cannot find BlurNodeState");
 		return;
@@ -63,11 +63,11 @@ void WaveyOp(Node *self)
 
 void SetupWaveyNode(Node *self)
 {
-	BlurNodeState state = {};
+	BitmapComputeState state = {};
 	state.compute = Shader("assets/shaders/wavey.comp");
 	state.pboHandle = GFXBufferAdd(GFX_BUFFER_PBO);
 	state.textureHandle = GFXTextureAdd();
-	self->extraHandle = GetBlurNodes()->Insert(state);
+	self->extraHandle = GetBitmapComputeStates()->Insert(state);
 }
 
 ObjectHandle CreateWaveyNode()

@@ -22,7 +22,8 @@ void InitializeData()
 	new(&_nodeState->sceneRenderDatas) ObjectContainer<SceneRenderData>(HANDLE_DATA, DATA_NONE);
 	new(&_nodeState->videoNodes) ObjectContainer<VideoNodeState>(HANDLE_DATA, DATA_NONE);
 	new(&_nodeState->sinWaveNodes) ObjectContainer<SinWaveNodeState>(HANDLE_DATA, DATA_NONE);
-	new(&_nodeState->blurNodes) ObjectContainer<BlurNodeState>(HANDLE_DATA, DATA_NONE);
+	new(&_nodeState->bitmapComputeStates) ObjectContainer<BitmapComputeState>(HANDLE_DATA, DATA_NONE);
+	new(&_nodeState->meshComputeStates) ObjectContainer<MeshComputeState>(HANDLE_DATA, DATA_NONE);
 }
 
 //////////
@@ -93,9 +94,14 @@ ObjectContainer<SceneRenderData>* GetSceneRenderDatas()
 	return &_nodeState->sceneRenderDatas;
 }
 
-ObjectContainer<BlurNodeState>* GetBlurNodes()
+ObjectContainer<BitmapComputeState>* GetBitmapComputeStates()
 {
-	return &_nodeState->blurNodes;
+	return &_nodeState->bitmapComputeStates;
+}
+
+ObjectContainer<MeshComputeState>* GetMeshComputeStates()
+{
+	return &_nodeState->meshComputeStates;
 }
 
 

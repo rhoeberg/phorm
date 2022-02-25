@@ -135,7 +135,7 @@ void SetupNodeConstructors()
 	/////////////////
 	AddNodeConstructor(String("cube mesh"), CubeOperation, CreateCubeNode);
 	AddNodeConstructor(String("grid mesh"), GridOperation, CreateGridNode);
-	AddNodeConstructor(String("noise mesh"), MeshNoiseOperation, CreateMeshNoise);
+	AddNodeConstructor(String("noise mesh"), MeshNoiseOperation, CreateMeshNoise, SetupMeshNoise);
 
 
 	/////////////////
@@ -148,7 +148,7 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("histogram"), HistogramOperation, CreateHistogramNode, SetupHistogramNode);
 	AddNodeConstructor(String("mul"), MulOperation, CreateMulNode, SetupMulNode);
 	AddNodeConstructor(String("add"), AddOperation, CreateAddNode, SetupAddNode);
-	AddNodeConstructor(String("time"), TimeOperation, CreateTimeNode, SetupTimeNode);
+	AddNodeConstructor(String("time"), TimeOperation, CreateTimeNode);
 	AddNodeConstructor(String("i2d"), I2DOp, CreateI2DNode);
 
 	/////////////////

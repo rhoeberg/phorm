@@ -4,6 +4,7 @@ void TimeOperation(Node *self)
 {
 	double *output = GetDoubles()->Get(self->GetDataLast());
 	*output = GetTime();
+
 	self->changed = true;
 }
 
@@ -24,18 +25,15 @@ void DrawTimeNode(Node *self)
 	ImDrawText(timePos, timeBuf, vec3(0.3, 0, 0));
 }
 
-void SetupTimeNode(Node *self)
-{
-	self->drawFunc = DrawTimeNode;
-}
-
 ObjectHandle CreateTimeNode()
 {
 	FixedArray<NodeParameter> params = {
+		NodeParameter("tick", 0.0),
 	};
 
 	FixedArray<NodeInput> inputs = {
 	};
+
 
 	return AddNode(DATA_DOUBLE, params, inputs);
 }

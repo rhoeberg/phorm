@@ -13,6 +13,7 @@
 
 enum GFXBufferUsageType {
 	GFX_STREAM_COPY,
+	GFX_DYNAMIC_READ,
 };
 
 enum GFXBufferType {
@@ -69,8 +70,10 @@ GLenum GetBufferUsageType(GFXBufferUsageType type)
 {
 	switch(type) {
 		case GFX_STREAM_COPY: return GL_STREAM_COPY; break;
+		case GFX_DYNAMIC_READ: return GL_DYNAMIC_READ; break;
 	}
 
+	// TODO (rhoe) we have to return a default value to mute compiler warning
 	return GL_STREAM_COPY;
 }
 

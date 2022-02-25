@@ -19,7 +19,14 @@ struct SinWaveNodeState {
 	i32 last;
 };
 
-struct BlurNodeState
+struct MeshComputeState
+{
+	Shader compute;
+	u32 buffer; 
+	i32 size; 
+};
+
+struct BitmapComputeState
 {
 	Shader compute;
 	u32 textureHandle;
@@ -101,7 +108,8 @@ struct NodeState {
 	ObjectContainer<SceneRenderData> sceneRenderDatas;
 	ObjectContainer<VideoNodeState> videoNodes;
 	ObjectContainer<SinWaveNodeState> sinWaveNodes;
-	ObjectContainer<BlurNodeState> blurNodes;
+	ObjectContainer<BitmapComputeState> bitmapComputeStates;
+	ObjectContainer<MeshComputeState> meshComputeStates;
 };
 
 global NodeState *_nodeState;
@@ -119,7 +127,8 @@ ObjectContainer<PointLight>* GetPointLights();
 ObjectContainer<String>* GetStrings();
 ObjectContainer<Scene>* GetScenes();
 ObjectContainer<SceneRenderData>* GetSceneRenderDatas();
-ObjectContainer<BlurNodeState>* GetBlurNodes();
+ObjectContainer<BitmapComputeState>* GetBitmapComputeStates();
+ObjectContainer<MeshComputeState>* GetMeshComputeStates();
 
 RenderObject CreateRenderObject();
 ObjectHandle AddNewRenderObject();

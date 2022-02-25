@@ -14,6 +14,7 @@ class VMArray {
 	VMArray();
 	VMArray(const VMArray<T>&);
 	VMArray(int _max, int _count, T *_data);
+	VMArray(u64 _size, T *_data);
 	VMArray(std::initializer_list<T> init);
 	VMArray(int _size);
 	~VMArray();

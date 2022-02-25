@@ -62,6 +62,12 @@ struct Shader
 		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
+	void SetUniform(const char *name, vec2 value)
+	{
+		GLuint loc = GetUniformLoc(name);
+		glUniform2fv(loc, 1, glm::value_ptr(value));
+	}
+
 	void SetUniform(const char *name, vec3 value)
 	{
 		GLuint loc = GetUniformLoc(name);
@@ -72,6 +78,12 @@ struct Shader
 	{
 		GLuint loc = GetUniformLoc(name);
 		glUniform4fv(loc, 1, glm::value_ptr(value));
+	}
+
+	void SetUniform(const char *name, i32 a, i32 b)
+	{
+		GLuint loc = GetUniformLoc(name);
+		glUniform2i(loc, a, b);
 	}
 
 };
