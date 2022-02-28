@@ -1,26 +1,26 @@
 /*
-  minimal hashmap with Strings as keys
+  minimal hashmap
   no resizing you have to choose the right size in the beginning
+ 
+  TODO (rhoe) swap std::hash to custom generic hash type/function
 */
 
 #pragma once
 
-#include "string.h"
-
 #define HASHMAP_DEFAULT_SIZE 256
 
-template <typename T>
+template <typename K, typename V>
 struct HashNode {
-	T value;
-	String key;
+	V value;
+	K key;
 	bool free;
 	HashNode *next;
 };
 
-template <typename T>
+template <typename K, typename V>
 struct HashMap
 {
-	HashNode<T> *elements;
+	HashNode<K, V> *elements;
 	size_t max;
 	int salt;
 
@@ -29,26 +29,26 @@ struct HashMap
 	~HashMap();
 	void InitializeElements();
 	void Free();
-	int CalcHash(String &key);
-	void Insert(String key, T value);
-	bool Remove(String key);
-	T* Get(String key);
-	bool Exist(String key);
+	int CalcHash(K &key);
+	bool Insert(K key, V value);
+	bool Remove(K key);
+	V* Get(K key);
+	bool Exist(K key);
 };
 
-template <typename T>
+template <typename K, typename V>
 struct HashIter {
 	int index;
 	int depth;
-	HashMap<T> *map;
+	HashMap<K, V> *map;
 
-	HashIter(HashMap<T> *_map) {
+	HashIter(HashMap<K, V> *_map) {
 		map = _map;
 		index = 0;
 		depth = 0;
 	}
 
-	HashNode<T>* Next() {
+	HashNode<K, V>* Next() {
 		// get next
 
 		while(true) {

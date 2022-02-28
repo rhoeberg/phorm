@@ -8,6 +8,9 @@ typedef int32_t i32;
 typedef int16_t i16;
 typedef int8_t i8;
 
+typedef float f32;
+typedef double f64;
+
 typedef glm::vec4 vec4;
 typedef glm::vec3 vec3;
 typedef glm::vec2 vec2;
@@ -53,6 +56,15 @@ struct ObjectHandle {
 
 	// TODO (rhoe) this is not testet
 	bool operator==(const ObjectHandle &other) {
+		return Equals(other);
+	}
+
+	bool operator!=(const ObjectHandle &other) {
+		return !Equals(other);
+	}
+
+	bool Equals(const ObjectHandle &other)
+	{
 		if(slotID == other.slotID &&
 		   id == other.id &&
 		   handleType == other.handleType &&
@@ -60,6 +72,15 @@ struct ObjectHandle {
 			return true;
 
 		return false;
+	}
+};
+
+template<>
+struct std::hash<ObjectHandle>
+{
+	size_t operator()(ObjectHandle &o) const noexcept
+	{
+		return (o.id * 1234) * (o.slotID * 4321) * (o.handleType * 2345) * (o.dataType * 5432);
 	}
 };
 

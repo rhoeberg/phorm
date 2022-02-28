@@ -20,7 +20,6 @@ size_t StrSize(const char *str)
 // done with precautions. But this type has the safeguards OFF.
 // Therefore if you need to modify buffer directly its very important
 // that you make sure to null terminate the string
-
 void String::ReCalc()
 {
 	length = StrSize(buffer);
@@ -134,6 +133,16 @@ void String::Print() {
 	printf("%s\n", buffer);
 }
 
+bool String::operator==(String &other)
+{
+	return Equals(other);
+}
+
+bool String::operator!=(String &other)
+{
+	return !Equals(other);
+}
+
 bool String::Equals(const char *str)
 {
 	if(StrSize(str) != length)
@@ -168,6 +177,21 @@ void String::Free() {
 	if(initialized)
 		free(buffer);
 }
+
+template<>
+struct std::hash<String>
+{
+	size_t operator()(String &s) const noexcept
+	{
+		int salt = 0;
+		int n = 0;
+		for(int i = 0; i < s.length; i++) {
+			n += s[i] * (salt + 1);
+		}
+
+		return n;
+	}
+};
 
 void Test_String()
 {

@@ -22,6 +22,8 @@ struct String
 	// String& operator=(String other);
 	char operator[](int index);
 	void Print();
+	bool operator==(String &other);
+	bool operator!=(String &other);
 	bool Equals(const char *str);
 	bool Equals(String &other);
 	~String();
