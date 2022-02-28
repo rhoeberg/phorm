@@ -1,4 +1,4 @@
 #pragma once
 
-void SaveNodes();
-void LoadNodes();
+void ProjectSave(String path);
+void ProjectLoad(String path);

@@ -133,10 +133,15 @@ String LoadString(SaveFile *saveFile)
 	return String(buffer); 
 }
 
-void SaveNodes()
+void ProjectSave(String path)
 {
 	SaveFile saveFile = {};
-	saveFile.file = fopen("testsave.octo", "wb");
+	saveFile.file = fopen(path.buffer, "wb");
+
+	//////////////////
+	// SAVE PHORM ID
+	//////////////////
+	SaveString(String("PHORM"), &saveFile);
 
 	//////////////
 	// SAVE NODES
@@ -182,15 +187,28 @@ void SaveNodes()
 	fclose(saveFile.file);
 }
 
-void LoadNodes()
+void ProjectLoad(String path)
 {
+	SaveFile saveFile = {};
+	saveFile.file = fopen(path.buffer, "rb");
+
+	//////////////////
+	// CHECK IF VALID PHORM PROJECT FILE
+	//////////////////
+	String phormID = LoadString(&saveFile);
+	if(!phormID.Equals("PHORM")) {
+		DebugLog("failed to load: %s", path.buffer);
+		return;
+	}
+
+
+	//////////////////
+	// LOAD PROJECT
+	//////////////////
 
 	// TODO (rhoe) we need to clear data when loading
 	// CLEAR DATA BEFORE LOADING NEW PROJECT
 	GetBitmaps()->Clear();
-
-	SaveFile saveFile = {};
-	saveFile.file = fopen("testsave.octo", "rb");
 
 	if(!saveFile.file) {
 		NOT_IMPLEMENTED

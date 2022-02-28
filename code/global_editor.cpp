@@ -208,8 +208,8 @@ void UpdateGlobalEditor()
 	}
 
 	// GLOBAL HOTKEYS
-	if(!_globalEditorState->promptActive && singleKeyPress(GLFW_KEY_V))
-		_globalEditorState->nodeEditorOn = !_globalEditorState->nodeEditorOn;
+	// if(!_globalEditorState->promptActive && singleKeyPress(GLFW_KEY_V))
+	// 	_globalEditorState->nodeEditorOn = !_globalEditorState->nodeEditorOn;
 
 	if(_globalEditorState->nodeEditorOn) {
 		UpdateNodeEditor();

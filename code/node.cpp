@@ -65,6 +65,20 @@ bool Node::Changed()
 	return false;
 }
 
+ObjectHandle Node::Copy()
+{
+	NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(name);
+	ObjectHandle resultHandle = ConstructNode(String(name), nodeConstructor);
+	Node *resultNode = GetNode(resultHandle);
+
+	resultNode->rect = rect;
+	resultNode->rect.pos += vec2(5, 5);
+	resultNode->inputs = inputs;
+	resultNode->params = params;
+
+	return resultHandle;
+}
+
 ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray<NodeInput> inputs)
 {
 	Node node = {};

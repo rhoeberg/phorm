@@ -91,6 +91,47 @@ u32 GetCurrentPage()
 	return _nodeEditorState->currentPage;
 }
 
+void PasteNodes()
+{
+	NodeEditorState *editor = _nodeEditorState;
+
+	HashMap<ObjectHandle, ObjectHandle> handleTable;
+	VMArray<ObjectHandle> newNodes;
+
+	for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
+		Node *node = GetNode(editor->selectedNodes[i]);
+		ObjectHandle newHandle = node->Copy();
+		handleTable.Insert(editor->selectedNodes[i], newHandle);
+		newNodes.Insert(newHandle);
+	}
+
+	editor->selectedNodes.Clear();
+	for(i32 i = 0; i < newNodes.Count(); i++) {
+		Node *node = GetNode(newNodes[i]);
+
+		for(i32 in = 0; in < node->inputs.Count(); in++) {
+			if(handleTable.Exist(node->inputs[in].handle)) {
+				node->inputs[in].handle = *handleTable.Get(node->inputs[in].handle);
+			}
+			else {
+				node->inputs[in].handle.isset = false;
+			}
+		}
+
+		for(i32 par = 0; par < node->params.Count(); par++) {
+			if(handleTable.Exist(node->params[par].nodeHandle)) {
+				node->params[par].nodeHandle = *handleTable.Get(node->params[par].nodeHandle);
+			}
+			else {
+				node->params[par].nodeHandle.isset = false;
+			}
+		}
+
+
+		editor->selectedNodes.Insert(newNodes[i]);
+	}
+}
+
 void NodeGUI()
 {
 	NodeEditorState *editor = _nodeEditorState;
@@ -264,23 +305,28 @@ Rect GetNodeParamRect(ObjectHandle handle, int paramIndex)
 
 void DrawNode(ObjectHandle handle)
 {
+	ImDrawSetNextLayer(1);
+
 	Node *node = GetNode(handle);
 	node->CallDraw();
 	// CallNodeDrawFunction(node);
 
+
 	if(node->type != DATA_NONE) {
 		Rect outputRect = GetNodeOutputRect(handle);
-		ImDrawSetColor(vec3(0.6f, 0.0f, 0.2f));
+		ImDrawSetColor(COLOR_NODE_OUTPUT);
 		ImDrawRect(outputRect);
 	}
 
+
 	// DRAW INPUTS
 	for(int i = 0; i < node->inputs.Count(); i++) {
-
 		Rect inputRect = GetNodeInputRect(handle, i);
-		ImDrawSetColor(vec3(0.0f, 0.5f, 0.2f));
+		ImDrawSetColor(COLOR_NODE_INPUT);
+		ImDrawSetNextLayer(1);
 		ImDrawRect(inputRect);
 
+		ImDrawSetNextLayer(0);
 		// TODO (rhoe) make it more clean / safe to see if a node input is set
 		if(node->inputs[i].handle.isset && NodeExists(node->inputs[i].handle)) {
 			Rect outputRect = GetNodeOutputRect(node->inputs[i].handle);
@@ -288,7 +334,7 @@ void DrawNode(ObjectHandle handle)
 			vec2 inputPos = GetRectCenter(inputRect);
 			// ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-			ImDrawLine(outputPos, inputPos);
+			ImDrawLine(outputPos, inputPos, 2.0f);
 		}
 	}
 
@@ -297,16 +343,19 @@ void DrawNode(ObjectHandle handle)
 	for(int i = 0; i < node->params.Count(); i++) {
 		if(node->params[i].exposed) {
 			Rect paramRect = GetNodeParamRect(handle, visibleParamsCount); 
-			ImDrawSetColor(vec3(0.0f, 0.2f, 0.5f));
+			// ImDrawSetColor(vec3(0.0f, 0.2f, 0.5f));
+			ImDrawSetColor(COLOR_NODE_INPUT);
+			ImDrawSetNextLayer(1);
 			ImDrawRect(paramRect);
 			visibleParamsCount++;
 
+			ImDrawSetNextLayer(0);
 			if(node->params[i].nodeHandle.isset && NodeExists(node->params[i].nodeHandle)) {
 				Rect outputRect = GetNodeOutputRect(node->params[i].nodeHandle);
 				vec2 outputPos = GetRectCenter(outputRect);
 				vec2 paramPos = GetRectCenter(paramRect);
 				ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-				ImDrawLine(outputPos, paramPos);
+				ImDrawLine(outputPos, paramPos, 2.0f);
 			}
 		}
 	}
@@ -324,7 +373,8 @@ void DrawNodeOutline(ObjectHandle handle)
 		outline.width = node->rect.width + outlineMargin;
 		outline.height = node->rect.height + outlineMargin;
 
-		ImDrawSetColor(vec4(1.0f, 1.0f, 0.0f, 0.7f));
+		// ImDrawSetColor(vec4(COLOR_NODE_HIGHLIGHT, 0.7f));
+		ImDrawSetColor(COLOR_NODE_HIGHLIGHT);
 		ImDrawRectOutline(outline, 1.5f);
 	}
 }
@@ -469,8 +519,8 @@ void UpdateNodeContinueDragging()
 			b.y = Max(editor->selectDragStart.y, mouse.y);
 
 			Rect rect = Rect(a, b);
-			ImDrawSetColor(vec4(0.0f, 0.0f, 1.0f, 0.3f));
-			ImDrawSetNextLayer(1);
+			ImDrawSetColor(vec4(COLOR_BOX_SELECT, 0.3f));
+			ImDrawSetNextLayer(2);
 			ImDrawRect(rect);
 			ImDrawSetNextLayer(0);
 		}
@@ -613,6 +663,20 @@ void UpdateNodeEditor()
 	}
 	if(keys[GLFW_KEY_DELETE]) {
 		DeleteNode(editor->draggedNode);
+	}
+	if(singleKeyPress(GLFW_KEY_C) && keys_mode == GLFW_MOD_CONTROL) {
+		DebugLog("copying");
+
+		for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
+			Node *node = GetNode(editor->selectedNodes[i]);
+			if(node) {
+				DebugLog("node:%s", GetStrings()->Get(node->labelHandle)->buffer);
+			}
+		}
+	}
+	else if(singleKeyPress(GLFW_KEY_V) && keys_mode == GLFW_MOD_CONTROL) {
+		PasteNodes();
+		DebugLog("pasting");
 	}
 
 	//////////////////

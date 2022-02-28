@@ -2,7 +2,6 @@
 
 void LabelOperation(Node *self)
 {
-	// NEXT
 	// Update labels hashmap with new key if name parameter changed
 
 	NodeInput *input = &self->inputs[0];

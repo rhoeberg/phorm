@@ -3,6 +3,7 @@
 void BaseNodeDrawFunc(Node *node);
 
 #include "nodes/LoadTextureNode.h"
+#include "nodes/NoiseBitmap.h"
 #include "nodes/BlurNode.h"
 #include "nodes/WaveyNode.h"
 #include "nodes/MixTextureNode.h"
@@ -45,12 +46,12 @@ struct NodeConstructor
 struct NodeConstructorState
 {
 	VMArray<String> names;
-	HashMap<NodeConstructor> constructors;
+	HashMap<String, NodeConstructor> constructors;
 	vec2 nextPos;
 };
 
 VMArray<String>* GetNodeNames();
-HashMap<NodeConstructor>* GetNodeConstructors();
+HashMap<String, NodeConstructor>* GetNodeConstructors();
 void SetNextConstructPos(vec2 pos);
 ObjectHandle ConstructNode(String name, NodeConstructor *nodeConstructor);
 VMArray<String>* GetNodeNames();

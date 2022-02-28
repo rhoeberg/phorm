@@ -55,6 +55,9 @@
 #define PL_MPEG_IMPLEMENTATION
 #include "pl_mpeg.h"
 
+#include "tinyfiledialogs.h"
+#include "tinyfiledialogs.c"
+
 #include "main.h"
 #include "imdraw.cpp"
 #include "ImDraw3D.cpp"
@@ -72,6 +75,7 @@
 #include "ObjectContainer.cpp"
 #include "NodeConstructor.cpp"
 #include "midi.cpp"
+#include "phorm_project.cpp"
 #include "node_parameter.cpp"
 #include "node.cpp"
 #include "node_editor.cpp"
@@ -124,8 +128,7 @@ void UpdateLoop()
 	// bool show = true;
 	// ImGui::ShowDemoWindow(&show);
 
-	glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+	GFXClear(COLOR_BG);
 
 	///////////////
 	// VIEWER RENDERING
@@ -170,7 +173,6 @@ void UpdateLoop()
 
 int main(int argc, char *argv[])
 {
-
 	///////////
 	// INITIALIZATION
 	///////////
@@ -207,6 +209,7 @@ int main(int argc, char *argv[])
 	InitializeSceneEditor();
 	InitializeSceneRender();
 	InitializeGlobalEditor();
+	InitializeProjectState();
 	
 
 	// TODO (rhoe) find place for this
@@ -223,7 +226,8 @@ int main(int argc, char *argv[])
 		String arg1 = argv[1];
 		if(arg1.Equals("load")) {
 			printf("loading scene on start\n");
-			LoadNodes();
+			String path("testsave.octo");
+			ProjectLoad(path);
 		}
 	}
 
@@ -291,6 +295,7 @@ void cleanup()
 
 	CleanupViewerRender();
 	CleanupGlobalEditor();
+	CleanupProjectState();
 	CleanupData();
 }
 

@@ -14,10 +14,14 @@ void UpdateDebug()
 
 	ImGui::Begin("debug");
 	if(ImGui::Button("save")) {
-		SaveNodes();
+		String path = tinyfd_saveFileDialog(NULL, NULL, 0, NULL, NULL);
+		// String path("testsave.octo");
+		ProjectSave(path);
 	}
 	if(ImGui::Button("load")) {
-		LoadNodes();
+		String path = tinyfd_openFileDialog(NULL, NULL, 0, NULL, NULL, 0);
+		// String path("testsave.octo");
+		ProjectLoad(path);
 	}
 
 	ImGui::Spacing();

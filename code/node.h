@@ -44,6 +44,7 @@ struct Node {
 	void CallOp();
 	void CallDraw();
 	bool Changed();
+	ObjectHandle Copy();
 
 private:
 	ObjectHandle dataHandle;

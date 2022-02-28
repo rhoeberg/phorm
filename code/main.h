@@ -21,6 +21,7 @@
 
 global bool keys[1024];
 global bool keys_registered[1024];
+global int keys_mode;
 global vec2 mouse;
 global bool mouse_buttons[32];
 global bool mouseInViewerWin;
@@ -51,6 +52,7 @@ global Settings settings;
 #include "Shader.h"
 #include "light.h"
 #include "midi.h"
+#include "phorm_project.h"
 #include "node_parameter.h"
 #include "node.h"
 #include "data.h"

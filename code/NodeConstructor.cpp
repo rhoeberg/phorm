@@ -3,7 +3,7 @@ void InitializeNodeConstructors()
 	_nodeConstructorState = (NodeConstructorState*)malloc(sizeof(NodeConstructorState));
 
 	new(&_nodeConstructorState->names) VMArray<String>();
-	new(&_nodeConstructorState->constructors) HashMap<NodeConstructor>(1024);
+	new(&_nodeConstructorState->constructors) HashMap<String, NodeConstructor>(1024);
 	_nodeConstructorState->nextPos = vec2(0, 0);
 
 	SetupNodeConstructors();
@@ -14,7 +14,7 @@ VMArray<String>* GetNodeNames()
 	return &_nodeConstructorState->names;
 }
 
-HashMap<NodeConstructor>* GetNodeConstructors()
+HashMap<String, NodeConstructor>* GetNodeConstructors()
 {
 	return &_nodeConstructorState->constructors;
 }
@@ -119,6 +119,7 @@ void SetupNodeConstructors()
 	// TEXTURE NODES
 	/////////////////
 	AddNodeConstructor(String("load texture"), LoadTextureOp, LoadTextureCreate);
+	AddNodeConstructor(String("noise bitmap"), NoiseBitmapOp, CreateNoiseBitmapNode);
 	AddNodeConstructor(String("blur texture"), BlurOperation, CreateBlurTexture, SetupBlurNode);
 	AddNodeConstructor(String("wavey"), WaveyOp, CreateWaveyNode, SetupWaveyNode);
 	AddNodeConstructor(String("mix texture"), MixTextureOperation, CreateMixTexture);
@@ -211,10 +212,13 @@ void BaseNodeDrawFunc(Node *node)
 	node->rect.width += node->params.Count() * PARAM_WIDTH;
 	node->rect.width += node->inputs.Count() * PARAM_WIDTH;
 	node->rect.height = NODE_HEIGHT;
-	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
+	ImDrawSetColor(COLOR_NODE_FILL);
 	ImDrawRect(node->rect);
 
+	// ImDrawSetColor(COLOR_NODE_OUTLINE);
+	// ImDrawRectOutline(node->rect);
+
 	vec2 namePos = node->rect.pos + vec2(8.0f, node->rect.height - 8.0f);
-	ImDrawText(namePos, node->name);
+	ImDrawText(namePos, node->name, COLOR_NODE_TEXT);
 }
 

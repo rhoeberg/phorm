@@ -38,7 +38,12 @@ void InitializeMidi()
 	}
 	else {
 		DebugLog("MIDI: connecting to midi port: %s\n", _midiState->midiin->getPortName(0).c_str());
-		_midiState->midiin->openPort(0);
+		try {
+			_midiState->midiin->openPort(0);
+		}
+		catch(RtMidiError &error) {
+			ErrorLog("MIDI: %s", error.getMessage());
+		}
 	}
 
 	_midiState->midiin->setCallback(&MidiInputCallback);

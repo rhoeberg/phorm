@@ -33,4 +33,4 @@ struct Bitmap {
 	u64 GetMemSize();
 };
 
-int GetPixelIndex(i32 x, i32 y, i32 height);
+i32 GetPixelIndex(i32 x, i32 y, i32 width);

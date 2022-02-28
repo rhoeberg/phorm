@@ -13,6 +13,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 		else if(action == GLFW_RELEASE) {
 			keys[key] = false;
 		}
+
+		keys_mode = mode;
 	}
 }  
 
