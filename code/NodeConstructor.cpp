@@ -101,7 +101,7 @@ ObjectHandle ConstructNode(String name, NodeConstructor *nodeConstructor)
 	return handle;
 }
 
-void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeSetupFunc setupFunc = NULL)
+void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeSetupFunc setupFunc)
 {
 	NodeConstructorState *state = _nodeConstructorState;
 
@@ -137,6 +137,8 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("cube mesh"), CubeOperation, CreateCubeNode);
 	AddNodeConstructor(String("grid mesh"), GridOperation, CreateGridNode);
 	AddNodeConstructor(String("noise mesh"), MeshNoiseOperation, CreateMeshNoise, SetupMeshNoise);
+	// AddNodeConstructor(String("particles"), ParticleOp, CreateParticleNode);
+	AddParticleNodes();
 
 
 	/////////////////

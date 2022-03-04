@@ -89,6 +89,25 @@ struct Mesh {
 		return result;
 	}
 
+	void SetVertex(i32 i, Vertex vertex)
+	{
+		i32 step = i * 8;
+
+		Vertex result = {};
+		vertices[step] = vertex.vx;
+		vertices[step + 1] = vertex.vy;
+		vertices[step + 2] = vertex.vz;
+		vertices[step + 3] = vertex.ux;
+		vertices[step + 4] = vertex.uy;
+		vertices[step + 5] = vertex.nx;
+		vertices[step + 6] = vertex.ny;
+		vertices[step + 7] = vertex.nz;
+	}
+
+	void SetVertexAmount(i32 amount) {
+		vertices = VMArray<float>(amount * 8);
+	}
+
 	void SetNormalAt(i32 i, vec3 normal) {
 		i32 step = i * 8;
 		vertices[step+5] = normal.x;

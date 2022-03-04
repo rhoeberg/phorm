@@ -36,6 +36,19 @@ struct BitmapComputeState
 	i32 height;
 };
 
+/* struct ParticleNodeState */
+/* { */
+/* 	Shader cellIndexShader; */
+/* 	Shader sortShader; */
+/* 	Shader offsetShader; */
+/* 	Shader boidSimShader; */
+
+/* 	u32 particles; */
+/* 	u32 particleIndices; */
+/* 	u32 cellIndices; */
+/* 	u32 cellOffset; */
+/* }; */
+
 // TODO (rhoe) change this name to something better
 struct SceneRenderData
 {
@@ -87,6 +100,37 @@ struct SceneRenderData
 
 };
 
+/*
+  For a easier way to add custom data to nodes instead of having to
+  add a new custom struct to data.h and then add the container to the 
+  nodestate etc..
+  We could have a super data struct which contains all objectcontainers 
+  (similar to our nodestate struct now)
+  but instead of hardcoding the different data types into it, we would
+  have a way to insert an arbitrary objectcontainer into it.
+
+  this could be done by having some sort of list of objectcontainers.
+
+  how would we then access and get a specific objectcontainer?
+  if we could somehow restrict container insertion to one container pr. type
+  then maybe we could use the type to retrieve the container.
+  alternativly we need to keep track of some indices
+  
+  problems:
+  im not even sure this is possible in c++ since we would need a list of generic lists
+  and im not sure templates can take care of that.
+  another problem is retrieving the data, its hard to do it in a clean way and it
+  will probably add some indirection would could potentialy be a performance problem,
+  considering how often we need to retrieve data.
+
+  
+  instead of templates its probably better to use pointers in some way.
+  still an indirection but might be doable.
+
+  
+  
+*/
+
 struct NodeState {
 	// NODES
 	ObjectContainer<Node> nodes;
@@ -110,6 +154,7 @@ struct NodeState {
 	ObjectContainer<SinWaveNodeState> sinWaveNodes;
 	ObjectContainer<BitmapComputeState> bitmapComputeStates;
 	ObjectContainer<MeshComputeState> meshComputeStates;
+	/* ObjectContainer<ParticleNodeState> particleNodeStates; */
 };
 
 global NodeState *_nodeState;
@@ -129,6 +174,7 @@ ObjectContainer<Scene>* GetScenes();
 ObjectContainer<SceneRenderData>* GetSceneRenderDatas();
 ObjectContainer<BitmapComputeState>* GetBitmapComputeStates();
 ObjectContainer<MeshComputeState>* GetMeshComputeStates();
+/* ObjectContainer<ParticleNodeState>* GetParticleNodeStates(); */
 
 RenderObject CreateRenderObject();
 ObjectHandle AddNewRenderObject();

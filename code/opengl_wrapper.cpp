@@ -33,6 +33,7 @@ void InitializeOpenglWrapper()
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	// glBindTexture(GL_TEXTURE_2D, 0);
 
+	glEnable(GL_PROGRAM_POINT_SIZE);
 
 }
 
@@ -100,6 +101,17 @@ void BindMainContextVAO(int handle)
 void BindViewerContextVAO(int handle)
 {
 	glBindVertexArray(_openglWrapperState->viewerContextVAO[handle]);
+}
+
+void GFXBindVAO(i32 handle)
+{
+	u32 vao = GetCurrentContextVAO(handle);
+	glBindVertexArray(vao);
+}
+
+void GFXUnbindVAO()
+{
+	glBindVertexArray(0);
 }
 
 GLuint GetViewerContextVAO(int handle)
@@ -183,14 +195,13 @@ int CreateSpriteVAO()
     return VAOHandle;
 }
 
-GLuint CreateShader(const char *path, int type)
+u32 CreateShader(char **source, int count, i32 type)
 {
-    const char* source = readFile(path);
     GLint success;
     GLchar infoLog[512];
     GLuint id;
     id = glCreateShader(type);
-    glShaderSource(id, 1, &source, NULL);
+    glShaderSource(id, count, source, NULL);
     glCompileShader(id);
     glGetShaderiv(id, GL_COMPILE_STATUS, &success);
     if(!success) {
@@ -200,11 +211,32 @@ GLuint CreateShader(const char *path, int type)
 	return id;
 }
 
+u32 CreateShader(const char *path, VMArray<String> defines, int type)
+{
+	char *sourceFile = ReadFile(path);
+	i32 sourceCount = defines.Count() + 2;
+	char **finalSource = (char**)malloc(sizeof(char*) * sourceCount);
+	
+	finalSource[0] = "#version 430\n";
+	for(i32 i = 0; i < defines.Count(); i++) {
+		finalSource[i+1] = defines[i].buffer;
+	}
+	finalSource[sourceCount - 1] = sourceFile;
+
+	return CreateShader(finalSource, sourceCount, type);
+}
+
+u32 CreateShader(const char *path, int type)
+{
+    char* source = ReadFile(path);
+	return CreateShader(&source, 1, type);
+}
+
 GLuint CreateShaderProgram(const char *vPath, const char *fPath)
 {
     GLuint shaderProgram;
-    const char* vertexCode = readFile(vPath);
-    const char* fragmentCode = readFile(fPath);
+    const char* vertexCode = ReadFile(vPath);
+    const char* fragmentCode = ReadFile(fPath);
 
     GLint success;
     GLchar infoLog[512];
@@ -271,6 +303,25 @@ void GFXFinish()
 	glFinish();
 }
 
+void GFXPointSize(f32 size)
+{
+	glPointSize(size);
+}
+
+void GFXDraw(i32 vaoHandle, GFXPrimitiveMode mode, i32 count, bool useIndices)
+{
+	GFXBindVAO(vaoHandle);
+
+	GLenum glMode = GetPrimitiveMode(mode);
+	if(useIndices) {
+		glDrawElements(glMode, count, GL_UNSIGNED_INT, 0);
+	}
+	else {
+		glDrawArrays(glMode, 0, count);
+	}
+
+	GFXUnbindVAO();
+}
 
 ///////////////
 // RESOURCES

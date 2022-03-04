@@ -130,7 +130,7 @@ RenderObject CreateRenderObject()
 	glGenBuffers(1, &result.EBO);
 	glGenBuffers(1, &result.VBO);
 	result.textureHandle = GFXTextureAdd();
-	result.wireframe = false;
+	result.primitiveMode = GFX_TRIANGLES;
 
 	return result;
 }

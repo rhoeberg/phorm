@@ -144,7 +144,6 @@ void UpdateInspector()
 		ImGui::Spacing();
 
 		for(int i = 0; i < node->params.Count(); i++) {
-
 			NodeParameter *param = &node->params[i];
 
 			sprintf(buffer, "exposed##exposed%d:%d", _nodeEditorState->draggedNode.id, i);
@@ -153,9 +152,8 @@ void UpdateInspector()
 			ImGui::Checkbox(buffer, &param->exposed);
 			ImGui::SameLine();
 
-			sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNode.id);
-
 			ImGui::Text("params");
+			sprintf(buffer, "%s##%d", &param->name, _nodeEditorState->draggedNode.id);
 			switch(node->params[i].type) {
 				case DATA_INT: {
 					if(ImGui::InputInt(buffer, &param->i)) {

@@ -17,6 +17,7 @@ struct String
 	void ResizeBuffer(int min);
 	void Concat(const char *str);
 	void Concat(String& other);
+	void Concat(int i);
 	String& operator=(const char *str);
 	String& operator=(const String other);
 	// String& operator=(String other);

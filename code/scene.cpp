@@ -251,12 +251,12 @@ void RenderObjectInstance::Render(Shader *shader)
 
 	///////////////////
 	// WIREFRAME MODE
-	if(renderObject->wireframe) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	else {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+	// if(renderObject->primitiveMode == G) {
+	// 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// }
+	// else {
+	// 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	// }
 
 	// TODO (rhoe) change default shader to material shader attached to renderobject
 	shader->Begin();
@@ -288,7 +288,16 @@ void RenderObjectInstance::Render(Shader *shader)
 	// DRAW
 	GLuint VAO = GetCurrentContextVAO(renderObject->VAOHandle);
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, renderObject->indicesCount, GL_UNSIGNED_INT, 0);
+
+	GFXPointSize(renderObject->pointSize);
+	if(renderObject->useIndices) {
+		GFXDraw(renderObject->VAOHandle, renderObject->primitiveMode, renderObject->indexCount, true);
+	}
+	else {
+		GFXDraw(renderObject->VAOHandle, renderObject->primitiveMode, renderObject->vertexCount, false);
+	}
+		 
+
 	glBindVertexArray(0);
 
 

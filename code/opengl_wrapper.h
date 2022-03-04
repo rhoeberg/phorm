@@ -27,6 +27,12 @@ enum GFXBarrierType {
 	GFX_BARRIER_IMAGE,
 };
 
+enum GFXPrimitiveMode {
+	GFX_LINES,
+	GFX_TRIANGLES,
+	GFX_POINTS
+};
+
 struct GFXTexture
 {
 	u32 id;
@@ -88,6 +94,17 @@ GLenum GetBarrierType(GFXBarrierType type)
 	return GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 }
 
+GLenum GetPrimitiveMode(GFXPrimitiveMode mode)
+{
+	switch(mode) {
+		case GFX_LINES: return GL_LINES; break;
+		case GFX_POINTS: return GL_POINTS; break;
+		case GFX_TRIANGLES: return GL_TRIANGLES; break;
+	}
+
+	return GL_TRIANGLES;
+}
+
 void InitializeOpenglWrapper();
 int AddVAOMainWindow();
 int AddVAOViewerWindow();
@@ -100,6 +117,7 @@ void SetContextMain();
 void SetContextViewer();
 void BindMainContextVAO(int handle);
 void BindViewerContextVAO(int handle);
+void GFXBindVAO(i32 handle);
 GLuint GetMainContextVAO(int handle);
 GLuint GetViewerContextVAO(int handle);
 GLuint GetCurrentContextVAO(int handle);
@@ -111,7 +129,9 @@ void BindBuffersToVAO(int VAOHandle, GLuint VBO, GLuint EBO);
 int CreateSpriteVAO();
 void CleanupOpenglWrapper();
 
+u32 CreateShader(char **source, int count, i32 type);
 GLuint CreateShader(const char *path, int type);
+u32 CreateShader(const char *path, VMArray<String> defines, int type);
 GLuint CreateShaderProgram(const char *vPath, const char *fPath);
 
 ///////////////
@@ -122,6 +142,8 @@ void GFXSetViewport(i32 x, i32 y, i32 width, i32 height);
 void GFXCompute(u32 x, u32 y, u32 z);
 void GFXMemBarrier(GFXBarrierType type);
 void GFXFinish();
+void GFXPointSize(f32 size);
+void GFXDraw(i32 vaoHandle, GFXPrimitiveMode mode, i32 count, bool useIndices);
 
 
 ///////////////

@@ -22,6 +22,15 @@ struct Shader
 		glDeleteShader(computeShader);
 	}
 
+	Shader(const char *cPath, VMArray<String> defines)
+	{
+		id = glCreateProgram();
+		GLuint computeShader = CreateShader(cPath, defines, GL_COMPUTE_SHADER);
+		glAttachShader(id, computeShader);
+		glLinkProgram(id);
+		glDeleteShader(computeShader);
+	}
+
 	void Begin()
 	{
 		glUseProgram(id);

@@ -10,12 +10,27 @@ void RenderObjectOperation(Node *self)
 	output->rot = self->params[2].Vec3();
 	output->color = self->params[3].Vec4();
 
-	if(self->params[4].Int() > 0) {
-		output->wireframe = true;
+	if(self->params[4].Int() == 0) {
+		output->primitiveMode = GFX_TRIANGLES;
+	}
+	else if(self->params[4].Int() == 1) {
+		output->primitiveMode = GFX_LINES;
+	}
+	else if(self->params[4].Int() == 2) {
+		output->primitiveMode = GFX_POINTS;
 	}
 	else {
-		output->wireframe = false;
+		output->primitiveMode = GFX_TRIANGLES;
 	}
+
+	if(self->params[5].Int() > 0) {
+		output->useIndices = false;
+	}
+	else {
+		output->useIndices = true;
+	}
+
+	output->pointSize = self->params[6].Double();
 
 	Bitmap *inputBitmap = GetBitmaps()->Get(self->inputs[1]);
 	if(inputBitmap) {
@@ -37,7 +52,8 @@ void RenderObjectOperation(Node *self)
 
 	BindBuffersToVAO(output->VAOHandle, output->VBO, output->EBO);
 
-	output->indicesCount = inputMesh->indices.Count();
+	output->indexCount = inputMesh->indices.Count();
+	output->vertexCount = inputMesh->vertices.Count();
 }
 
 ObjectHandle CreateRenderObjectNode()
@@ -47,7 +63,9 @@ ObjectHandle CreateRenderObjectNode()
 		NodeParameter("scale", vec3(1.0f, 1.0f, 1.0f)),
 		NodeParameter("rot", vec3(0.0f, 0.0f, 0.0f)),
 		NodeParameter("color", vec4(1.0f, 1.0f, 1.0f, 1.0f)),
-		NodeParameter("wireframe", 0),
+		NodeParameter("mode", 0),
+		NodeParameter("indices", 0),
+		NodeParameter("pointsize", 0.1),
 	};
 
 	FixedArray<NodeInput> inputs = {

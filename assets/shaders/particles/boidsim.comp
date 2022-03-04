@@ -1,0 +1,245 @@
+/*
+  
+1. - CREATE GROUP LIST
+make list of nearest particles (maximum of MAX_NEAREST) = GROUP
+
+2. - CALC VELOCITIES
+- get avg vel of GROUP (add together velocities of each particle and divide by amount of particles)
+- get centerVel of GROUP (direction from boidpos to center)
+- get avoidVel of GROUP (add direction away from each particle thats too close)
+- add together avg, center and avoid to get a final velocity and normalize;
+
+
+3. - APPLY NEW VELOCITIES
+- calc new pos from vel
+
+ */
+
+/* #version 430  */
+#extension GL_ARB_compute_shader : enable
+#extension GL_ARB_shader_storage_buffer_object : enable
+
+/* #define LOCAL_SIZE_X 32 // workgroup size */
+/* #define MAX_RANGE 10 */
+/* #define MIN_DIST 2 */
+#define MAX_GROUP_SIZE 32
+#define H 1 // radius from which particle can affect each other
+
+/* #define TOTAL_GRID_CELL_COUNT 1024 // THIS NEEDS TO BE SIMILAR TO TOTAL GRID CELL COUNT IN C++ */
+
+int currentGroupSize = 0;
+/* int currentAvoidGroupSize = 0; */
+
+// TODO (rhoe) could be an optimization to store pos and vel seperatly
+struct Particle {
+	vec4 pos;
+	vec4 vel;
+};
+
+struct BoidConfig {
+	float avg;
+	float avoid;
+	float center;
+	float goal;
+	float maxRange;
+	float minDist;
+	float speed;
+	float limit;
+};
+
+layout (local_size_x = WORKGROUP_SIZE, local_size_y = 1, local_size_z = 1) in; // Note hardware limit mentioned above!
+
+// std140 helps remove the problem of memory layout issues
+layout(binding=0) buffer particleBuffer
+{
+	Particle particles[]; 
+};
+
+/* layout(std140, binding=1) buffer indexBuffer */
+layout(binding=1) buffer indexBuffer
+{
+	uint particleIndices[];
+};
+
+layout(binding=2) buffer cellIndexBuffer
+{
+	uint cellIndices[];
+};
+
+
+layout(binding=3) buffer cellOffsetBuffer
+{
+	uint cellOffsets[];
+};
+
+/* layout(binding=4) buffer debugBuffer */
+/* { */
+/* 	uint debug[]; */
+/* }; */
+
+uint local_group[MAX_GROUP_SIZE];
+/* uint localAvoid[MAX_GROUP_SIZE]; */
+
+uniform int n;
+uniform vec4 goalPos;
+uniform BoidConfig config;
+
+uint GetFlatCellIndex(in ivec3 cellIndex)
+{
+  const uint p1 = 73856093; // some large primes
+  const uint p2 = 19349663;
+  const uint p3 = 83492791;
+  uint n = p1 * cellIndex.x ^ p2*cellIndex.y ^ p3*cellIndex.z;
+  n %= TOTAL_GRID_CELL_COUNT;
+  return n;
+}
+
+void getGroup() {
+	uint id = gl_GlobalInvocationID.x;
+
+	uint particleIndexA = particleIndices[id];
+	Particle particleA = particles[particleIndexA];
+
+	/* Particle particleA = particles[id]; */
+
+	ivec3 cellIndex = ivec3(floor(particleA.pos / H));
+	bool groupFull = false;
+
+	for(int i = -1; i <= 1; ++i) {
+		if(groupFull)
+			break;
+		for(int j = -1; j <= 1; ++j) {
+			if(groupFull)
+				break;
+			for(int k = -1; k <= 1; ++k) {
+				if(groupFull)
+					break;
+
+				ivec3 neighborIndex = cellIndex + ivec3(i, j, k);
+				uint flatNeighborIndex = GetFlatCellIndex(neighborIndex);
+       
+				// look up the offset to the cell:
+				uint neighborIterator = cellOffsets[flatNeighborIndex];
+
+				// iterate through particles in the neighbour cell (if iterator offset is valid)
+				while(neighborIterator != 0xFFFFFFFF && neighborIterator < n) {
+					uint particleIndexB = particleIndices[neighborIterator];
+					if(cellIndices[particleIndexB] != flatNeighborIndex) {
+						break;  // it means we stepped out of the neighbour cell list!
+					}
+
+
+					if(particleIndexB != particleIndexA) {
+						// Here you can load particleB and do the SPH evaluation logic
+						Particle particleB = particles[particleIndexB];
+						float distanceAB = distance(particleA.pos, particleB.pos);
+
+						/* if(currentAvoidGroupSize < MAX_GROUP_SIZE && distanceAB < config.minDist) { */
+						/* 	localAvoid[currentAvoidGroupSize] = particleIndexB; */
+						/* 	currentAvoidGroupSize++; */
+						/* } */
+						if(currentGroupSize < MAX_GROUP_SIZE && distanceAB < config.maxRange) {
+							local_group[currentGroupSize] = particleIndexB;
+							currentGroupSize++;
+							/* else { */
+							/* 	// check if new boid is close than some of the others */
+							/* 	// maybe this is overkill and not needed */
+							/* 	float maxDist = 0; */
+							/* 	int maxPart = 0; */
+							/* 	for(int i = 0; i < MAX_GROUP_SIZE; i++) { */
+							/* 		Particle otherParticle = particles[local_group[i]]; */
+							/* 		float dist = distance(otherParticle.pos, particleA.pos); */
+							/* 		if(maxDist < dist) { */
+							/* 			maxDist = dist; */
+							/* 			maxPart = i; */
+							/* 		} */
+							/* 	} */
+
+							/* 	if(distanceAB < maxDist) { */
+							/* 		local_group[maxPart] = particleIndexB; */
+							/* 	} */
+								
+							/* } */
+
+
+							if(currentGroupSize == MAX_GROUP_SIZE) {
+								groupFull = true;
+								break;
+							}
+						}
+					}
+					
+					neighborIterator++;  // iterate...
+				}
+
+			}
+		}
+	}
+}
+
+
+void main() {
+
+	// 1. group
+	getGroup();
+
+	// 2. velocities
+	uint id = gl_GlobalInvocationID.x;
+
+	uint particleIndexA = particleIndices[id];
+	Particle particleA = particles[particleIndexA];
+	/* particleA.vel = vec4(0); */
+	/* Particle particleA = particles[id]; */
+
+	vec4 avgVel = vec4(0, 0, 0, 0);
+	vec4 avoidVel = vec4(0, 0, 0, 0);
+	vec4 centroidPos = vec4(0, 0, 0, 0);
+	for(int i = 0; i < currentGroupSize; i++) {
+		Particle particleB = particles[local_group[i]];
+
+		centroidPos += particleB.pos;
+
+		if(distance(particleA.pos, particleB.pos) < config.minDist)
+			avoidVel += particleA.pos - particleB.pos; // particleB.pos - particleA.pos;
+
+		avgVel += particleB.vel;
+	}
+
+	/* for(int i = 0; i < currentAvoidGroupSize; i++) { */
+	/* 	Particle particleB = particles[localAvoid[i]]; */
+	/* 	avoidVel += particleA.pos - particleB.pos; // particleB.pos - particleA.pos; */
+	/* } */
+
+	// 3. apply
+	if(currentGroupSize > 0) {
+		/* debug[0] = 10; */
+		avgVel /= currentGroupSize;
+		centroidPos /= currentGroupSize;
+		vec4 centroidDir = centroidPos - particleA.pos;
+
+		/* if(length(centroidDir) > 1.3) */
+		particleA.vel += (centroidDir / 8) * config.center;
+		
+		/* if(length(avgVel) > 1.3) */
+		particleA.vel += (avgVel / 8) * config.avg;
+
+		/* if(length(avgVel) > 1.3) */
+		particleA.vel += (avoidVel / 8) * config.avoid;
+		/* particleA.vel = normalize(particleA.vel); */
+	}
+
+	/* goalPos = vec4(0, 0, 0, 0); */
+	vec4 goalVel = goalPos - particleA.pos;
+	particleA.vel += (goalVel / 8) * config.goal;
+
+	/* if(length(particleA.vel) > 0) */
+		/* particleA.vel = normalize(particleA.vel); */
+
+	/* float limit = 10; */
+	if(length(particleA.vel) > config.limit) {
+		particleA.vel = normalize(particleA.vel) * config.limit;
+	}
+
+	particleA.pos += particleA.vel * config.speed;
+	particles[particleIndexA] = particleA;
+}

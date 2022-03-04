@@ -1,6 +1,6 @@
 #include <stdarg.h>
 
-char* readFile(const char* fileName)
+char* ReadFile(const char* fileName)
 {
     char* result = 0;
     FILE* file = fopen(fileName, "rb");

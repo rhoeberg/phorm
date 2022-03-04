@@ -96,6 +96,13 @@ void String::Concat(String& other)
 	buffer[length] = '\0';
 }
 
+void String::Concat(int i)
+{
+	char tmp[128];
+	sprintf(tmp, "%d\0", i);
+	Concat(tmp);
+}
+
 String& String::operator=(const char *str) {
 	// Free();
 	*this = String(str);

@@ -6,8 +6,20 @@ void SawWaveOperation(Node *self)
 	if(!output)
 		return;
 
+	// PARAMS
 	double rate = self->params[0].Double();
-	*output = Fmod(GetTime() * rate, 1.0f);
+	double min = self->params[1].Double();
+	double max = self->params[2].Double();
+	if(max < min) {
+		ErrorLog("SawWaveNode: max cannot be smaller than min");
+		return;
+	}
+
+	double result = Fmod(GetTime() * rate, 1.0f);
+	double range = max - min;
+	result = (result * range) + min;
+
+	*output = result;
 
 	self->changed = true;
 }
@@ -46,6 +58,8 @@ ObjectHandle CreateSawWaveNode()
 {
 	FixedArray<NodeParameter> params = {
 		NodeParameter("rate", 1.0),
+		NodeParameter("min", 0.0),
+		NodeParameter("max", 1.0),
 	};
 
 	FixedArray<NodeInput> inputs = {

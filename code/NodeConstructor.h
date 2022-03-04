@@ -1,6 +1,10 @@
 #pragma once
 
+typedef ObjectHandle (*NodeCreateFunc)();
+typedef void (*NodeSetupFunc)(Node *self);
+
 void BaseNodeDrawFunc(Node *node);
+void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeSetupFunc setupFunc = NULL);
 
 #include "nodes/LoadTextureNode.h"
 #include "nodes/NoiseBitmap.h"
@@ -13,6 +17,7 @@ void BaseNodeDrawFunc(Node *node);
 #include "nodes/CubeNode.h"
 #include "nodes/GridNode.h"
 #include "nodes/MeshNoise.h"
+#include "nodes/ParticleNode.h"
 #include "nodes/renderobject_node.h"
 #include "nodes/CombineObjectsNode.h"
 #include "nodes/MirrorNode.h"
@@ -32,9 +37,6 @@ void BaseNodeDrawFunc(Node *node);
 
 // output node
 #include "nodes/OutputNode.h"
-
-typedef ObjectHandle (*NodeCreateFunc)();
-typedef void (*NodeSetupFunc)(Node *self);
 
 struct NodeConstructor
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-char* readFile(const char* fileName);
+char* ReadFile(const char* fileName);
 
 void _DebugLog(char *filename, i32 linenumber, char *format, ...);
 void _ErrorLog(char *filename, i32 linenumber, char *format, ...);

@@ -1,11 +1,14 @@
 #pragma once
+
+
 struct RenderObject {
 	bool hasTexture;
 	u32 textureHandle;
 	int VAOHandle; // not a direct VAO id but an abstract handle
 	GLuint VBO;
 	GLuint EBO;
-	int indicesCount;
+	i32 indexCount;
+	i32 vertexCount;
 
 
 	vec3 pos;
@@ -13,5 +16,7 @@ struct RenderObject {
 	vec3 rot;
 	vec4 color;
 
-	bool wireframe;
+	GFXPrimitiveMode primitiveMode;
+	f32 pointSize; 
+	bool useIndices;
 };

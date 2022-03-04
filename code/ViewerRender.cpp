@@ -83,7 +83,7 @@ void InitializeViewerRender()
 	// renderObject->VAOHandle = CreateSpriteVAO();
 	renderObject->VAOHandle = CreateViewerQuad();
 	renderObject->hasTexture = true;
-	renderObject->indicesCount = 6;
+	renderObject->indexCount = 6;
 	renderObject->pos = vec3(0, 0, 0);
 	renderObject->rot = vec3(0, 0, 0);
 	renderObject->scale = vec3(1, 1, 1);
@@ -92,21 +92,19 @@ void InitializeViewerRender()
  
 void ViewRenderObject(ObjectHandle renderObject)
 {
-	// render to general FBO
-	// attach general texture (size of window?)
-	// render texture on viewer quad
-
 	int width, height;
 	GetViewerWindowSize(&width, &height);
 	SceneRenderData *renderData = GetSceneRenderDatas()->Get(_viewerRenderState->sceneRenderData);
 	renderData->SetSize(width, height);
 	glViewport(0, 0, width, height);
 
+	// == TODO (rhoe) add these to opengl_wrapper
 	glBindFramebuffer(GL_FRAMEBUFFER, renderData->fbo);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+	// ==
+
+	GFXClear(vec3(0.0f, 0.0f, 0.0f));
 
 	// TODO (rhoe) needs to set these uniforms on the
 	//             shader attached to specific renderojbect
@@ -116,30 +114,15 @@ void ViewRenderObject(ObjectHandle renderObject)
 	mat4 view = _viewerRenderState->freeCam.GetViewMatrix();
 	_viewerRenderState->objectShader.SetUniform("projection", projection);
 	_viewerRenderState->objectShader.SetUniform("view", view);
-	// defaultShader.SetUniform("projection", projection);
-	// defaultShader.SetUniform("view", view);
-	// _viewerRenderState->objectShader.End();
-	// defaultShader.SetUniform("pointLightAmount", 0);
-
-	// RenderObject *renderObject = GetRenderObjects()->Get(handle);
-	// if(renderObject) {
-
-	// ObjectHandle renderObjectHandle = viewerNode->GetData();
-	// RenderObject *renderObject = GetRenderObjects()->Get(renderObjectHandle);
 
 	Node *viewerNode = GetNode(GetViewerNode());
 	RenderObjectInstance instance = renderObject;
 	instance.Render(&_viewerRenderState->objectShader);
 
-	// SceneObject sceneObject(GetViewerNode(), renderObject);
-	// sceneObject.Render();
-	// }
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// set viewer texture handle to fbo texture
 	_viewerRenderState->currentViewTextureID = renderData->textureID;
-
 }
 
 void UpdateViewerRender()
