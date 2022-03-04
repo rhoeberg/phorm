@@ -6,7 +6,7 @@ NodeParameter::NodeParameter(const char *_name, int _i)
 	sprintf(name, "%s", _name);
 	i = _i;
 	nodeHandle.isset = false;
-	exposed = true;
+	exposed = false;
 }
 
 NodeParameter::NodeParameter(const char *_name, double _d)
@@ -15,7 +15,7 @@ NodeParameter::NodeParameter(const char *_name, double _d)
 	sprintf(name, "%s", _name);
 	d = _d;
 	nodeHandle.isset = false;
-	exposed = true;
+	exposed = false;
 }
 
 NodeParameter::NodeParameter(const char *_name, vec3 _v3)

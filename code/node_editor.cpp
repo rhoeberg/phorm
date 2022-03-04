@@ -132,6 +132,7 @@ void PasteNodes()
 	}
 }
 
+// TODO (rhoe) move this to global editor
 void NodeGUI()
 {
 	NodeEditorState *editor = _nodeEditorState;
@@ -139,23 +140,10 @@ void NodeGUI()
 	/////////////////
 	// PAGES
 	/////////////////
-
-
-	/////////////////
-	// NODE LIST
-	/////////////////
 	ImGui::Begin("editor");
 
 	ImGui::InputInt("page", &editor->currentPage);
 
-	// ImGui::Spacing();
-	// VMArray<String>* names = GetNodeNames();
-	// for(i32 i = 0; i < names->Count(); i++) {
-	// 	if(ImGui::Button((*names)[i].buffer)) {
-	// 		NodeConstructor *nodeConstructor = GetNodeConstructors()->Get((*names)[i]);
-	// 		ConstructNode((*names)[i], nodeConstructor);
-	// 	}
-	// }
 	if(ImGui::Button("add page")) {
 		editor->pages.Insert(AddString(""));
 	}
