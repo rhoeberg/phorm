@@ -182,7 +182,7 @@ void ProjectSave(String path)
 
 	//////////////
 	// SAVE PAGES
-	SaveVMArray<ObjectHandle>(&_nodeEditorState->pages, &saveFile);
+	SaveVMArray<ObjectHandle>(&_globalEditorState->pages, &saveFile);
 
 	fclose(saveFile.file);
 }
@@ -344,7 +344,7 @@ void ProjectLoad(String path)
 
 	/////////////
 	// LOAD PAGES
-	LoadNextVMArray<ObjectHandle>(&_nodeEditorState->pages, &saveFile);
+	LoadNextVMArray<ObjectHandle>(&_globalEditorState->pages, &saveFile);
 }
 
 void SaveSettings()

@@ -61,14 +61,6 @@ struct NodeEditorState {
 	VMArray<String> promptCandidates;
 	int promptCandidateSelected;
 
-
-	////////////////
-	// CURRENT PAGE
-	i32 currentPage;
-	/* VMArray<String> pages; */
-	VMArray<ObjectHandle> pages;
-
-
 	////////////////
 	// GLOBAL OUTPUT NODE
 	ObjectHandle output;

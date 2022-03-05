@@ -6,6 +6,9 @@ void InitializeGlobalEditor()
 	_globalEditorState->nodeEditorOn = true;
 	_globalEditorState->promptActive = false;
 	_globalEditorState->viewerMode = VIEW_OBJECT;
+	_globalEditorState->currentPage = 0;
+	new(&_globalEditorState->pages) VMArray<String>();
+	_globalEditorState->pages.Insert(AddString("main"));
 }
 
 bool IsPromptActive()
@@ -190,6 +193,52 @@ void UpdateInspector()
 	ImGui::End();
 }
 
+
+///////////////////
+// PAGE EDITOR
+///////////////////
+u32 GetCurrentPage()
+{
+	return _globalEditorState->currentPage;
+}
+
+void UpdatePageEditor()
+{
+	GlobalEditorState *editor = _globalEditorState;
+
+	ImGui::Begin("editor");
+
+	// ImGui::InputInt("page", &editor->currentPage);
+
+	if(ImGui::Button("add page")) {
+		editor->pages.Insert(AddString(""));
+	}
+
+	char buffer[128];
+	for(i32 i = 0; i < editor->pages.Count(); i++) {
+		sprintf(buffer, "%d:", i);
+		if(ImGui::Button(buffer)) {
+			editor->currentPage = i;
+		}
+		ImGui::SameLine();
+		String *pageName = GetStrings()->Get(editor->pages[i]);
+		if(pageName) {
+			if(i != 0) {
+				sprintf(buffer, "##pagename%d", i);
+				if(ImGui::InputText(buffer, pageName->buffer, pageName->bufferSize)) {
+					pageName->ReCalc();
+				}
+			}
+			else {
+				ImGui::Text(pageName->buffer);
+			}
+		}
+	}
+
+
+	ImGui::End();
+}
+
 void UpdateGlobalEditor()
 {
 	// SEND TO RENDER
@@ -217,6 +266,7 @@ void UpdateGlobalEditor()
 	}
 
 	UpdateInspector();
+	UpdatePageEditor();
 }
 
 void CleanupGlobalEditor()

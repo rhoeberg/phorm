@@ -11,6 +11,11 @@ struct GlobalEditorState {
 	ViewerMode viewerMode;
 	ObjectHandle inspectorObject;
 	ObjectHandle viewerNode;
+
+	////////////////
+	// CURRENT PAGE
+	i32 currentPage;
+	VMArray<ObjectHandle> pages;
 };
 
 void UpdateGlobalEditor();
@@ -19,5 +24,6 @@ void SetInspectorObject(ObjectHandle handle);
 void SetViewerNode(ObjectHandle handle);
 ObjectHandle GetViewerNode();
 void SetViewerMode(i32 mode);
+u32 GetCurrentPage();
 
 global GlobalEditorState *_globalEditorState;

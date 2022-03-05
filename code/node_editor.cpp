@@ -1,23 +1,6 @@
 #include "node_editor.h"
 #include "data.h"
 
-// void NodeEditorSetWindowSize(int width, int height)
-// {
-// 	//////////////
-// 	// VIEWER IN MAIN LOCATION
-// 	glUseProgram(_nodeEditorState->viewerShader);
-//     GLuint projectionLoc = glGetUniformLocation(_nodeEditorState->viewerShader, "projection");
-//     glm::mat4 projection;
-//     projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
-//     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-//     GLuint modelLoc = glGetUniformLocation(_nodeEditorState->viewerShader, "model");
-// 	glm::mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-//     model = glm::translate(model, glm::vec3(width - (VIEWER_SIZE + 10), 10.0f, 0.0f));
-//     model = glm::scale(model, glm::vec3(VIEWER_SIZE, VIEWER_SIZE,1));
-//     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-// }
-
 bool MouseInsideViewerRect()
 {
 	// int width, height;
@@ -58,9 +41,9 @@ void InitializeNodeEditor()
 
 	int promptCandidateFocus;
 
-	editor->currentPage = 0;
-	new(&editor->pages) VMArray<String>();
-	editor->pages.Insert(AddString("main"));
+	// editor->currentPage = 0;
+	// new(&editor->pages) VMArray<String>();
+	// editor->pages.Insert(AddString("main"));
 
 	// CREATE OUTPUT NODE
 	// TODO (rhoe) move this to another place
@@ -84,11 +67,6 @@ Node *GetOutputNode()
 ObjectHandle GetOutputHandle()
 {
 	return _nodeEditorState->output;
-}
-
-u32 GetCurrentPage()
-{
-	return _nodeEditorState->currentPage;
 }
 
 void PasteNodes()
@@ -136,43 +114,6 @@ void PasteNodes()
 void NodeGUI()
 {
 	NodeEditorState *editor = _nodeEditorState;
-
-	/////////////////
-	// PAGES
-	/////////////////
-	ImGui::Begin("editor");
-
-	ImGui::InputInt("page", &editor->currentPage);
-
-	if(ImGui::Button("add page")) {
-		editor->pages.Insert(AddString(""));
-	}
-
-	char buffer[128];
-	for(i32 i = 0; i < editor->pages.Count(); i++) {
-		sprintf(buffer, "%d:", i);
-		if(ImGui::Button(buffer)) {
-			editor->currentPage = i;
-		}
-		ImGui::SameLine();
-		String *pageName = GetStrings()->Get(editor->pages[i]);
-		if(pageName) {
-			if(i != 0) {
-				sprintf(buffer, "##pagename%d", i);
-				if(ImGui::InputText(buffer, pageName->buffer, pageName->bufferSize)) {
-					pageName->ReCalc();
-				}
-			}
-			else {
-				ImGui::Text(pageName->buffer);
-			}
-		}
-	}
-
-
-	ImGui::End();
-
-
 
 	/////////////////
 	// INPUT PROMPT
@@ -355,7 +296,7 @@ void DrawNodeOutline(ObjectHandle handle)
 	NodeEditorState *editor = _nodeEditorState;
 
 	Node *node = GetNode(handle);
-	if(node && node->page == editor->currentPage) {
+	if(node && node->page == GetCurrentPage()) {
 		Rect outline= {};
 		outline.pos = node->rect.pos - vec2(outlineMargin, outlineMargin);
 		outline.width = node->rect.width + outlineMargin;
@@ -377,7 +318,7 @@ void UpdateHoverState()
 	for(int i = 0; i < _nodeState->nodes.Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = _nodeState->nodes.Get(handle);
-		if(node && node->page == editor->currentPage) {
+		if(node && node->page == GetCurrentPage()) {
 			// CHECK INPUTS
 			for(int j = 0; j < node->inputs.Count(); j++) {
 				Rect inputRect = GetNodeInputRect(handle, j);
@@ -591,7 +532,7 @@ void UpdateNodeStopDragging()
 			for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
 				ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 				Node *node = _nodeState->nodes.Get(handle);
-				if(node && node->page == editor->currentPage) {
+				if(node && node->page == GetCurrentPage()) {
 					vec2 center = GetRectCenter(node->rect);
 					if(center.x > a.x && center.x < b.x &&
 					   center.y > a.y && center.y < b.y) {
@@ -672,7 +613,7 @@ void UpdateNodeEditor()
 	for(i32 i = 0; i < GetNodes()->Count(); i++) {
 		ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 		Node *node = GetNodes()->Get(handle);
-		if(node && node->page == editor->currentPage) {
+		if(node && node->page == GetCurrentPage()) {
 			DrawNode(handle);
 		}
 	}
