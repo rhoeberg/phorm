@@ -76,6 +76,11 @@ void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 		}
 		case DATA_SCENE: {
 			dataHandle = GetScenes()->Insert(Scene());
+			break;
+		}
+		case DATA_CAMERA: {
+			dataHandle = GetCameras()->Insert(Camera());
+			break;
 		}
 		case DATA_NONE: {
 			break;
@@ -180,6 +185,11 @@ void SetupNodeConstructors()
 	// VEC3 NODES
 	/////////////////
 	AddNodeConstructor(String("vec3"), Vec3NodeOperation, CreateVec3Node);
+
+	/////////////////
+	// CAMERA NODES
+	/////////////////
+	AddNodeConstructor(String("camera"), CameraNodeOp, CreateCameraNode);
 }
 
 /*

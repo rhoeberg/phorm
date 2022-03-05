@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO (rhoe) should probalby have a name string also for tooltips
 struct NodeInput {
 	DataType type;
 	ObjectHandle handle;

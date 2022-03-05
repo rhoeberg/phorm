@@ -74,22 +74,6 @@ struct Camera {
 		return result;
 	}
 
-
-	/*
-	  Currently we can only orbit around a fixed point (default to center)
-	  This makes it easier to understand the orbit center point for the user
-	  but mean we cannot orbit around objects which is not in the center
-	  it also mean that the camera is jumping to orbit pos when you start
-	  orbiting.
-
-	  using this as orbit center would allow us to orbit any arbitrary point
-	  its just very hard for the user to actually uniformly around an object
-	  because you have to find the exact camera pos that corresponds to the
-	  object centered with the corrent orbit distance
-	  # vec3 orbitCenter = pos + (front * orbitDist);
-	  
-	  would be nice to have a more dynamic way of doing it
-	 */
 	void OrbitDrag(vec2 dragOffset)
 	{
 		orbitCenter = pos + (front * orbitDist);
@@ -113,7 +97,7 @@ struct Camera {
 		front = glm::normalize(orbitCenter - pos);
 	}
 
-	void LookDir(vec2 offset)
+	void MouseLook(vec2 offset)
 	{
 		float yawAmount = lookDirSpeed * offset.x;
 		float pitchAmount = lookDirSpeed * offset.y;
@@ -142,5 +126,11 @@ struct Camera {
 
 		float deltaSpeed = moveSpeed * deltaTime;
 		pos += glm::normalize(vel) * deltaSpeed;
+	}
+
+	void LookAt(vec3 _pos, vec3 target)
+	{
+		pos = _pos;
+		front = normalize(target - _pos);
 	}
 };

@@ -23,44 +23,6 @@ void AddSceneRenderCommand(ObjectHandle scene, ObjectHandle texture, ObjectHandl
 
 void UpdateSceneRender()
 {
-	///////////////////
-	// UPDATE CAMERA
-	// if(MouseInsideViewerRect()) {
-	// 	if(scrollReady) {
-	// 		_viewerRenderState->.OrbitScrollOut(scrollOffset);
-	// 		_viewerRenderState->.OrbitDrag(vec2(0.0f, 0.0f));
-	// 		scrollReady = false;
-	// 	}
-
-	// 	vec2 dragOffset;
-
-	// 	// mouse drag (orbit)
-	// 	dragOffset = mouse - lastDragPos;
-	// 	if(mouse_buttons[GLFW_MOUSE_BUTTON_3]) {
-	// 		cam.OrbitDrag(dragOffset);
-	// 	}
-	// 	else if(mouse_buttons[GLFW_MOUSE_BUTTON_2]) {
-	// 		cam.LookDir(dragOffset);
-	// 	}
-
-	// 	lastDragPos = mouse;
-
-	// 	if(keys[GLFW_KEY_W]) {
-	// 		cam.Move(CAM_FORWARD);
-	// 	}
-	// 	else if(keys[GLFW_KEY_S]) {
-	// 		cam.Move(CAM_BACKWARD);
-	// 	}
-
-	// 	if(keys[GLFW_KEY_A]) {
-	// 		cam.Move(CAM_LEFT);
-	// 	}
-	// 	else if(keys[GLFW_KEY_D]) {
-	// 		cam.Move(CAM_RIGHT);
-	// 	}
-	// }
-
-
 	for(i32 i = 0; i < _sceneRenderState->commands.Count(); i++) {
 		RenderSceneCommand(_sceneRenderState->commands[i]);
 	}
@@ -112,7 +74,15 @@ void RenderSceneCommand(SceneRenderCommand command)
 											0.1f, 1000.0f);
 
 	mat4 model = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-	mat4 view = _viewerRenderState->freeCam.GetViewMatrix();
+
+	mat4 view = {};
+	Camera *sceneCam = GetCameras()->Get(scene->cameraHandle);
+	if(FreeCamMode() || !sceneCam) {
+		view = _viewerRenderState->freeCam.GetViewMatrix();
+	}
+	else {
+		view = sceneCam->GetViewMatrix();
+	}
 
 	defaultShader.SetUniform("projection", projection);
 	defaultShader.SetUniform("view", view);

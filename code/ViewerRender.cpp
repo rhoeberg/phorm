@@ -144,7 +144,7 @@ void UpdateViewerRender()
 		_viewerRenderState->freeCam.OrbitDrag(dragOffset);
 	}
 	else if(mouse_buttons[GLFW_MOUSE_BUTTON_2]) {
-		_viewerRenderState->freeCam.LookDir(dragOffset);
+		_viewerRenderState->freeCam.MouseLook(dragOffset);
 	}
 
 	if(keys[GLFW_KEY_W]) {

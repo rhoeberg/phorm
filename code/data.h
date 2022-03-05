@@ -36,19 +36,6 @@ struct BitmapComputeState
 	i32 height;
 };
 
-/* struct ParticleNodeState */
-/* { */
-/* 	Shader cellIndexShader; */
-/* 	Shader sortShader; */
-/* 	Shader offsetShader; */
-/* 	Shader boidSimShader; */
-
-/* 	u32 particles; */
-/* 	u32 particleIndices; */
-/* 	u32 cellIndices; */
-/* 	u32 cellOffset; */
-/* }; */
-
 // TODO (rhoe) change this name to something better
 struct SceneRenderData
 {
@@ -147,6 +134,7 @@ struct NodeState {
 	ObjectContainer<String> strings;
 	ObjectContainer<PointLight> pointLights;
 	ObjectContainer<Scene> scenes;
+	ObjectContainer<Camera> cameras;
 
 	// NODE SPECIFIC STATE
 	ObjectContainer<SceneRenderData> sceneRenderDatas;
@@ -171,6 +159,7 @@ ObjectContainer<vec4>* GetVec4s();
 ObjectContainer<PointLight>* GetPointLights();
 ObjectContainer<String>* GetStrings();
 ObjectContainer<Scene>* GetScenes();
+ObjectContainer<Camera>* GetCameras();
 ObjectContainer<SceneRenderData>* GetSceneRenderDatas();
 ObjectContainer<BitmapComputeState>* GetBitmapComputeStates();
 ObjectContainer<MeshComputeState>* GetMeshComputeStates();

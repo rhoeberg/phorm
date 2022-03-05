@@ -64,6 +64,7 @@ struct SceneObject
 
 struct Scene {
 	vec3 bgColor;
+	ObjectHandle cameraHandle;
 	ObjectContainer<SceneObject> sceneObjects;
 	ObjectContainer<ObjectHandle> pointLights;
 

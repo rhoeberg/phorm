@@ -7,6 +7,7 @@ void InitializeGlobalEditor()
 	_globalEditorState->promptActive = false;
 	_globalEditorState->viewerMode = VIEW_OBJECT;
 	_globalEditorState->currentPage = 0;
+	_globalEditorState->freeCamMode = true;
 	new(&_globalEditorState->pages) VMArray<String>();
 	_globalEditorState->pages.Insert(AddString("main"));
 }
@@ -34,6 +35,11 @@ void SetViewerNode(ObjectHandle handle)
 ObjectHandle GetViewerNode()
 {
 	return _globalEditorState->viewerNode;
+}
+
+bool FreeCamMode()
+{
+	return _globalEditorState->freeCamMode;
 }
 
 void RenderViewerNode()
@@ -239,11 +245,23 @@ void UpdatePageEditor()
 	ImGui::End();
 }
 
+///////////////////
+// VIEWER SETTINGS
+///////////////////
+void UpdateViewerSettings()
+{
+	ImGui::Begin("viewer/render");
+	ImGui::Checkbox("freecam", &_globalEditorState->freeCamMode);
+	ImGui::End();
+}
+
 void UpdateGlobalEditor()
 {
+	GlobalEditorState *editor = _globalEditorState;
+
 	// SEND TO RENDER
 	// TOOD (rhoe) this should probably be moved to viewer
-	switch(_globalEditorState->viewerMode) {
+	switch(editor->viewerMode) {
 		case VIEW_OBJECT: {
 			RenderViewerNode();
 			break;
@@ -257,8 +275,11 @@ void UpdateGlobalEditor()
 	// GLOBAL HOTKEYS
 	// if(!_globalEditorState->promptActive && singleKeyPress(GLFW_KEY_V))
 	// 	_globalEditorState->nodeEditorOn = !_globalEditorState->nodeEditorOn;
+	if(!editor->promptActive && singleKeyPress(GLFW_KEY_C)) {
+		editor->freeCamMode = !editor->freeCamMode;
+	}
 
-	if(_globalEditorState->nodeEditorOn) {
+	if(editor->nodeEditorOn) {
 		UpdateNodeEditor();
 	}
 	else {
@@ -267,6 +288,7 @@ void UpdateGlobalEditor()
 
 	UpdateInspector();
 	UpdatePageEditor();
+	UpdateViewerSettings();
 }
 
 void CleanupGlobalEditor()

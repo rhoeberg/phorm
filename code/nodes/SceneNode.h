@@ -2,10 +2,14 @@
 
 void SceneNodeOp(Node *self)
 {
-	/* Scene *scene = GetScenes()->Get(self->extraHandle); */
-	/* scene->bgColor = self->params[0].Vec3(); */
+	Scene *scene = GetScenes()->Get(self->GetDataLast());
+	if(!scene) {
+		ErrorLog("SceneNode: can not find scene output");
+		return;
+	}
 
-	/* RenderScene2(self->extraHandle, self->GetDataLast()); */
+	Node *camInputNode = GetNode(self->inputs[0].handle);
+	scene->cameraHandle = camInputNode->GetData();
 
 	self->changed = true;
 }
@@ -14,7 +18,6 @@ void SceneNodeEditor(Node *self)
 {
 	ImGui::Begin("scene editor");
 
-	/* Scene *scene = GetScenes()->Get(self->extraHandle); */
 	Scene *scene = GetScenes()->Get(self->GetDataLast());
 
 	//////////////////
@@ -125,6 +128,7 @@ ObjectHandle CreateSceneNode()
 	};
 
 	FixedArray<NodeInput> inputs = {
+		NodeInput(DATA_CAMERA),
 	};
 
 	return AddNode(DATA_SCENE, params, inputs);

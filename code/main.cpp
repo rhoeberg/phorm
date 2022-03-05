@@ -204,11 +204,11 @@ int main(int argc, char *argv[])
 	// add user nodes to system
 	CustomInit();
 
+	InitializeGlobalEditor();
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();
 	InitializeSceneRender();
-	InitializeGlobalEditor();
 	InitializeProjectState();
 	
 

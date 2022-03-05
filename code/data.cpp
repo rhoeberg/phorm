@@ -17,6 +17,7 @@ void InitializeData()
 	new(&_nodeState->strings) ObjectContainer<String>(HANDLE_DATA, DATA_STRING);
 	new(&_nodeState->pointLights) ObjectContainer<PointLight>(HANDLE_DATA, DATA_POINTLIGHT);
 	new(&_nodeState->scenes) ObjectContainer<Scene>(HANDLE_DATA, DATA_SCENE);
+	new(&_nodeState->cameras) ObjectContainer<Camera>(HANDLE_DATA, DATA_CAMERA);
 
 	// NODE SPECIFIC STATE
 	new(&_nodeState->sceneRenderDatas) ObjectContainer<SceneRenderData>(HANDLE_DATA, DATA_NONE);
@@ -87,6 +88,11 @@ ObjectContainer<String>* GetStrings()
 ObjectContainer<Scene>* GetScenes()
 {
 	return &_nodeState->scenes;
+}
+
+ObjectContainer<Camera>* GetCameras()
+{
+	return &_nodeState->cameras;
 }
 
 ObjectContainer<SceneRenderData>* GetSceneRenderDatas()

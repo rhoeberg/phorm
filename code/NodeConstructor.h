@@ -34,6 +34,7 @@ void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeS
 #include "nodes/IntToDouble.h"
 #include "nodes/MidiCCNode.h"
 #include "nodes/DoubleToInt.h"
+#include "nodes/CameraNode.h"
 
 // output node
 #include "nodes/OutputNode.h"
