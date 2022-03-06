@@ -7,7 +7,7 @@ enum ViewerMode {
 
 struct GlobalEditorState {
 	bool promptActive;
-	bool nodeEditorOn;
+	bool editorFreeze;
 	ViewerMode viewerMode;
 	ObjectHandle inspectorObject;
 	ObjectHandle viewerNode;
@@ -23,6 +23,8 @@ struct GlobalEditorState {
 };
 
 void UpdateGlobalEditor();
+void EditorFreeze();
+void EditorUnfreeze();
 void SetPromptActive(bool value);
 void SetInspectorObject(ObjectHandle handle);
 void SetViewerNode(ObjectHandle handle);

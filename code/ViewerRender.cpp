@@ -167,35 +167,41 @@ void UpdateViewerRender()
 
 	Node *viewerNode = GetNode(GetViewerNode());
 	if(viewerNode) {
-		if(viewerNode->type == DATA_RENDEROBJECT) {
-			ObjectHandle handle = viewerNode->GetData();
-			ViewRenderObject(handle);
-		}
-		else if(viewerNode->type == DATA_BITMAP) {
-			Bitmap *bitmap = GetBitmaps()->Get(viewerNode->GetData());
-			RenderObject *renderObject = GetRenderObjects()->Get(_viewerRenderState->baseTextureObject);
-			GFXTextureUploadBitmap(renderObject->textureHandle, bitmap);
-			ViewRenderObject(_viewerRenderState->baseTextureObject);
-		}
-		else if(viewerNode->type == DATA_SCENE) {
-			AddSceneRenderCommand(viewerNode->GetData(),
-								  ObjectHandle(),
-								  _viewerRenderState->sceneRenderData);
-		}
-		else if(viewerNode->type == DATA_NONE) {
-			// OUTPUT NODE
-			Node *output = GetOutputNode();
-			Bitmap *bitmap = GetBitmaps()->Get(output->inputs[0]);
-			glBindTexture(GL_TEXTURE_2D, _viewerRenderState->outputTextureID);
-			if(bitmap) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap->width, bitmap->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap->pixels);
+		switch(viewerNode->type) {
+			case DATA_RENDEROBJECT: {
+				ObjectHandle handle = viewerNode->GetData();
+				ViewRenderObject(handle);
+				break;
 			}
-			else {
-				Pixel white = Pixel(255, 255, 255, 255);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
+			case DATA_BITMAP: {
+				Bitmap *bitmap = GetBitmaps()->Get(viewerNode->GetData());
+				RenderObject *renderObject = GetRenderObjects()->Get(_viewerRenderState->baseTextureObject);
+				GFXTextureUploadBitmap(renderObject->textureHandle, bitmap);
+				ViewRenderObject(_viewerRenderState->baseTextureObject);
+				break;
 			}
-			glBindTexture(GL_TEXTURE_2D, 0);
-			_viewerRenderState->currentViewTextureID = _viewerRenderState->outputTextureID;
+			case DATA_SCENE: {
+				AddSceneRenderCommand(viewerNode->GetData(),
+									  ObjectHandle(),
+									  _viewerRenderState->sceneRenderData);
+				break;
+			}
+			case DATA_NONE: {
+				// OUTPUT NODE
+				Node *output = GetOutputNode();
+				Bitmap *bitmap = GetBitmaps()->Get(output->inputs[0]);
+				glBindTexture(GL_TEXTURE_2D, _viewerRenderState->outputTextureID);
+				if(bitmap) {
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmap->width, bitmap->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap->pixels);
+				}
+				else {
+					Pixel white = Pixel(255, 255, 255, 255);
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
+				}
+				glBindTexture(GL_TEXTURE_2D, 0);
+				_viewerRenderState->currentViewTextureID = _viewerRenderState->outputTextureID;
+				break;
+			}
 		}
 	}
 

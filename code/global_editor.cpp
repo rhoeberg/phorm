@@ -1,15 +1,24 @@
 #include "global_editor.h"
-
 void InitializeGlobalEditor()
 {
 	_globalEditorState = (GlobalEditorState*)malloc(sizeof(GlobalEditorState));
-	_globalEditorState->nodeEditorOn = true;
 	_globalEditorState->promptActive = false;
 	_globalEditorState->viewerMode = VIEW_OBJECT;
 	_globalEditorState->currentPage = 0;
 	_globalEditorState->freeCamMode = true;
+	_globalEditorState->editorFreeze = false;
 	new(&_globalEditorState->pages) VMArray<String>();
 	_globalEditorState->pages.Insert(AddString("main"));
+}
+
+void EditorFreeze()
+{
+	_globalEditorState->editorFreeze = true;
+}
+
+void EditorUnfreeze()
+{
+	_globalEditorState->editorFreeze = false;
 }
 
 bool IsPromptActive()
@@ -24,7 +33,9 @@ void SetPromptActive(bool value)
 
 void SetInspectorObject(ObjectHandle handle)
 {
-	_globalEditorState->inspectorObject = handle;
+	if(!_globalEditorState->editorFreeze) {
+		_globalEditorState->inspectorObject = handle;
+	}
 }
 
 void SetViewerNode(ObjectHandle handle)
@@ -40,49 +51,6 @@ ObjectHandle GetViewerNode()
 bool FreeCamMode()
 {
 	return _globalEditorState->freeCamMode;
-}
-
-void RenderViewerNode()
-{
-	// ObjectHandle handle = GetViewerNode();
-	// if(handle.isset && NodeExists(handle)) {
-	// 	Node *node = GetNode(handle);
-	// 	switch(node->type) {
-	// 		case DATA_TEXTURE: {
-	// 			AddTextureToRenderQueue(node->GetData());
-	// 			break;
-	// 		}
-	// 		case DATA_RENDEROBJECT: {
-	// 			RenderObjectInstance instance = RenderObjectInstance(node->GetData());
-	// 			AddToRenderQueue(instance);
-	// 			break;
-	// 		}
-	// 		case DATA_RENDEROBJECT_GROUP: {
-	// 			RenderObjectGroup *group = GetRenderObjectGroups()->Get(node->GetData());
-	// 			for(i32 i = 0; i < group->renderObjects.Count(); i++) {
-	// 				RenderObjectInstance instance = RenderObjectInstance(node->GetData());
-	// 				AddToRenderQueue(instance);
-	// 			}
-	// 			break;
-	// 		}
-	// 		case DATA_SCENE: {
-	// 			Scene *scene = GetScenes()->Get(node->GetData());
-	// 			if(scene) {
-	// 				for(i32 i = 0; i < scene->sceneObjects.Count(); i++) {
-	// 					SceneObject *sceneObj = scene->sceneObjects.GetAt(i);
-	// 					if(sceneObj) {
-	// 						Node *node = GetNode(sceneObj->handle);
-	// 						RenderObjectInstance instance = RenderObjectInstance(node->GetData());
-	// 						AddToRenderQueue(instance);
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 		default: {
-	// 			// TODO (rhoe) trying to show node type with no view 
-	// 		}
-	// 	}
-	// }
 }
 
 void SetViewerMode(i32 mode)
@@ -150,6 +118,10 @@ void UpdateInspector()
 			}
 		}
 
+		ImGui::Spacing();
+
+		sprintf(buffer, "update##update%d", _nodeEditorState->draggedNode.id);
+		ImGui::Checkbox(buffer, &node->update);
 		ImGui::Spacing();
 
 		for(int i = 0; i < node->params.Count(); i++) {
@@ -259,33 +231,12 @@ void UpdateGlobalEditor()
 {
 	GlobalEditorState *editor = _globalEditorState;
 
-	// SEND TO RENDER
-	// TOOD (rhoe) this should probably be moved to viewer
-	switch(editor->viewerMode) {
-		case VIEW_OBJECT: {
-			RenderViewerNode();
-			break;
-		}
-		case VIEW_SCENE: {
-			// RenderScene();
-			break;
-		}
-	}
-
 	// GLOBAL HOTKEYS
-	// if(!_globalEditorState->promptActive && singleKeyPress(GLFW_KEY_V))
-	// 	_globalEditorState->nodeEditorOn = !_globalEditorState->nodeEditorOn;
 	if(!editor->promptActive && singleKeyPress(GLFW_KEY_C)) {
 		editor->freeCamMode = !editor->freeCamMode;
 	}
 
-	if(editor->nodeEditorOn) {
-		UpdateNodeEditor();
-	}
-	else {
-		UpdateSceneEditor();
-	}
-
+	UpdateNodeEditor();
 	UpdateInspector();
 	UpdatePageEditor();
 	UpdateViewerSettings();
