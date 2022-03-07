@@ -75,3 +75,5 @@ void ViewSelectedNode();
 u32 GetCurrentPage();
 ObjectHandle GetOutputHandle();
 Node *GetOutputNode();
+bool HoveringNode();
+ObjectHandle GetHoverNodeHandle();

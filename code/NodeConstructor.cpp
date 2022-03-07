@@ -35,60 +35,63 @@ void SetupNode(Node *node, NodeConstructor *nodeConstructor)
 	node->drawFunc = BaseNodeDrawFunc;
 
 	ObjectHandle dataHandle = {};
-	switch(node->type) {
-		case DATA_BITMAP: {
-			Bitmap bitmap = {};
-			dataHandle = GetBitmaps()->Insert(bitmap);
-			break;
-		}
-		case DATA_MESH: {
-			Mesh mesh = {};
-			dataHandle = _nodeState->meshes.Insert(mesh);
-			break;
-		}
-		case DATA_RENDEROBJECT: {
-			dataHandle = AddNewRenderObject();
-			break;
-		}
-		case DATA_RENDEROBJECT_GROUP: {
-			dataHandle = _nodeState->renderObjectGroups.Insert(RenderObjectGroup());
-			break;
-		}
-		case DATA_POINTLIGHT: {
-			PointLight light = {};
-			dataHandle = _nodeState->pointLights.Insert(light);
-			break;
-		}
-		case DATA_DOUBLE: {
-			double value = 0.0;
-			dataHandle = _nodeState->doubles.Insert(value);
-			break;
-		}
-		case DATA_INT: {
-			int value = 0;
-			dataHandle = GetInts()->Insert(value);
-			break;
-		}
-		case DATA_VEC3: {
-			vec3 v3 = {};
-			dataHandle = _nodeState->vec3s.Insert(v3);
-			break;
-		}
-		case DATA_SCENE: {
-			dataHandle = GetScenes()->Insert(Scene());
-			break;
-		}
-		case DATA_CAMERA: {
-			dataHandle = GetCameras()->Insert(Camera());
-			break;
-		}
-		case DATA_NONE: {
-			break;
-		}
-		default: {
-			NOT_IMPLEMENTED;
+	if(!nodeConstructor->noCache) {
+		switch(node->type) {
+			case DATA_BITMAP: {
+				Bitmap bitmap = {};
+				dataHandle = GetBitmaps()->Insert(bitmap);
+				break;
+			}
+			case DATA_MESH: {
+				Mesh mesh = {};
+				dataHandle = _nodeState->meshes.Insert(mesh);
+				break;
+			}
+			case DATA_RENDEROBJECT: {
+				dataHandle = AddNewRenderObject();
+				break;
+			}
+			case DATA_RENDEROBJECT_GROUP: {
+				dataHandle = _nodeState->renderObjectGroups.Insert(RenderObjectGroup());
+				break;
+			}
+			case DATA_POINTLIGHT: {
+				PointLight light = {};
+				dataHandle = _nodeState->pointLights.Insert(light);
+				break;
+			}
+			case DATA_DOUBLE: {
+				double value = 0.0;
+				dataHandle = _nodeState->doubles.Insert(value);
+				break;
+			}
+			case DATA_INT: {
+				int value = 0;
+				dataHandle = GetInts()->Insert(value);
+				break;
+			}
+			case DATA_VEC3: {
+				vec3 v3 = {};
+				dataHandle = _nodeState->vec3s.Insert(v3);
+				break;
+			}
+			case DATA_SCENE: {
+				dataHandle = GetScenes()->Insert(Scene());
+				break;
+			}
+			case DATA_CAMERA: {
+				dataHandle = GetCameras()->Insert(Camera());
+				break;
+			}
+			case DATA_NONE: {
+				break;
+			}
+			default: {
+				NOT_IMPLEMENTED;
+			}
 		}
 	}
+
 	node->SetDataHandle(dataHandle);
 
 	if(nodeConstructor->setupFunc != NULL) 
@@ -115,6 +118,14 @@ void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeS
 	constructor.op = op;
 	constructor.createFunc = createFunc;
 	constructor.setupFunc = setupFunc;
+	constructor.noCache = false;
+	state->constructors.Insert(name, constructor);
+}
+
+void AddNodeConstructor(String name, NodeConstructor constructor)
+{
+	NodeConstructorState *state = _nodeConstructorState;
+	state->names.Insert(name);
 	state->constructors.Insert(name, constructor);
 }
 
@@ -156,7 +167,7 @@ void SetupNodeConstructors()
 	AddNodeConstructor(String("histogram"), HistogramOperation, CreateHistogramNode, SetupHistogramNode);
 	AddNodeConstructor(String("mul"), MulOperation, CreateMulNode, SetupMulNode);
 	AddNodeConstructor(String("add"), AddOperation, CreateAddNode, SetupAddNode);
-	AddNodeConstructor(String("time"), TimeOperation, CreateTimeNode);
+	AddNodeConstructor(String("time"), TimeOperation, CreateTimeNode, SetupTimeNode);
 	AddNodeConstructor(String("i2d"), I2DOp, CreateI2DNode);
 
 	/////////////////
@@ -164,6 +175,8 @@ void SetupNodeConstructors()
 	/////////////////
 	AddNodeConstructor(String("midicc"), MidiCCOperation, CreateMidiCCNode);
 	AddNodeConstructor(String("d2i"), D2IOp, CreateD2INode);
+	AddNodeConstructor(String("random"), RandIntOp, CreateRandIntNode);
+	AddNodeConstructor(String("tick"), TickNodeOp, CreateTickNode);
 
 	/////////////////
 	// RENDEROBJECT NODES
@@ -190,6 +203,7 @@ void SetupNodeConstructors()
 	// CAMERA NODES
 	/////////////////
 	AddNodeConstructor(String("camera"), CameraNodeOp, CreateCameraNode);
+	AddCameraSwitchConstructor();
 }
 
 /*

@@ -80,6 +80,21 @@ bool singleKeyPress(int GLFW_KEY)
     }
 }
 
+bool SingleMousePress(int MOUSE_BUTTON)
+{
+    if(mouse_buttons[MOUSE_BUTTON] && !mouse_registered[MOUSE_BUTTON]) {
+        mouse_registered[MOUSE_BUTTON] = true;
+        return true;
+    } 
+    else if(!keys[MOUSE_BUTTON] && mouse_registered[MOUSE_BUTTON]) {
+        mouse_registered[MOUSE_BUTTON] = false;
+        return false;
+    }
+    else {
+        return false;
+    }
+}
+
 void dropCallback(GLFWwindow *window, int count, const char **paths)
 {
 	int i;

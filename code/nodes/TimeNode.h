@@ -21,8 +21,13 @@ void DrawTimeNode(Node *self)
 
 	vec2 timePos = namePos + vec2(70, 0);
 	char timeBuf[32];
-	sprintf(timeBuf, "%.2f", *GetDoubles()->Get(self->GetData()));
+	sprintf(timeBuf, "%.2f", *GetDoubles()->Get(self->GetDataLast()));
 	ImDrawText(timePos, timeBuf, vec3(0.3, 0, 0));
+}
+
+void SetupTimeNode(Node *self)
+{
+	self->drawFunc = DrawTimeNode;
 }
 
 ObjectHandle CreateTimeNode()

@@ -25,6 +25,7 @@ struct GlobalEditorState {
 void UpdateGlobalEditor();
 void EditorFreeze();
 void EditorUnfreeze();
+bool EditorIsFrozen();
 void SetPromptActive(bool value);
 void SetInspectorObject(ObjectHandle handle);
 void SetViewerNode(ObjectHandle handle);

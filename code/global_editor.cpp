@@ -21,6 +21,11 @@ void EditorUnfreeze()
 	_globalEditorState->editorFreeze = false;
 }
 
+bool EditorIsFrozen()
+{
+	return _globalEditorState->editorFreeze;
+}
+
 bool IsPromptActive()
 {
 	return _globalEditorState->promptActive;

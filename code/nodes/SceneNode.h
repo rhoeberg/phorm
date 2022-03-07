@@ -9,7 +9,9 @@ void SceneNodeOp(Node *self)
 	}
 
 	Node *camInputNode = GetNode(self->inputs[0].handle);
-	scene->cameraHandle = camInputNode->GetData();
+	if(camInputNode) {
+		scene->cameraHandle = camInputNode->GetData();
+	}
 
 	self->changed = true;
 }
@@ -54,6 +56,8 @@ void SceneNodeEditor(Node *self)
 		}
 	}
 
+	ImGui::Separator();
+
 	for(i32 i = 0; i < scene->pointLights.Count(); i++) {
 		char nameBuffer[128];
 		ObjectHandle *handle = scene->pointLights.GetAt(i);
@@ -71,7 +75,7 @@ void SceneNodeEditor(Node *self)
 				}
 			}
 
-			ImGui::SameLine(40);
+			ImGui::SameLine(150);
 
 			sprintf(nameBuffer, "remove##%d", i);
 			if(ImGui::Button(nameBuffer)) {

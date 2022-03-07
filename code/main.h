@@ -24,6 +24,7 @@ global bool keys_registered[1024];
 global int keys_mode;
 global vec2 mouse;
 global bool mouse_buttons[32];
+global bool mouse_registered[32];
 global bool mouseInViewerWin;
 global bool scrollReady;
 global double scrollOffset;
@@ -60,8 +61,8 @@ global Settings settings;
 #include "node_editor.h"
 #include "SceneRender.h"
 #include "scene.h"
-#include "NodeConstructor.h"
 #include "global_editor.h"
+#include "NodeConstructor.h"
 #include "scene_editor.h"
 #include "ViewerRender.h"
 #include "save.h"

@@ -23,6 +23,7 @@ void RenderObjectOperation(Node *self)
 		output->primitiveMode = GFX_TRIANGLES;
 	}
 
+	// TODO (rhoe) this code is counter intuitive
 	if(self->params[5].Int() > 0) {
 		output->useIndices = false;
 	}

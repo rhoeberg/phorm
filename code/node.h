@@ -33,6 +33,7 @@ struct Node {
 	Rect rect;
 	i32 page;
 	char name[128];
+	bool update; 
 	ObjectHandle extraHandle;
 	ObjectHandle labelHandle;
 	FixedArray<NodeInput> inputs;

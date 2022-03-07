@@ -6,6 +6,31 @@ typedef void (*NodeSetupFunc)(Node *self);
 void BaseNodeDrawFunc(Node *node);
 void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeSetupFunc setupFunc = NULL);
 
+struct NodeConstructor
+{
+	NodeOp op;
+	NodeSetupFunc setupFunc;
+	NodeCreateFunc createFunc;
+	bool noCache;
+};
+
+struct NodeConstructorState
+{
+	VMArray<String> names;
+	HashMap<String, NodeConstructor> constructors;
+	vec2 nextPos;
+};
+
+VMArray<String>* GetNodeNames();
+HashMap<String, NodeConstructor>* GetNodeConstructors();
+void SetNextConstructPos(vec2 pos);
+ObjectHandle ConstructNode(String name, NodeConstructor *nodeConstructor);
+VMArray<String>* GetNodeNames();
+void NamesBeginningWith(VMArray<String> *array, String typed);
+void InitializeNodeConstructors();
+void SetupNodeConstructors();
+void AddNodeConstructor(String name, NodeConstructor constructor);
+
 #include "nodes/LoadTextureNode.h"
 #include "nodes/NoiseBitmap.h"
 #include "nodes/BlurNode.h"
@@ -34,32 +59,12 @@ void AddNodeConstructor(String name, NodeOp op, NodeCreateFunc createFunc, NodeS
 #include "nodes/IntToDouble.h"
 #include "nodes/MidiCCNode.h"
 #include "nodes/DoubleToInt.h"
+#include "nodes/RandIntNode.h"
+#include "nodes/TickNode.h"
 #include "nodes/CameraNode.h"
+#include "nodes/CameraSwitch.h"
 
 // output node
 #include "nodes/OutputNode.h"
-
-struct NodeConstructor
-{
-	NodeOp op;
-	NodeSetupFunc setupFunc;
-	NodeCreateFunc createFunc;
-};
-
-struct NodeConstructorState
-{
-	VMArray<String> names;
-	HashMap<String, NodeConstructor> constructors;
-	vec2 nextPos;
-};
-
-VMArray<String>* GetNodeNames();
-HashMap<String, NodeConstructor>* GetNodeConstructors();
-void SetNextConstructPos(vec2 pos);
-ObjectHandle ConstructNode(String name, NodeConstructor *nodeConstructor);
-VMArray<String>* GetNodeNames();
-void NamesBeginningWith(VMArray<String> *array, String typed);
-void InitializeNodeConstructors();
-void SetupNodeConstructors();
 
 global NodeConstructorState *_nodeConstructorState;

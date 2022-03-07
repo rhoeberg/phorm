@@ -146,6 +146,11 @@ void UpdateLoop()
 	// TODO (rhoe) should maybe be switched off by compiler macro
 	UpdateDebug();
 
+	////////////////
+	// NODES
+	////////////////
+	UpdateNodes();
+
 	///////////////
 	// RENDERING
 	///////////////

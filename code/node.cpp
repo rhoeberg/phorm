@@ -178,6 +178,16 @@ ObjectHandle GetInputData(NodeInput input)
 	return ObjectHandle();
 }
 
+void UpdateNodes()
+{
+	for(i32 i = 0; i < GetNodes()->Count(); i++) {
+		Node *node = GetNodes()->GetAt(i);
+		if(node && node->update) {
+			node->CallOp();
+		}
+	}
+}
+
 void CleanupNodes()
 {
 	// TODO (rhoe) freeing moar stuff
@@ -186,7 +196,7 @@ void CleanupNodes()
 	_nodeState->nodes.Free();
 	_nodeState->bitmaps.Free();
 
-	for(int i = 0; i < _nodeState->strings.Count(); i++) {
+	for(i32 i = 0; i < _nodeState->strings.Count(); i++) {
 		ObjectHandle handle = _nodeState->strings.GetHandle(i);
 		String *string = _nodeState->strings.Get(handle);
 		string->Free();

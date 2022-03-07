@@ -371,26 +371,42 @@ void UpdateHoverState()
 	}
 }
 
+bool HoveringNode()
+{
+	if(_nodeEditorState->hoverState.elementType == EDITOR_ELEMENT_NODE) {
+		return true;
+	}
+
+	return false;
+}
+
+ObjectHandle GetHoverNodeHandle()
+{
+	return _nodeEditorState->hoverState.nodeHandle;
+}
+
 void UpdateNodeStartDragging()
 {
 	NodeEditorState *editor = _nodeEditorState;
 
-	editor->isDragging = true;
-	editor->draggedType = editor->hoverState.elementType;
-	// editor->nodeMultiSelect = false;
+	if(!EditorIsFrozen()) {
+		editor->isDragging = true;
+		editor->draggedType = editor->hoverState.elementType;
+		// editor->nodeMultiSelect = false;
 
-	// hovering element
-	if(editor->hoverState.elementType != EDITOR_ELEMENT_NONE) {
-		editor->draggedNode = editor->hoverState.nodeHandle;
-		editor->draggedCtxHandle = editor->hoverState.ctxHandle;
-		Node *node = GetNode(editor->hoverState.nodeHandle);
-		editor->dragOffset = node->rect.pos - mouse;
-	}
-	else {
-		// start box selecting
-		editor->selectDragStart = mouse;
-		editor->selectedNodes.Clear();
-		// editor->nodeMultiSelect = true;
+		// hovering element
+		if(editor->hoverState.elementType != EDITOR_ELEMENT_NONE) {
+			editor->draggedNode = editor->hoverState.nodeHandle;
+			editor->draggedCtxHandle = editor->hoverState.ctxHandle;
+			Node *node = GetNode(editor->hoverState.nodeHandle);
+			editor->dragOffset = node->rect.pos - mouse;
+		}
+		else {
+			// start box selecting
+			editor->selectDragStart = mouse;
+			editor->selectedNodes.Clear();
+			// editor->nodeMultiSelect = true;
+		}
 	}
 }
 

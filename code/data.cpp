@@ -137,6 +137,7 @@ RenderObject CreateRenderObject()
 	glGenBuffers(1, &result.VBO);
 	result.textureHandle = GFXTextureAdd();
 	result.primitiveMode = GFX_TRIANGLES;
+	result.useIndices = true;
 
 	return result;
 }
