@@ -75,6 +75,7 @@
 #include "ObjectContainer.cpp"
 #include "NodeConstructor.cpp"
 #include "midi.cpp"
+#include "PhormNetwork.cpp"
 #include "phorm_project.cpp"
 #include "node_parameter.cpp"
 #include "node.cpp"
@@ -291,6 +292,7 @@ void cleanup()
     imDrawClean();
     glfwTerminate();
 	CleanupMidi();
+	CleanupNetwork();
 	CleanupNodes();
 	CleanupCustom();
 	CleanupNodeEditor();

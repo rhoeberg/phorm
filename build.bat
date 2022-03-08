@@ -13,7 +13,7 @@ rem set defineFlags=/D WIN /D VULKAN
 rem ============= VULKAN ================
 
 set includeFlags=-I ..\3rdparty\glfw\include -I ..\3rdparty\glew\include -I ..\3rdparty\portaudio\include -I %VULKAN_PATH%\Include -I ..\3rdparty 
-set libraryFlags=glfw3dll.lib OpenGL32.lib glew32.lib portaudio_x64.lib winmm.lib comdlg32.lib ole32.lib user32.lib shell32.lib /link /LIBPATH:"..\3rdparty\glfw\lib" /LIBPATH:"..\3rdparty\glew\lib\Release\x64" /LIBPATH:"..\3rdparty" /LIBPATH:"..\3rdparty\portaudio\lib"
+set libraryFlags=glfw3dll.lib OpenGL32.lib glew32.lib portaudio_x64.lib winmm.lib comdlg32.lib ole32.lib user32.lib shell32.lib ws2_32.lib /link /LIBPATH:"..\3rdparty\glfw\lib" /LIBPATH:"..\3rdparty\glew\lib\Release\x64" /LIBPATH:"..\3rdparty" /LIBPATH:"..\3rdparty\portaudio\lib"
 
 set defineFlags=/D WIN
 

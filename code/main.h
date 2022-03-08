@@ -54,6 +54,7 @@ global Settings settings;
 #include "light.h"
 #include "Camera.h"
 #include "midi.h"
+#include "PhormNetwork.h"
 #include "phorm_project.h"
 #include "node_parameter.h"
 #include "node.h"
