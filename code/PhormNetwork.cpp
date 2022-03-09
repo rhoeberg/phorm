@@ -1,5 +1,7 @@
 void InitializeUDP()
 {
+	ConsoleLog("UDP: Initializing");
+
 	// _networkState = (NetworkState*)malloc(sizeof(NetworkState));
 	_networkState = new NetworkState();
 
@@ -40,7 +42,7 @@ NetworkMessage GetLastMessage()
 
 void ListenUDP()
 {
-	DebugLog("listening to port 5000");
+	ConsoleLog("UDP: listening to port 5000");
 	i32 msgLen = sizeof(_networkState->other);
 	memset(_networkState->lastMessage.buffer, '\0', NETWORK_BUFFER_SIZE);
 	while(!_networkState->udpListener.shouldStop) {

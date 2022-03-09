@@ -245,9 +245,9 @@ void UpdatePageEditor()
 ///////////////////
 // CONSOLE
 ///////////////////
-void ConsoleAddMessage(String msg)
+void ConsoleAddMessage(String text, vec3 color)
 {
-	_globalEditorState->console.messages.Insert(msg);
+	_globalEditorState->console.messages.Insert(ConsoleMessage(text, color));
 	_globalEditorState->console.scrollBottom = true;
 }
 
@@ -286,12 +286,14 @@ void UpdateConsole()
 	ImGui::SetNextWindowSize(ImVec2(width, height));
 
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 	bool show = true;
 	ImGui::Begin("console", &show, flags);
         
 	for(i32 i = 0; i < _globalEditorState->console.messages.Count(); i++) {
-		ImGui::TextWrapped("%s", _globalEditorState->console.messages[i].buffer);
+		ConsoleMessage msg = _globalEditorState->console.messages[i];
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(msg.color.r, msg.color.g, msg.color.b, 1.0f));
+		ImGui::TextWrapped("%s", msg.text.buffer);
+		ImGui::PopStyleColor(1);
 	}
         
 	if (_globalEditorState->console.scrollBottom)
@@ -299,7 +301,7 @@ void UpdateConsole()
 	_globalEditorState->console.scrollBottom = false;
         
 	ImGui::End();
-	ImGui::PopStyleColor(2);
+	ImGui::PopStyleColor(1);
 }
 
 ///////////////////

@@ -28,17 +28,46 @@ void _DebugLog(char *filename, i32 linenumber, char *format, ...)
 
 	va_list args;
 	va_start(args, format);
-
-	// cannot use normal printf when using varargs, have to use vprintf
-	//                   (for sprintf we use vsprintf)
 	char buffer[128];
 	vsprintf(buffer, format, args);
 	vprintf(buffer, {});
 	va_end(args);
 
-	ConsoleAddMessage(String(buffer));
+	printf("\n");
+
+	ConsoleAddMessage(String(buffer), vec3(1.0f, 1.0f, 0.0f));
+}
+
+void _ConsoleLog(char *filename, i32 linenumber, char *format, ...)
+{
+	printf("%s(%d): warning, ", filename, linenumber);
+
+	va_list args;
+	va_start(args, format);
+	char buffer[128];
+	vsprintf(buffer, format, args);
+	vprintf(buffer, {});
+	va_end(args);
 
 	printf("\n");
+
+	ConsoleAddMessage(String(buffer), vec3(1.0f, 1.0f, 1.0f));
+}
+
+void _WarningLog(char *filename, i32 linenumber, char *format, ...)
+{
+	printf("%s(%d): error, ", filename, linenumber);
+
+	va_list args;
+	va_start(args, format);
+	char buffer[128];
+	vsprintf(buffer, format, args);
+	vprintf(buffer, {});
+	va_end(args);
+
+	printf("\n");
+
+	ConsoleAddMessage(String(buffer), vec3(1.0f, 1.0f, 0.0f));
 }
 
 void _ErrorLog(char *filename, i32 linenumber, char *format, ...)
@@ -47,9 +76,12 @@ void _ErrorLog(char *filename, i32 linenumber, char *format, ...)
 
 	va_list args;
 	va_start(args, format);
-
-	vprintf(format, args);
+	char buffer[128];
+	vsprintf(buffer, format, args);
+	vprintf(buffer, {});
 	va_end(args);
 
 	printf("\n");
+
+	ConsoleAddMessage(String(buffer), vec3(1.0f, 0.0f, 0.0f));
 }

@@ -8,7 +8,13 @@ enum ViewerMode {
 struct ConsoleMessage
 {
 	String text;
-	vec4 color;
+	vec3 color;
+
+	ConsoleMessage(String _text, vec3 _color)
+	{
+		text = _text;
+		color = _color;
+	}
 };
 
 enum ConsoleState {
@@ -19,7 +25,7 @@ enum ConsoleState {
 
 struct Console
 {
-	VMArray<String> messages;
+	VMArray<ConsoleMessage> messages;
 	bool scrollBottom;
 	ConsoleState state;
 };
@@ -58,5 +64,6 @@ u32 GetCurrentPage();
 bool FreeCamMode();
 
 void ConsoleAddMessage(String msg);
+void ConsoleAddMessage(String text, vec3 color = vec3(1.0f, 1.0f, 1.0f));
 
 global GlobalEditorState *_globalEditorState;

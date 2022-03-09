@@ -200,16 +200,16 @@ int main(int argc, char *argv[])
     //     	cleanup();
     //     	exit(1);
     //     }
-	InitializeMidi();
 
 	// Initialize Application
 	InitializeData();
+	InitializeGlobalEditor();
 	InitializeNodeConstructors();
+	InitializeMidi();
 
 	// add user nodes to system
 	CustomInit();
 
-	InitializeGlobalEditor();
 	InitializeUDP();
 	InitializeNodeEditor();
 	InitializeViewerRender();

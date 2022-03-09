@@ -28,6 +28,8 @@ void MidiInputCallback(double deltaTime, std::vector<u8> *message, void *userDat
 
 void InitializeMidi()
 {
+	ConsoleLog("MIDI: Initializing");
+
 	_midiState = (MidiState*)calloc(1, sizeof(MidiState));
 
 	_midiState->midiin = new RtMidiIn();
