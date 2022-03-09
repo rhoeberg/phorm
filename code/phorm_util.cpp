@@ -31,8 +31,12 @@ void _DebugLog(char *filename, i32 linenumber, char *format, ...)
 
 	// cannot use normal printf when using varargs, have to use vprintf
 	//                   (for sprintf we use vsprintf)
-	vprintf(format, args);
+	char buffer[128];
+	vsprintf(buffer, format, args);
+	vprintf(buffer, {});
 	va_end(args);
+
+	ConsoleAddMessage(String(buffer));
 
 	printf("\n");
 }

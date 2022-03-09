@@ -1,6 +1,7 @@
 void InitializeUDP()
 {
-	_networkState = (NetworkState*)malloc(sizeof(NetworkState));
+	// _networkState = (NetworkState*)malloc(sizeof(NetworkState));
+	_networkState = new NetworkState();
 
 	
 	// Init winsock
@@ -27,14 +28,24 @@ void InitializeUDP()
 		return;
 	}
 
-	// char buffer[NETWORK_BUFFER_SIZE];
-	char *buffer = (char*)malloc(NETWORK_BUFFER_SIZE);
-	i32 recvlen = 0;
+	_networkState->udpListener.shouldStop = false;
+	_networkState->udpListener.thread = std::thread(ListenUDP);
+	// ListenUDP();
+}
+
+NetworkMessage GetLastMessage()
+{
+	return _networkState->lastMessage;
+}
+
+void ListenUDP()
+{
+	DebugLog("listening to port 5000");
 	i32 msgLen = sizeof(_networkState->other);
-	while(1) {
-		memset(buffer, '\0', NETWORK_BUFFER_SIZE);
-		recvlen = recvfrom(_networkState->socket, buffer, NETWORK_BUFFER_SIZE, 0, (sockaddr*)&_networkState->other, &msgLen);
-		if(recvlen == SOCKET_ERROR) {
+	memset(_networkState->lastMessage.buffer, '\0', NETWORK_BUFFER_SIZE);
+	while(!_networkState->udpListener.shouldStop) {
+		_networkState->lastMessage.length = recvfrom(_networkState->socket, _networkState->lastMessage.buffer, NETWORK_BUFFER_SIZE, 0, (sockaddr*)&_networkState->other, &msgLen);
+		if(_networkState->lastMessage.length == SOCKET_ERROR) {
 			ErrorLog("network: failed to recieve package: %d", WSAGetLastError());
 			continue;
 		}
@@ -42,7 +53,7 @@ void InitializeUDP()
 		// buffer should be filled with incomming data
 		// do stuff with it
 		DebugLog("recieved data:");
-		DebugLog("%s", buffer);
+		DebugLog("%d, %s", _networkState->lastMessage.length, _networkState->lastMessage.buffer);
 
 		//now reply the client with the same data
 		// if (sendto(_networkState->socket, (char*)buffer, recvlen, 0, (sockaddr*)&_networkState->other, msgLen) == SOCKET_ERROR)
@@ -50,16 +61,12 @@ void InitializeUDP()
 		// 	printf("network: sendto() failed with error code : %d" , WSAGetLastError());
 		// }
 	}
-
-	
 }
-
-// void NetworkListen()
-// {
-// }
 
 void CleanupNetwork()
 {
 	closesocket(_networkState->socket);
+	_networkState->udpListener.shouldStop = true;
+	_networkState->udpListener.thread.join();
 	WSACleanup();
 }

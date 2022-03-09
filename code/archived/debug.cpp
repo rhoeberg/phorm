@@ -46,6 +46,18 @@ void UpdateDebug()
 	ImGui::Spacing();
 	ImGui::Text("midi (channel 0, cc 1):%d", _midiState->channels[0].cc[1]);
 
+	ImGui::Spacing();
+	ImGui::Text("UDP MESSAGE");
+	// static NetworkMessage lastMessage = {};
+	if(GetLastMessage().length > 0) {
+		// lastMessage = GetLastMessage();
+		ImGui::Text("%s", GetLastMessage().buffer);
+	}
+	// if(lastMessage.length > 0) {
+	// 	ImGui::Text("%s", lastMessage.buffer);
+	// }
+	
+
     ImGui::End();
 
 }

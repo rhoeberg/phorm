@@ -9,6 +9,8 @@ void InitializeGlobalEditor()
 	_globalEditorState->editorFreeze = false;
 	new(&_globalEditorState->pages) VMArray<String>();
 	_globalEditorState->pages.Insert(AddString("main"));
+
+	new(&_globalEditorState->console.messages) VMArray<String>();
 }
 
 void EditorFreeze()
@@ -34,13 +36,6 @@ bool IsPromptActive()
 void SetPromptActive(bool value)
 {
 	_globalEditorState->promptActive = value;
-}
-
-void SetInspectorObject(ObjectHandle handle)
-{
-	if(!_globalEditorState->editorFreeze) {
-		_globalEditorState->inspectorObject = handle;
-	}
 }
 
 void SetViewerNode(ObjectHandle handle)
@@ -73,8 +68,26 @@ void ToggleViewerMode()
 	}
 }
 
+///////////////////
+// INSPECTOR
+///////////////////
+void SetInspectorObject(ObjectHandle handle)
+{
+	if(!_globalEditorState->editorFreeze) {
+		_globalEditorState->inspectorObject = handle;
+	}
+}
+
 void UpdateInspector()
 {
+	i32 winWidth, winHeight;
+	GetWindowSize(&winWidth, &winHeight);
+	i32 width = 250;
+	i32 height = winHeight / 2;
+
+	ImGui::SetNextWindowPos(ImVec2(winWidth - width, winHeight - height), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(width, height));
+
 	ImGui::Begin("Inspector");
 	Node *node = GetNode(_globalEditorState->inspectorObject);
 	if(node) {
@@ -189,6 +202,13 @@ void UpdatePageEditor()
 {
 	GlobalEditorState *editor = _globalEditorState;
 
+	i32 winWidth, winHeight;
+	GetWindowSize(&winWidth, &winHeight);
+	i32 width = 250;
+	i32 height = winHeight / 3;
+	ImGui::SetNextWindowPos(ImVec2(0, winHeight - height), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(width, height));
+
 	ImGui::Begin("editor");
 
 	// ImGui::InputInt("page", &editor->currentPage);
@@ -223,10 +243,150 @@ void UpdatePageEditor()
 }
 
 ///////////////////
+// CONSOLE
+///////////////////
+void ConsoleAddMessage(String msg)
+{
+	_globalEditorState->console.messages.Insert(msg);
+	_globalEditorState->console.scrollBottom = true;
+}
+
+void UpdateConsole()
+{
+	
+
+	i32 winWidth, winHeight;
+	GetWindowSize(&winWidth, &winHeight);
+	i32 width = winWidth - (winWidth / 3);
+
+	ImGuiWindowFlags flags = 0;
+	flags |= ImGuiWindowFlags_NoTitleBar;
+
+	i32 fullHeight = 400;
+	i32 height = 0;
+	switch(_globalEditorState->console.state) {
+		case CONSOLE_HIDE: {
+			height = 1;
+			flags |= ImGuiWindowFlags_NoScrollbar;
+			break;
+		}
+		case CONSOLE_HALF: {
+			height = fullHeight / 2;
+			break;
+		}
+		case CONSOLE_FULL: {
+			height = fullHeight;
+			break;
+		}
+	}
+		
+
+	ImGui::SetNextWindowPos(ImVec2(winWidth / 6, 0), ImGuiCond_Always);
+
+	ImGui::SetNextWindowSize(ImVec2(width, height));
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+	bool show = true;
+	ImGui::Begin("console", &show, flags);
+        
+	for(i32 i = 0; i < _globalEditorState->console.messages.Count(); i++) {
+		ImGui::TextWrapped("%s", _globalEditorState->console.messages[i].buffer);
+	}
+        
+	if (_globalEditorState->console.scrollBottom)
+		ImGui::SetScrollHereY(1.0f);
+	_globalEditorState->console.scrollBottom = false;
+        
+	ImGui::End();
+	ImGui::PopStyleColor(2);
+}
+
+///////////////////
+// DEBUG VIEW
+///////////////////
+void UpdateDebug()
+{
+	// ImGui::Begin("LABELS");
+	// HashMap<ObjectHandle> *labels = &_nodeState->labels;
+	// HashIter<ObjectHandle> iter = HashIter<ObjectHandle>(labels);
+
+	// HashNode<ObjectHandle> *next = iter.Next();
+	// while(next) {
+	// 	// we have the next label do something
+	// 	ImGui::Text("key:%s\tvalue:%d", next->key.buffer, next->value.id);
+	// 	next = iter.Next();
+	// }
+	// ImGui::End();
+	i32 winWidth, winHeight;
+	GetWindowSize(&winWidth, &winHeight);
+	i32 width = 250;
+	i32 height = winHeight / 3;
+	ImGui::SetNextWindowPos(ImVec2(0, winHeight - (height * 2)), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(width, height));
+
+	ImGui::Begin("debug");
+	if(ImGui::Button("save")) {
+		String path = tinyfd_saveFileDialog(NULL, NULL, 0, NULL, NULL);
+		// String path("testsave.octo");
+		ProjectSave(path);
+	}
+	if(ImGui::Button("load")) {
+		String path = tinyfd_openFileDialog(NULL, NULL, 0, NULL, NULL, 0);
+		// String path("testsave.octo");
+		ProjectLoad(path);
+	}
+
+	ImGui::Spacing();
+
+	if(ImGui::Button("reset time")) {
+		ResetTime();
+	}
+
+	ImGui::Text("deltaTime: %f", deltaTime);
+
+	ImGui::Text("CAMERA");
+	Camera *cam = &_viewerRenderState->freeCam;
+	ImGui::InputFloat3("pos", glm::value_ptr(cam->pos));
+	ImGui::InputFloat3("front", glm::value_ptr(cam->front));
+	ImGui::Text("speed: %f", cam->moveSpeed);
+	ImGui::Text("orbitdist: %f", cam->orbitDist);
+	ImGui::Text("magnitude: %f", glm::length(cam->front));
+
+	ImGui::Spacing();
+	ImGui::InputFloat2("mouse", glm::value_ptr(mouse));
+
+	ImGui::Spacing();
+	ImGui::Text("midi (channel 0, cc 1):%d", _midiState->channels[0].cc[1]);
+
+	ImGui::Spacing();
+	ImGui::Text("UDP MESSAGE");
+	// static NetworkMessage lastMessage = {};
+	if(GetLastMessage().length > 0) {
+		// lastMessage = GetLastMessage();
+		ImGui::Text("%s", GetLastMessage().buffer);
+	}
+	// if(lastMessage.length > 0) {
+	// 	ImGui::Text("%s", lastMessage.buffer);
+	// }
+	
+
+    ImGui::End();
+
+}
+
+///////////////////
 // VIEWER SETTINGS
 ///////////////////
 void UpdateViewerSettings()
 {
+	i32 winWidth, winHeight;
+	GetWindowSize(&winWidth, &winHeight);
+	i32 width = 250;
+	i32 height = winHeight / 3;
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(width, height));
+
 	ImGui::Begin("viewer/render");
 	ImGui::Checkbox("freecam", &_globalEditorState->freeCamMode);
 	ImGui::End();
@@ -241,10 +401,20 @@ void UpdateGlobalEditor()
 		editor->freeCamMode = !editor->freeCamMode;
 	}
 
+	if(!editor->promptActive && singleKeyPress(GLFW_KEY_K)) {
+		if(editor->console.state == CONSOLE_HIDE)
+			editor->console.state = CONSOLE_HALF;
+		else if(editor->console.state == CONSOLE_HALF)
+			editor->console.state = CONSOLE_FULL;
+		else 
+			editor->console.state = CONSOLE_HIDE;
+	}
+
 	UpdateNodeEditor();
 	UpdateInspector();
 	UpdatePageEditor();
 	UpdateViewerSettings();
+	UpdateConsole();
 }
 
 void CleanupGlobalEditor()

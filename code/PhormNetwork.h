@@ -1,5 +1,7 @@
 #pragma once
 
+#include <thread>
+
 /* #include <sys/socket.h> */
 /* #include <arpa/inet.h> */
 
@@ -12,12 +14,25 @@
 /* #include <winsock2.h> */
 /* #pragma comment(lib,"ws2_32.lib") //Winsock Library */
 
+struct NetworkMessage
+{
+	char buffer[NETWORK_BUFFER_SIZE];
+	i32 length;
+};
+
+struct NetworkUDPListener
+{
+	std::thread thread;
+	bool shouldStop;
+};
 
 struct NetworkState
 {
 	WSADATA wsaData;
 	SOCKET socket;
 	sockaddr_in server, other;
+	NetworkMessage lastMessage;
+	NetworkUDPListener udpListener;
 
 
 	/* UDPAdress address; */
@@ -32,6 +47,7 @@ struct NetworkState
 
 
 void InitializeUDP();
+void ListenUDP();
 bool UPDSend(u8 *buffer, u64 size);
 bool UPDRecieve(u8 *buffer, u64 size);
 

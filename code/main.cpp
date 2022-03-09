@@ -91,7 +91,6 @@
 #include "mesh.cpp"
 #include "data.cpp"
 #include "save.cpp"
-#include "debug.cpp"
 
 // GFX LAYER
 /*#ifdef VULKAN
@@ -211,6 +210,7 @@ int main(int argc, char *argv[])
 	CustomInit();
 
 	InitializeGlobalEditor();
+	InitializeUDP();
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();

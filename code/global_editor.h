@@ -5,6 +5,25 @@ enum ViewerMode {
 	VIEW_SCENE,
 };
 
+struct ConsoleMessage
+{
+	String text;
+	vec4 color;
+};
+
+enum ConsoleState {
+	CONSOLE_HIDE,
+	CONSOLE_HALF,
+	CONSOLE_FULL,
+};
+
+struct Console
+{
+	VMArray<String> messages;
+	bool scrollBottom;
+	ConsoleState state;
+};
+
 struct GlobalEditorState {
 	bool promptActive;
 	bool editorFreeze;
@@ -20,6 +39,10 @@ struct GlobalEditorState {
 	////////////////
 	// SCENE RENDER
 	bool freeCamMode;
+
+	////////////////
+	// CONSOLE
+	Console console;
 };
 
 void UpdateGlobalEditor();
@@ -33,5 +56,7 @@ ObjectHandle GetViewerNode();
 void SetViewerMode(i32 mode);
 u32 GetCurrentPage();
 bool FreeCamMode();
+
+void ConsoleAddMessage(String msg);
 
 global GlobalEditorState *_globalEditorState;
