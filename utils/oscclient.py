@@ -7,6 +7,10 @@ import argparse
 import random
 import time
 
+import pythonosc
+# from pythonosc.osc_message import OscMessage
+# from pythonosc.osc_bundle import OscBundle
+
 from pythonosc import udp_client
 
 
@@ -20,9 +24,12 @@ def main():
 
   client = udp_client.SimpleUDPClient(args.ip, args.port)
 
-  for x in range(10):
+  address = "/adr"
+  builder = OscMessageBuilder(address)
+
+  for x in range(3):
     r = random.random()
-    client.send_message("/filter", r)
+    client.send_message("/adr", r)
     print(r)
     time.sleep(1)
 

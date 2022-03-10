@@ -35,6 +35,7 @@ struct OSCState
 };
 
 void InitializeOSC();
+vec3 OSCTryGetVec3(String address);
 String GetOSCAddress(NetworkMessage message);
 void UpdateOSC();
 

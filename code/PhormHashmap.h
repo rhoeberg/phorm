@@ -52,7 +52,7 @@ struct HashIter {
 		// get next
 
 		while(true) {
-			HashNode<T> *next = &map->elements[index];
+			HashNode<K, V> *next = &map->elements[index];
 			if(index >= map->max) {
 				return NULL;
 			}

@@ -78,10 +78,12 @@ template <typename T>
 void PArray<T>::Grow()
 {
 	int oldMax = max;
-	max *= 2;
-	data = (T*)realloc(data, sizeof(T) * max);
-	T* offset = data + oldMax;
-	memset(offset, 0, max - oldMax);
+	max *= 4;
+	u64 size = max * sizeof(T);
+	T* tmp = data;
+	data = (T*)calloc(max, sizeof(T));
+	memcpy(data, tmp, oldMax * sizeof(T));
+	free(tmp);
 }
 
 template <typename T>
