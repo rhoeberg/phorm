@@ -1,6 +1,7 @@
 #pragma once
 
 #include <thread>
+#include <mutex>
 
 /* #include <sys/socket.h> */
 /* #include <arpa/inet.h> */
@@ -33,6 +34,8 @@ struct NetworkState
 	sockaddr_in server, other;
 	NetworkMessage lastMessage;
 	NetworkUDPListener udpListener;
+	std::mutex msgLock;
+	bool messageConsumed;
 
 
 	/* UDPAdress address; */

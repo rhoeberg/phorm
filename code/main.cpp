@@ -76,6 +76,7 @@
 #include "NodeConstructor.cpp"
 #include "midi.cpp"
 #include "PhormNetwork.cpp"
+#include "PhormOSC.cpp"
 #include "phorm_project.cpp"
 #include "node_parameter.cpp"
 #include "node.cpp"
@@ -129,6 +130,11 @@ void UpdateLoop()
 	// ImGui::ShowDemoWindow(&show);
 
 	GFXClear(COLOR_BG);
+
+	///////////////
+	// OSC
+	///////////////
+	UpdateOSC();
 
 	///////////////
 	// VIEWER RENDERING
@@ -211,6 +217,7 @@ int main(int argc, char *argv[])
 	CustomInit();
 
 	InitializeUDP();
+	InitializeOSC();
 	InitializeNodeEditor();
 	InitializeViewerRender();
 	InitializeSceneEditor();

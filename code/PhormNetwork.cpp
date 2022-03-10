@@ -37,7 +37,19 @@ void InitializeUDP()
 
 NetworkMessage GetLastMessage()
 {
+	_networkState->msgLock.lock();
+	_networkState->messageConsumed = true;
+	_networkState->msgLock.unlock();
+
 	return _networkState->lastMessage;
+}
+
+bool UDPNewMessage()
+{
+	if(_networkState->messageConsumed == false && _networkState->lastMessage.length > 0)
+		return true;
+
+	return false;
 }
 
 void ListenUDP()
@@ -51,6 +63,11 @@ void ListenUDP()
 			ErrorLog("network: failed to recieve package: %d", WSAGetLastError());
 			continue;
 		}
+
+		_networkState->msgLock.lock();
+		_networkState->messageConsumed = false;
+		_networkState->msgLock.unlock();
+
 
 		// buffer should be filled with incomming data
 		// do stuff with it

@@ -13,7 +13,29 @@
   type: ",fff\0\0\0\0"
   data: three 32 bit float values
 
+  ---
+  For now we keep the implementation simple
+  we support the basic phorm data types:
+  - float
+  - vec3
+  - int
+
+  which means we only accept the type tags: 
+  - r
+  - rrr
+  - i
  */
 
 #pragma once
 
+struct OSCState
+{
+	HashMap<String, vec3> vec3Inputs;
+	/* HashMap<String, vec3> vec3Inputs; */
+};
+
+void InitializeOSC();
+String GetOSCAddress(NetworkMessage message);
+void UpdateOSC();
+
+global OSCState *_OSCState;

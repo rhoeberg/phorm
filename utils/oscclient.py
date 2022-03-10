@@ -21,7 +21,9 @@ def main():
   client = udp_client.SimpleUDPClient(args.ip, args.port)
 
   for x in range(10):
-    client.send_message("/filter", random.random())
+    r = random.random()
+    client.send_message("/filter", r)
+    print(r)
     time.sleep(1)
 
 
