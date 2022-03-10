@@ -16,17 +16,17 @@ struct NodeConstructor
 
 struct NodeConstructorState
 {
-	VMArray<String> names;
-	HashMap<String, NodeConstructor> constructors;
+	PArray<String> names;
+	PMap<String, NodeConstructor> constructors;
 	vec2 nextPos;
 };
 
-VMArray<String>* GetNodeNames();
-HashMap<String, NodeConstructor>* GetNodeConstructors();
+PArray<String>* GetNodeNames();
+PMap<String, NodeConstructor>* GetNodeConstructors();
 void SetNextConstructPos(vec2 pos);
 ObjectHandle ConstructNode(String name, NodeConstructor *nodeConstructor);
-VMArray<String>* GetNodeNames();
-void NamesBeginningWith(VMArray<String> *array, String typed);
+PArray<String>* GetNodeNames();
+void NamesBeginningWith(PArray<String> *array, String typed);
 void InitializeNodeConstructors();
 void SetupNodeConstructors();
 void AddNodeConstructor(String name, NodeConstructor constructor);

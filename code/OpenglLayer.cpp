@@ -10,8 +10,8 @@ struct GLTexture
 
 struct GLState
 {
-	VMArray<GLBuffer> buffers;
-	VMArray<Texture> textures;
+	PArray<GLBuffer> buffers;
+	PArray<Texture> textures;
 };
 
 global GLState *_glState;

@@ -2,7 +2,7 @@
 
 struct ImDraw3DState
 {
-	VMArray<GLfloat> vertices;
+	PArray<GLfloat> vertices;
 	vec4 drawColor;
 	GLuint shader;
 	GLuint vbo;

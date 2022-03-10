@@ -15,7 +15,7 @@ void ImDraw3DSetProjection(mat4 projection)
 void ImDraw3DInitialize()
 {
 	_im3D= (ImDraw3DState*)malloc(sizeof(ImDraw3DState));
-	new(&_im3D->vertices) VMArray<GLfloat>();
+	new(&_im3D->vertices) PArray<GLfloat>();
 
 	// SETUP SHADER
     _im3D->shader = CreateShaderProgram("assets/shaders/imdraw3d.vs", "assets/shaders/imdraw3d.frag");

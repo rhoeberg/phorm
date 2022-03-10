@@ -1,7 +1,7 @@
-#include "vm_array.h"
+#include "PhormArray.h"
 
 template <typename T>
-VMArray<T>::VMArray()
+PArray<T>::PArray()
 {
 	max = ARRAY_START_SIZE;
 	data = (T*)calloc(max, sizeof(T));
@@ -10,7 +10,7 @@ VMArray<T>::VMArray()
 }
 
 template <typename T>
-VMArray<T>::VMArray(const VMArray<T>& old)
+PArray<T>::PArray(const PArray<T>& old)
 {
 	count = old.count;
 	max = old.max;
@@ -24,7 +24,7 @@ VMArray<T>::VMArray(const VMArray<T>& old)
 // we could save memory by setting max to the size of the init list
 // this way the array would possibly create a better contextual size
 template <typename T>
-VMArray<T>::VMArray(std::initializer_list<T> init)
+PArray<T>::PArray(std::initializer_list<T> init)
 {
 	max = ARRAY_START_SIZE;
 	data = (T*)calloc(max, sizeof(T));
@@ -38,7 +38,7 @@ VMArray<T>::VMArray(std::initializer_list<T> init)
 }
 
 template <typename T>
-VMArray<T>::VMArray(int _max, int _count, T *_data)
+PArray<T>::PArray(int _max, int _count, T *_data)
 {
 	max = _max;
 	count = _count;
@@ -48,7 +48,7 @@ VMArray<T>::VMArray(int _max, int _count, T *_data)
 }
 
 template <typename T>
-VMArray<T>::VMArray(u64 _size, T *_data)
+PArray<T>::PArray(u64 _size, T *_data)
 {
 	max = _size;
 	count = _size;
@@ -58,7 +58,7 @@ VMArray<T>::VMArray(u64 _size, T *_data)
 }
 
 template <typename T>
-VMArray<T>::VMArray(int _size)
+PArray<T>::PArray(int _size)
 {
 	max = _size;
 	count = _size;
@@ -67,7 +67,7 @@ VMArray<T>::VMArray(int _size)
 }
 
 template <typename T>
-VMArray<T>::~VMArray()
+PArray<T>::~PArray()
 {
 	// TODO (rhoe) for now we call Free manually on arrays when we need to
 	// if(data != NULL)
@@ -75,7 +75,7 @@ VMArray<T>::~VMArray()
 }
 
 template <typename T>
-void VMArray<T>::Grow()
+void PArray<T>::Grow()
 {
 	int oldMax = max;
 	max *= 2;
@@ -85,7 +85,7 @@ void VMArray<T>::Grow()
 }
 
 template <typename T>
-int VMArray<T>::Insert(const T &e)
+int PArray<T>::Insert(const T &e)
 {
 	int result = -1;
 
@@ -100,7 +100,7 @@ int VMArray<T>::Insert(const T &e)
 }
 
 template <typename T>
-int VMArray<T>::InsertNew()
+int PArray<T>::InsertNew()
 {
 	int result = -1;
 	if(count == max - 1) {
@@ -113,20 +113,20 @@ int VMArray<T>::InsertNew()
 }
 
 template <typename T>
-int VMArray<T>::Count()
+int PArray<T>::Count()
 {
 	return count;
 }
 
 template <typename T>
-int VMArray<T>::Max()
+int PArray<T>::Max()
 {
 	return max;
 }
 
 // TODO (rhoe) this function is not testet
 template <typename T>
-bool VMArray<T>::Contains(const T &e)
+bool PArray<T>::Contains(const T &e)
 {
 	bool result = false;
 	for(int i = 0; i < count; i++) {
@@ -140,20 +140,20 @@ bool VMArray<T>::Contains(const T &e)
 }
 
 template <typename T>
-T* VMArray<T>::Data()
+T* PArray<T>::Data()
 {
 	return data;
 }
 
 template <typename T>
-T& VMArray<T>::operator[](int index)
+T& PArray<T>::operator[](int index)
 {
 	//TODO (rhoe) check bounds here
 	return data[index];
 }
 
 // template <typename T>
-// VMArray<T>& VMArray<T>::operator=(VMArray<T> &other)
+// PArray<T>& PArray<T>::operator=(PArray<T> &other)
 // {
 // 	this->count = other.count;
 // 	this->max = other.max;
@@ -164,7 +164,7 @@ T& VMArray<T>::operator[](int index)
 // }
 
 // template <typename T>
-// VMArray<T>& VMArray<T>::operator=(std::initializer_list<T> init)
+// PArray<T>& PArray<T>::operator=(std::initializer_list<T> init)
 // {
 // 	this->max = ARRAY_START_SIZE;
 // 	this->data = (T*)calloc(max, sizeof(T));
@@ -178,7 +178,7 @@ T& VMArray<T>::operator[](int index)
 // }
 
 template <typename T>
-void VMArray<T>::Free()
+void PArray<T>::Free()
 {
 	if(initialized && data != NULL)
 		free(data);
@@ -189,7 +189,7 @@ void VMArray<T>::Free()
 // be leftover data in the array, but since we care more about performance than
 // security this has been the priorty
 template <typename T>
-void VMArray<T>::Clear()
+void PArray<T>::Clear()
 {
 	count = 0;
 }

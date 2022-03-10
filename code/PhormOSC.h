@@ -30,8 +30,8 @@
 
 struct OSCState
 {
-	HashMap<String, vec3> vec3Inputs;
-	/* HashMap<String, vec3> vec3Inputs; */
+	PMap<String, vec3> vec3Inputs;
+	/* PMap<String, vec3> vec3Inputs; */
 };
 
 void InitializeOSC();

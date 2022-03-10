@@ -31,8 +31,8 @@ struct Vertex {
 };
 
 struct Mesh {
-	VMArray<float> vertices;
-	VMArray<GLuint> indices;
+	PArray<float> vertices;
+	PArray<GLuint> indices;
 
 	void AddVertex(vec3 pos, vec2 uv, vec3 normal) {
 		vertices.Insert(pos.x);
@@ -105,7 +105,7 @@ struct Mesh {
 	}
 
 	void SetVertexAmount(i32 amount) {
-		vertices = VMArray<float>(amount * 8);
+		vertices = PArray<float>(amount * 8);
 	}
 
 	void SetNormalAt(i32 i, vec3 normal) {

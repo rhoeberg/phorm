@@ -33,16 +33,16 @@ void InitializeNodeEditor()
 	// _nodeEditorState->viewerHeight = VIEWER_SIZE;
 	editor->nodeMultiSelect = false;
 	// editor->selectDragging = false;
-	new (&editor->selectedNodes) VMArray<ObjectHandle>();
+	new (&editor->selectedNodes) PArray<ObjectHandle>();
 
 	editor->promptOpen = false;
 	editor->promptSetFocus = false;
-	new (&editor->promptCandidates) VMArray<String>();
+	new (&editor->promptCandidates) PArray<String>();
 
 	int promptCandidateFocus;
 
 	// editor->currentPage = 0;
-	// new(&editor->pages) VMArray<String>();
+	// new(&editor->pages) PArray<String>();
 	// editor->pages.Insert(AddString("main"));
 
 	// CREATE OUTPUT NODE
@@ -73,8 +73,8 @@ void PasteNodes()
 {
 	NodeEditorState *editor = _nodeEditorState;
 
-	HashMap<ObjectHandle, ObjectHandle> handleTable;
-	VMArray<ObjectHandle> newNodes;
+	PMap<ObjectHandle, ObjectHandle> handleTable;
+	PArray<ObjectHandle> newNodes;
 
 	for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
 		Node *node = GetNode(editor->selectedNodes[i]);

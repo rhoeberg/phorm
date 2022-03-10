@@ -314,8 +314,8 @@ void AddParticleNodes()
 	totalGridCellCountStr.Concat(TOTAL_GRID_CELL_COUNT);
 	totalGridCellCountStr.Concat("\n");
 
-	VMArray<String> workgroupAndTotalGrid = {workgroupSizeStr, totalGridCellCountStr};
-	VMArray<String> workGroupSize = {workgroupSizeStr, totalGridCellCountStr};
+	PArray<String> workgroupAndTotalGrid = {workgroupSizeStr, totalGridCellCountStr};
+	PArray<String> workGroupSize = {workgroupSizeStr, totalGridCellCountStr};
 
 	_particleNodeState = new ParticleNodeState();
 	_particleNodeState->cellIndexShader = Shader("assets/shaders/particles/cellindex.comp", workgroupAndTotalGrid);

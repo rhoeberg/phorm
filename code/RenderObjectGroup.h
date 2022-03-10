@@ -15,12 +15,12 @@ struct RenderObjectGroup
 {
 	// could this contain renderobject instances instead of
 	// sceneobjects to avoid infinite nesting?
-	/* VMArray<SceneObject> renderObjects; */
+	/* PArray<SceneObject> renderObjects; */
 	vec3 pos;
 	vec3 scale;
 	vec3 rot;
 
 	RenderObjectGroup() {
-		/* renderObjects = VMArray<SceneObject>(); */
+		/* renderObjects = PArray<SceneObject>(); */
 	}
 };

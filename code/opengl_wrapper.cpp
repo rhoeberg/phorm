@@ -11,10 +11,10 @@
 void InitializeOpenglWrapper()
 {
 	_openglWrapperState = (OpenglWrapperState*)malloc(sizeof(OpenglWrapperState));
-	new(&_openglWrapperState->mainContextVAO) VMArray<GLuint>();
-	new(&_openglWrapperState->viewerContextVAO) VMArray<GLuint>();
-	new(&_openglWrapperState->buffers) VMArray<GFXBuffer>();
-	new(&_openglWrapperState->textures) VMArray<GFXTexture>();
+	new(&_openglWrapperState->mainContextVAO) PArray<GLuint>();
+	new(&_openglWrapperState->viewerContextVAO) PArray<GLuint>();
+	new(&_openglWrapperState->buffers) PArray<GFXBuffer>();
+	new(&_openglWrapperState->textures) PArray<GFXTexture>();
 
 	_openglWrapperState->viewerInMain = true;
 
@@ -211,7 +211,7 @@ u32 CreateShader(char **source, int count, i32 type)
 	return id;
 }
 
-u32 CreateShader(const char *path, VMArray<String> defines, int type)
+u32 CreateShader(const char *path, PArray<String> defines, int type)
 {
 	char *sourceFile = ReadFile(path);
 	i32 sourceCount = defines.Count() + 2;

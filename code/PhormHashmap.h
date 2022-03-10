@@ -18,15 +18,15 @@ struct HashNode {
 };
 
 template <typename K, typename V>
-struct HashMap
+struct PMap
 {
 	HashNode<K, V> *elements;
 	size_t max;
 	int salt;
 
-	HashMap();
-	HashMap(int _max);
-	~HashMap();
+	PMap();
+	PMap(int _max);
+	~PMap();
 	void InitializeElements();
 	void Free();
 	int CalcHash(K &key);
@@ -40,9 +40,9 @@ template <typename K, typename V>
 struct HashIter {
 	int index;
 	int depth;
-	HashMap<K, V> *map;
+	PMap<K, V> *map;
 
-	HashIter(HashMap<K, V> *_map) {
+	HashIter(PMap<K, V> *_map) {
 		map = _map;
 		index = 0;
 		depth = 0;
@@ -83,4 +83,4 @@ struct HashIter {
 	}
 };
 
-void Test_HashMap();
+void Test_PMap();

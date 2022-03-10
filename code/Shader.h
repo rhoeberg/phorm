@@ -22,7 +22,7 @@ struct Shader
 		glDeleteShader(computeShader);
 	}
 
-	Shader(const char *cPath, VMArray<String> defines)
+	Shader(const char *cPath, PArray<String> defines)
 	{
 		id = glCreateProgram();
 		GLuint computeShader = CreateShader(cPath, defines, GL_COMPUTE_SHADER);

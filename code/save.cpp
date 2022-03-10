@@ -24,7 +24,7 @@ struct SaveFile {
 
 
 template <typename T>
-void SaveVMArray(VMArray<T> *array, SaveFile *saveFile)
+void SavePArray(PArray<T> *array, SaveFile *saveFile)
 {
 	// save vertices
 	int count = array->Count();
@@ -37,10 +37,10 @@ void SaveVMArray(VMArray<T> *array, SaveFile *saveFile)
 
 /*
   This function assumes that the next piece of data in the file
-  is a VMArray of type T
+  is a PArray of type T
  */
 template <typename T>
-void LoadNextVMArray(VMArray<T> *array, SaveFile *saveFile)
+void LoadNextPArray(PArray<T> *array, SaveFile *saveFile)
 {
 	int count;
 	int max;
@@ -49,24 +49,24 @@ void LoadNextVMArray(VMArray<T> *array, SaveFile *saveFile)
 	// TODO (rhoe) maybe its possibly to avoid this extra malloc
 	T *data = (T*)malloc(sizeof(T) * count);
 	fread(data, sizeof(T) * count, 1, saveFile->file);
-	*array = VMArray<T>(max, count, data);
+	*array = PArray<T>(max, count, data);
 	free(data);
 }
 
 template <typename T>
 void SaveObjectContainer(ObjectContainer<T> *container, SaveFile *saveFile)
 {
-	SaveVMArray<T>(&container->elements, saveFile);
-	SaveVMArray<bool>(&container->isFree, saveFile);
-	SaveVMArray<u32>(&container->slotID, saveFile);
+	SavePArray<T>(&container->elements, saveFile);
+	SavePArray<bool>(&container->isFree, saveFile);
+	SavePArray<u32>(&container->slotID, saveFile);
 }
 
 template <typename T>
 void LoadObjectContainer(ObjectContainer<T> *container, SaveFile *saveFile)
 {
-	LoadNextVMArray<T>(&container->elements, saveFile);
-	LoadNextVMArray<bool>(&container->isFree, saveFile);
-	LoadNextVMArray<u32>(&container->slotID, saveFile);
+	LoadNextPArray<T>(&container->elements, saveFile);
+	LoadNextPArray<bool>(&container->isFree, saveFile);
+	LoadNextPArray<u32>(&container->slotID, saveFile);
 }
 
 void SaveBool(bool b, SaveFile *saveFile)
@@ -182,7 +182,7 @@ void ProjectSave(String path)
 
 	//////////////
 	// SAVE PAGES
-	SaveVMArray<ObjectHandle>(&_globalEditorState->pages, &saveFile);
+	SavePArray<ObjectHandle>(&_globalEditorState->pages, &saveFile);
 
 	fclose(saveFile.file);
 }
@@ -215,7 +215,7 @@ void ProjectLoad(String path)
 		return;
 	}
 
-	// _nodeState->nodes = LoadNextVMArray<Node>(&saveFile);
+	// _nodeState->nodes = LoadNextPArray<Node>(&saveFile);
 	LoadObjectContainer<Node>(&_nodeState->nodes, &saveFile);
 
 	// hook up node function pointers
@@ -344,7 +344,7 @@ void ProjectLoad(String path)
 
 	/////////////
 	// LOAD PAGES
-	LoadNextVMArray<ObjectHandle>(&_globalEditorState->pages, &saveFile);
+	LoadNextPArray<ObjectHandle>(&_globalEditorState->pages, &saveFile);
 }
 
 void SaveSettings()

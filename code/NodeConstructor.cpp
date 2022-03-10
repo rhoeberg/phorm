@@ -2,19 +2,19 @@ void InitializeNodeConstructors()
 {
 	_nodeConstructorState = (NodeConstructorState*)malloc(sizeof(NodeConstructorState));
 
-	new(&_nodeConstructorState->names) VMArray<String>();
-	new(&_nodeConstructorState->constructors) HashMap<String, NodeConstructor>(1024);
+	new(&_nodeConstructorState->names) PArray<String>();
+	new(&_nodeConstructorState->constructors) PMap<String, NodeConstructor>(1024);
 	_nodeConstructorState->nextPos = vec2(0, 0);
 
 	SetupNodeConstructors();
 }
 
-VMArray<String>* GetNodeNames()
+PArray<String>* GetNodeNames()
 {
 	return &_nodeConstructorState->names;
 }
 
-HashMap<String, NodeConstructor>* GetNodeConstructors()
+PMap<String, NodeConstructor>* GetNodeConstructors()
 {
 	return &_nodeConstructorState->constructors;
 }
@@ -210,7 +210,7 @@ void SetupNodeConstructors()
   Returns an array with results from search
   note: clears array before use so will remove all data before
  */
-void NamesBeginningWith(VMArray<String> *array, String typed)
+void NamesBeginningWith(PArray<String> *array, String typed)
 {
 	array->Clear();
 	NodeConstructorState *state = _nodeConstructorState;

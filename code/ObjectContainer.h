@@ -6,9 +6,9 @@ template <typename T>
 struct ObjectContainer {
 	// its very important that these 3 arrays are completely synced.
 	// each index in the arrays refers to the same objects
-	VMArray<T> elements;
-	VMArray<bool> isFree;
-	VMArray<u32> slotID;
+	PArray<T> elements;
+	PArray<bool> isFree;
+	PArray<u32> slotID;
 
 	HandleType handleType;
 	DataType dataType;

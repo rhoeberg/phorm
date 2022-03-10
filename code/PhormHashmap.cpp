@@ -1,7 +1,7 @@
-#include "hashmap.h"
+#include "PhormHashmap.h"
 
 template <typename K, typename V>
-void HashMap<K, V>::InitializeElements()
+void PMap<K, V>::InitializeElements()
 {
 	for(int i = 0; i < max; i++) {
 		elements[i].free = true;
@@ -10,7 +10,7 @@ void HashMap<K, V>::InitializeElements()
 }
 
 template <typename K, typename V>
-HashMap<K, V>::HashMap()
+PMap<K, V>::PMap()
 {
 	elements = (HashNode<K, V>*)calloc(1, sizeof(HashNode<K, V>) * HASHMAP_DEFAULT_SIZE);
 	max = HASHMAP_DEFAULT_SIZE;
@@ -20,7 +20,7 @@ HashMap<K, V>::HashMap()
 }
 
 template <typename K, typename V>
-HashMap<K, V>::HashMap(int _max)
+PMap<K, V>::PMap(int _max)
 {
 	elements = (HashNode<K, V>*)calloc(1, sizeof(HashNode<K, V>) * _max);
 	max = _max;
@@ -30,20 +30,20 @@ HashMap<K, V>::HashMap(int _max)
 }
 
 template <typename K, typename V>
-HashMap<K, V>::~HashMap()
+PMap<K, V>::~PMap()
 {
 	free(elements);
 }
 
 template <typename K, typename V>
-void HashMap<K, V>::Free()
+void PMap<K, V>::Free()
 {
 	free(elements);
 }
 
 // TODO (rhoe) implement better hashing algo
 template <typename K, typename V>
-int HashMap<K, V>::CalcHash(K &key)
+int PMap<K, V>::CalcHash(K &key)
 {
 	size_t hash = std::hash<K>{}(key);
 	return hash % max;
@@ -57,7 +57,7 @@ int HashMap<K, V>::CalcHash(K &key)
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::Insert(K key, V value)
+bool PMap<K, V>::Insert(K key, V value)
 {
 	if(Exist(key))
 		return false;
@@ -88,7 +88,7 @@ bool HashMap<K, V>::Insert(K key, V value)
   Returns false if the key didnt exist
 */
 template <typename K, typename V>
-bool HashMap<K, V>::Remove(K key)
+bool PMap<K, V>::Remove(K key)
 {
 	int hash = CalcHash(key);
 	HashNode<K, V> *next = &elements[hash];
@@ -118,7 +118,7 @@ bool HashMap<K, V>::Remove(K key)
 }
 
 template <typename K, typename V>
-V* HashMap<K, V>::Get(K key)
+V* PMap<K, V>::Get(K key)
 {
 	int hash = CalcHash(key);
 	HashNode<K, V> *next = &elements[hash];
@@ -136,7 +136,7 @@ V* HashMap<K, V>::Get(K key)
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::Exist(K key)
+bool PMap<K, V>::Exist(K key)
 {
 	int hash = CalcHash(key);
 	HashNode<K, V> *next = &elements[hash];
@@ -152,14 +152,14 @@ bool HashMap<K, V>::Exist(K key)
 	return !next->free;
 }
 
-void Test_HashMap()
+void Test_PMap()
 {
 
 	printf("HASHMAP TEST: starting\n");
 
 	{
 		// test normal hashmap
-		HashMap<String, int> map = {};
+		PMap<String, int> map = {};
 
 		map.Insert(String("rasmus"), 33);
 		map.Insert(String("louise"), 29);
@@ -180,7 +180,7 @@ void Test_HashMap()
 		// test with salt 0 to test collisions;
 		// all strings will hash to 0
 
-		HashMap<String, int> map = HashMap<String, int>();
+		PMap<String, int> map = PMap<String, int>();
 		map.salt = -1;
 
 		map.Insert(String("rasmus"), 33);

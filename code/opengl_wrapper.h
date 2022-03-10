@@ -3,7 +3,7 @@
 #include "Bitmap.h"
 
 /* struct OpenglContextState { */
-/* 	VMArray<GLuint> VAOObjects; */
+/* 	PArray<GLuint> VAOObjects; */
 /* }; */
 
 /* struct VAOHandle */
@@ -49,10 +49,10 @@ struct OpenglWrapperState
 	// OpenglContextState mainWindowContext;
 	// OpenglContextState viewerWindowContext;
 
-	VMArray<u32> mainContextVAO;
-	VMArray<u32> viewerContextVAO;
-	VMArray<GFXBuffer> buffers;
-	VMArray<GFXTexture> textures;
+	PArray<u32> mainContextVAO;
+	PArray<u32> viewerContextVAO;
+	PArray<GFXBuffer> buffers;
+	PArray<GFXTexture> textures;
 
 	i32 defaultTexture;
 	bool viewerInMain;
@@ -131,7 +131,7 @@ void CleanupOpenglWrapper();
 
 u32 CreateShader(char **source, int count, i32 type);
 GLuint CreateShader(const char *path, int type);
-u32 CreateShader(const char *path, VMArray<String> defines, int type);
+u32 CreateShader(const char *path, PArray<String> defines, int type);
 GLuint CreateShaderProgram(const char *vPath, const char *fPath);
 
 ///////////////

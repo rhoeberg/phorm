@@ -15,7 +15,7 @@ struct Tube
 
 struct Tubes
 {
-	VMArray<Tube> points;
+	PArray<Tube> points;
 	i32 lastDir;
 };
 
@@ -25,7 +25,7 @@ void TubeOperation(Node *self)
 {
 	if(!self->initialized) {
 		Tubes tubes = {};
-		tubes.points = VMArray<Tube>();
+		tubes.points = PArray<Tube>();
 		tubes.lastDir = 0;
 		self->extraHandle = myTubes.Insert(tubes);
 		self->initialized = true;

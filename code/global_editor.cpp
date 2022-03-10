@@ -7,10 +7,10 @@ void InitializeGlobalEditor()
 	_globalEditorState->currentPage = 0;
 	_globalEditorState->freeCamMode = true;
 	_globalEditorState->editorFreeze = false;
-	new(&_globalEditorState->pages) VMArray<String>();
+	new(&_globalEditorState->pages) PArray<String>();
 	_globalEditorState->pages.Insert(AddString("main"));
 
-	new(&_globalEditorState->console.messages) VMArray<String>();
+	new(&_globalEditorState->console.messages) PArray<String>();
 }
 
 void EditorFreeze()
@@ -310,7 +310,7 @@ void UpdateConsole()
 void UpdateDebug()
 {
 	// ImGui::Begin("LABELS");
-	// HashMap<ObjectHandle> *labels = &_nodeState->labels;
+	// PMap<ObjectHandle> *labels = &_nodeState->labels;
 	// HashIter<ObjectHandle> iter = HashIter<ObjectHandle>(labels);
 
 	// HashNode<ObjectHandle> *next = iter.Next();

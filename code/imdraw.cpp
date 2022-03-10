@@ -51,9 +51,9 @@ void ImDrawInitialize()
 
 	// initialize layers
 	imDrawNextLayer = 2;
-	// TODO (rhoe) cant call contstructor on VMArray which is already intialized
+	// TODO (rhoe) cant call contstructor on PArray which is already intialized
 	// for(int i = 0; i < ARRAY_SIZE(imDrawLayers); i++) {
-	// 	imDrawLayers[i].vertices = VMArray<GLfloat>();
+	// 	imDrawLayers[i].vertices = PArray<GLfloat>();
 	// }
 
 	/////////////////////////

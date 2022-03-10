@@ -9,7 +9,7 @@ struct SceneRenderCommand
 
 struct SceneRenderState
 {
-	VMArray<SceneRenderCommand> commands;
+	PArray<SceneRenderCommand> commands;
 };
 
 void AddSceneRenderCommand(ObjectHandle scene, ObjectHandle texture, ObjectHandle sceneRenderData);

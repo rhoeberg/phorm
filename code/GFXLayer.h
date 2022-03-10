@@ -23,8 +23,8 @@ struct GFXBuffer
 
 struct GFXState
 {
-	VMArray<GFXTexture> textures;
-	VMArray<GFXBuffer> buffers;
+	PArray<GFXTexture> textures;
+	PArray<GFXBuffer> buffers;
 };
 
 void GFXLayerInit();

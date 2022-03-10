@@ -90,6 +90,29 @@ void SceneNodeEditor(Node *self)
 	//////////////////
 	// ADD OBJECTS
 	//////////////////
+
+	static bool selectObjMode = false;
+	static bool doneSelecting = false;
+	if(ImGui::Button("add object") && !selectObjMode) {
+		selectObjMode = true;
+		doneSelecting = false;
+		EditorFreeze();
+	}
+
+	if(selectObjMode && !doneSelecting) {
+		if(mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
+			if(HoveringNode()) {
+				scene->sceneObjects.Insert(SceneObject(GetHoverNodeHandle()));
+			}
+			doneSelecting = true;
+		}
+	}
+
+	if(doneSelecting && !mouse_buttons[GLFW_MOUSE_BUTTON_1]) {
+		EditorUnfreeze();
+		selectObjMode = false;
+	}
+
 	if(scene) {
 		for(i32 i = 0; i < _nodeState->nodes.Count(); i++) {
 			ObjectHandle handle = _nodeState->nodes.GetHandle(i);

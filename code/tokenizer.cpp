@@ -39,7 +39,7 @@ struct Token {
 };
 
 struct TokenizedFile {
-	VMArray<Token> tokens;
+	PArray<Token> tokens;
 	char *source;
 };
 
@@ -188,7 +188,7 @@ void FreeTokenizedFile(TokenizedFile *tokenizedFile)
 // 	Tokenizer tokenizer = {};
 // 	tokenizer.at = file;
 
-// 	VMArray<Token> tokens;
+// 	PArray<Token> tokens;
 
 // 	while(tokenizer.at[0] != 0) {
 // 		Token token = ParseToken(&tokenizer);

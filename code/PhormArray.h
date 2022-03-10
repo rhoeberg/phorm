@@ -3,7 +3,7 @@
 #define ARRAY_START_SIZE 16
 
 template <typename T>
-class VMArray {
+class PArray {
  private:
 	T *data;
 	int max;
@@ -11,13 +11,13 @@ class VMArray {
 	bool initialized;
 	void Grow();
  public:
-	VMArray();
-	VMArray(const VMArray<T>&);
-	VMArray(int _max, int _count, T *_data);
-	VMArray(u64 _size, T *_data);
-	VMArray(std::initializer_list<T> init);
-	VMArray(int _size);
-	~VMArray();
+	PArray();
+	PArray(const PArray<T>&);
+	PArray(int _max, int _count, T *_data);
+	PArray(u64 _size, T *_data);
+	PArray(std::initializer_list<T> init);
+	PArray(int _size);
+	~PArray();
 	int Insert(const T &e);
 	int InsertNew();
 	int Count();
@@ -28,6 +28,6 @@ class VMArray {
 	void Clear();
 
 	T& operator[](int index);
-	// VMArray<T>& operator=(VMArray<T> &other);
-	// VMArray<T>& operator=(std::initializer_list<T> init);
+	// PArray<T>& operator=(PArray<T> &other);
+	// PArray<T>& operator=(std::initializer_list<T> init);
 };

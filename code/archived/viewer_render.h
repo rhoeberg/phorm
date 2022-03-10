@@ -68,9 +68,9 @@ struct TransformGizmoState {
 };
 
 struct ViewerRenderState {
-	VMArray<RenderObjectInstance> renderList;
-	VMArray<RenderGroupInstance> renderGroupList;
- 	VMArray<RenderLightInstance> renderPointLights;
+	PArray<RenderObjectInstance> renderList;
+	PArray<RenderGroupInstance> renderGroupList;
+ 	PArray<RenderLightInstance> renderPointLights;
 	ObjectHandle baseTextureObject;
 	bool wireframe;
 

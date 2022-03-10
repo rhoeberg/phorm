@@ -25,7 +25,7 @@ enum ConsoleState {
 
 struct Console
 {
-	VMArray<ConsoleMessage> messages;
+	PArray<ConsoleMessage> messages;
 	bool scrollBottom;
 	ConsoleState state;
 };
@@ -40,7 +40,7 @@ struct GlobalEditorState {
 	////////////////
 	// CURRENT PAGE
 	i32 currentPage;
-	VMArray<ObjectHandle> pages;
+	PArray<ObjectHandle> pages;
 
 	////////////////
 	// SCENE RENDER

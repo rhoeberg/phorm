@@ -6,7 +6,7 @@ global vec2 lastDragPos;
 void InitializeSceneRender()
 {
 	_sceneRenderState = (SceneRenderState*)malloc(sizeof(SceneRenderState));
-	new(&_sceneRenderState->commands) VMArray<SceneRenderCommand>();
+	new(&_sceneRenderState->commands) PArray<SceneRenderCommand>();
 
     defaultShader = Shader("assets/shaders/texture.vert", "assets/shaders/texture.frag");
 

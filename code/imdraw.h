@@ -70,7 +70,7 @@ global stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
 global GLuint ftex;
 global GLuint textShader;
 
-#include "vm_array.h"
+#include "PhormArray.h"
 
 #define FONT_SIZE 18.0
 #define MAX_TEXT_SIZE 512
@@ -85,17 +85,17 @@ struct TextCommand {
 #define IMDRAW_LAYER_AMOUNT 3
 
 struct ImDrawLayer {
-	VMArray<GLfloat> vertices;
+	PArray<GLfloat> vertices;
 };
 
 global ImDrawLayer imDrawLayers[IMDRAW_LAYER_AMOUNT];
-// global VMArray<GLfloat> imDrawVertices;
+// global PArray<GLfloat> imDrawVertices;
 global GLuint imDrawVAO;
 global GLuint imDrawVBO;
 global GLuint imDrawShader;
 global vec4 imDrawColor;
 global int imDrawNextLayer;
-global VMArray<TextCommand> imTextCommands;
+global PArray<TextCommand> imTextCommands;
 // global size_t imVBOSize;
 
 global GLuint imdrawTextVAO;

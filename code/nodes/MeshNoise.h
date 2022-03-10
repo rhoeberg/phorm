@@ -41,11 +41,11 @@ void MeshNoiseOperation(Node *self)
 
 	float *mappedBuffer = (float*)GFXBufferMap(state->buffer);
 	if(mappedBuffer) {
-		output->vertices = VMArray<float>(input->vertices.Count(), mappedBuffer);
+		output->vertices = PArray<float>(input->vertices.Count(), mappedBuffer);
 		GFXBufferUnmap(state->buffer);
 	}
 	
-	output->indices = VMArray<GLuint>(input->indices);
+	output->indices = PArray<GLuint>(input->indices);
 
 	/* for(i32 i = 0; i < input->vertices.Count(); i+=8) { */
 	/* 	float x = input->vertices[i]; */

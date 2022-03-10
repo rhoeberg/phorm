@@ -51,14 +51,14 @@ struct NodeEditorState {
 	// SELECT DRAGGING
 	bool nodeMultiSelect;
 	vec2 selectDragStart;
-	VMArray<ObjectHandle> selectedNodes;
+	PArray<ObjectHandle> selectedNodes;
 
 	////////////////
 	// ADD NODE PROMPT
 	bool promptOpen;
 	bool promptSetFocus;
 	char promptBuffer[128];
-	VMArray<String> promptCandidates;
+	PArray<String> promptCandidates;
 	int promptCandidateSelected;
 
 	////////////////
