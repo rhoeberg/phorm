@@ -10,7 +10,7 @@ void InitializeGlobalEditor()
 	new(&_globalEditorState->pages) PArray<String>();
 	_globalEditorState->pages.Insert(AddString("main"));
 
-	new(&_globalEditorState->console.messages) PArray<String>();
+	new(&_globalEditorState->console.messages) PArray<ConsoleMessage>();
 }
 
 void EditorFreeze()
@@ -288,6 +288,10 @@ void UpdateConsole()
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 	bool show = true;
 	ImGui::Begin("console", &show, flags);
+
+	if(ImGui::Button("clear")) {
+		_globalEditorState->console.messages.Clear();
+	}
         
 	for(i32 i = 0; i < _globalEditorState->console.messages.Count(); i++) {
 		ConsoleMessage msg = _globalEditorState->console.messages[i];
