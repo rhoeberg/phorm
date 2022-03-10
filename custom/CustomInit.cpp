@@ -40,7 +40,9 @@ void CustomInit()
 	//
 	// Example:
 	// AddNodeConstructor(String("Test User Node"), TestUserOperation, CreateTestUserNode);
-	// AddNodeConstructor(String("Tubes"), TubeOperation, CreateTubeNode);
+
+	AddNodeConstructor(String("BlazeReader"), BlazeReaderOp, CreateBlazeReaderNode);
+	AddNodeConstructor(String("BlazeOutput"), BlazeOutputOp, CreateBlazeOutputNode);
 
 }
 

@@ -30,8 +30,21 @@ void InitializeUDP()
 		return;
 	}
 
-	_networkState->udpListener.shouldStop = false;
-	_networkState->udpListener.thread = std::thread(ListenUDP);
+	//-------------------------
+	// Set the socket I/O mode: In this case FIONBIO
+	// enables or disables the blocking mode for the 
+	// socket based on the numerical value of iMode.
+	// If iMode = 0, blocking is enabled; 
+	// If iMode != 0, non-blocking mode is enabled.
+	u_long iMode = 1;
+	i32 iResult = ioctlsocket(_networkState->socket, FIONBIO, &iMode);
+	if (iResult != NO_ERROR)
+		printf("ioctlsocket failed with error: %ld\n", iResult);
+  
+
+
+	// _networkState->udpListener.shouldStop = false;
+	// _networkState->udpListener.thread = std::thread(ListenUDP);
 	// ListenUDP();
 }
 
@@ -50,6 +63,11 @@ bool UDPNewMessage()
 		return true;
 
 	return false;
+}
+
+i32 UDPRecieve(char *buffer, u32 size)
+{
+	return recvfrom(_networkState->socket, buffer, size, 0, NULL, NULL);
 }
 
 void ListenUDP()
@@ -71,8 +89,8 @@ void ListenUDP()
 
 		// buffer should be filled with incomming data
 		// do stuff with it
-		DebugLog("recieved data:");
-		DebugLog("%d, %s", _networkState->lastMessage.length, _networkState->lastMessage.buffer);
+		// DebugLog("recieved data:");
+		// DebugLog("%d, %s", _networkState->lastMessage.length, _networkState->lastMessage.buffer);
 
 		//now reply the client with the same data
 		// if (sendto(_networkState->socket, (char*)buffer, recvlen, 0, (sockaddr*)&_networkState->other, msgLen) == SOCKET_ERROR)

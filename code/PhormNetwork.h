@@ -27,6 +27,7 @@ struct NetworkUDPListener
 	bool shouldStop;
 };
 
+
 struct NetworkState
 {
 	WSADATA wsaData;
