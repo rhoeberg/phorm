@@ -37,7 +37,7 @@ global Settings settings;
 
 // #include "audio.h"
 /* #include "opengl.h" */
-#include "phorm_util.h"
+#include "PhormUtil.h"
 #include "simplexnoise1234.h"
 #include "math.h"
 #include "PhormArray.h"
@@ -48,7 +48,7 @@ global Settings settings;
 #include "PhormHashmap.h"
 #include "ObjectContainer.h"
 #include "glfw_wrapper.h"
-#include "opengl_wrapper.h"
+#include "PhormOpengl.h"
 //#include "GFXLayer.h"
 #include "Shader.h"
 #include "light.h"
@@ -56,7 +56,7 @@ global Settings settings;
 #include "midi.h"
 #include "PhormNetwork.h"
 #include "PhormOSC.h"
-#include "phorm_project.h"
+#include "PhormProject.h"
 #include "node_parameter.h"
 #include "node.h"
 #include "data.h"
