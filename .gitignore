@@ -7,3 +7,4 @@ build
 /testsave.octo
 /settings.vmsettings
 /phorm.10x
+*.phorm
