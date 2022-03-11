@@ -3,7 +3,7 @@ void InitializeGlobalEditor()
 {
 	_globalEditorState = (GlobalEditorState*)malloc(sizeof(GlobalEditorState));
 	_globalEditorState->promptActive = false;
-	_globalEditorState->viewerMode = VIEW_OBJECT;
+	_globalEditorState->fullscreenView = false;
 	_globalEditorState->currentPage = 0;
 	_globalEditorState->freeCamMode = true;
 	_globalEditorState->editorFreeze = false;
@@ -53,19 +53,9 @@ bool FreeCamMode()
 	return _globalEditorState->freeCamMode;
 }
 
-void SetViewerMode(i32 mode)
+bool FullscreenViewer()
 {
-	_globalEditorState->viewerMode = (ViewerMode)mode;
-}
-
-void ToggleViewerMode()
-{
-	if(_globalEditorState->viewerMode == VIEW_OBJECT) {
-		_globalEditorState->viewerMode = VIEW_SCENE;
-	}
-	else {
-		_globalEditorState->viewerMode = VIEW_OBJECT;
-	}
+	return _globalEditorState->fullscreenView;
 }
 
 ///////////////////
@@ -281,7 +271,7 @@ void UpdateConsole()
 	}
 		
 
-	ImGui::SetNextWindowPos(ImVec2(winWidth / 6, 0), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(250, 0), ImGuiCond_Always);
 
 	ImGui::SetNextWindowSize(ImVec2(width, height));
 
@@ -395,6 +385,16 @@ void UpdateViewerSettings()
 
 	ImGui::Begin("viewer/render");
 	ImGui::Checkbox("freecam", &_globalEditorState->freeCamMode);
+
+	if(ImGui::Button("viewer")) {
+		settings.viewerInMain = !settings.viewerInMain;
+		if(settings.viewerInMain) {
+			HideViewerOtherWindow();
+		}
+		else {
+			ShowViewerOtherWindow();
+		}
+	}
 	ImGui::End();
 }
 
@@ -416,11 +416,18 @@ void UpdateGlobalEditor()
 			editor->console.state = CONSOLE_HIDE;
 	}
 
-	UpdateNodeEditor();
-	UpdateInspector();
-	UpdatePageEditor();
-	UpdateViewerSettings();
-	UpdateConsole();
+	if(!editor->promptActive && singleKeyPress(GLFW_KEY_V)) {
+		editor->fullscreenView = !editor->fullscreenView;
+	}
+
+	if(!editor->fullscreenView) {
+		UpdateNodeEditor();
+		UpdateInspector();
+		UpdatePageEditor();
+		UpdateViewerSettings();
+		UpdateConsole();
+		UpdateDebug();
+	}
 }
 
 void CleanupGlobalEditor()

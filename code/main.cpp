@@ -146,12 +146,6 @@ void UpdateLoop()
 	///////////////
 	UpdateGlobalEditor();
 
-	///////////////
-	// DEBUG
-	///////////////
-	// TODO (rhoe) should maybe be switched off by compiler macro
-	UpdateDebug();
-
 	////////////////
 	// NODES
 	////////////////
@@ -164,21 +158,24 @@ void UpdateLoop()
 	UpdateSceneRender();
 	UpdateViewerRender();
 
-	///////////////
-	// IMDRAW
-	///////////////
-	SetContextMain();
-	int screenWidth, screenHeight;
-	// GetWindowSize(&screenWidth, &screenHeight);
-	GetFramebufferSize(&screenWidth, &screenHeight);
-	glViewport(0, 0, screenWidth, screenHeight);
-	ImDrawRender();
+	if(!FullscreenViewer()) {
+		///////////////
+		// IMDRAW
+		///////////////
+		SetContextMain();
+		int screenWidth, screenHeight;
+		// GetWindowSize(&screenWidth, &screenHeight);
+		GetFramebufferSize(&screenWidth, &screenHeight);
+		glViewport(0, 0, screenWidth, screenHeight);
+		ImDrawRender();
+	}
 
 	///////////////
 	// BUFFER SWAP / IMGUI RENDER
 	///////////////
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	
 	glfwSwapBuffers(_win);
 }
 
@@ -228,8 +225,6 @@ int main(int argc, char *argv[])
 	// TODO (rhoe) find place for this
     srand(glfwGetTime());
 
-
-
 	///////////
 	// LOAD SETTINGS
 	///////////
@@ -260,13 +255,8 @@ int main(int argc, char *argv[])
 
 		settings.viewerInMain = false;
 	}
-	SetWindowSettings(_win, settings.mainWindow);
-	SetWindowSettings(_viewerWindow, settings.viewerWindow);
-
-	// load viewer settings
-	SetViewerInMain(settings.viewerInMain);
-
-
+	// settings.viewerInMain = true;
+	SetWindowSettings(settings);
 
 	////////////
 	// UPDATE LOOP
@@ -286,7 +276,6 @@ int main(int argc, char *argv[])
 	// save last settings
 	SaveSettings();
 
-	// TODO (rhoe) move this to midi system
     cleanup();
     return 0;
 }

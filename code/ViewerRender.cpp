@@ -204,22 +204,46 @@ void UpdateViewerRender()
 			}
 		}
 	}
+	RenderView();
 
-	int width, height;
-	GetViewerWindowSize(&width, &height);
-	RenderView(0, 0, width, height);
-
-	glfwSwapBuffers(_viewerWindow);
 	// glfwMakeContextCurrent(_win);
-	// SetContextMain();
 }
 
-void RenderView(i32 x, i32 y, i32 width, i32 height)
+void RenderView()
 {
-	// SetContextViewer();
+	i32 width, height;
+	i32 x = 0, y = 0;
+
+	if(settings.viewerInMain) {
+		SetContextMain();
+
+		i32 wWidth, wHeight;
+		GetWindowSize(&wWidth, &wHeight);
+
+		if(FullscreenViewer()) {
+			width = wWidth;
+			height = wHeight;
+		}
+		else {
+			width = 500;
+			height = 350;
+			x = wWidth - width;
+			y = wHeight - height;
+		}
+
+	}
+	else {
+		SetContextViewer();
+		GetViewerWindowSize(&width, &height);
+		x = 0;
+		y = 0;
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+	}
+
+
 	glViewport(x, y, width, height);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+
 
 	_viewerRenderState->shader.Begin();
 
@@ -234,6 +258,13 @@ void RenderView(i32 x, i32 y, i32 width, i32 height)
 	glBindVertexArray(0);
 
 	_viewerRenderState->shader.End();
+
+
+	if(settings.viewerInMain) {
+	}
+	else {
+		glfwSwapBuffers(_viewerWindow);
+	}
 
 }
 

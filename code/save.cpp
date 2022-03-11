@@ -377,9 +377,6 @@ void SaveSettings()
 		settings.viewerWindow.posX = x;
 		settings.viewerWindow.posY = y;
 	}
-
-	settings.viewerInMain = ViewerInMain();
-
 	fwrite(&settings, sizeof(settings), 1, saveFile.file);
 }
 

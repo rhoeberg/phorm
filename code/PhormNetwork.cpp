@@ -103,7 +103,7 @@ void ListenUDP()
 void CleanupNetwork()
 {
 	closesocket(_networkState->socket);
-	_networkState->udpListener.shouldStop = true;
-	_networkState->udpListener.thread.join();
+	// _networkState->udpListener.shouldStop = true;
+	// _networkState->udpListener.thread.join();
 	WSACleanup();
 }

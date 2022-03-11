@@ -162,10 +162,19 @@ void ResetTime()
 	startTime = glfwGetTime();
 }
 
-void SetWindowSettings(GLFWwindow *win, WindowSettings settings)
+void SetWindowSettings(Settings settings)
 {
-	glfwSetWindowPos(win, settings.posX, settings.posY);
-	glfwSetWindowSize(win, settings.width, settings.height);
+	glfwSetWindowPos(_win, settings.mainWindow.posX, settings.mainWindow.posY);
+	glfwSetWindowSize(_win, settings.mainWindow.width, settings.mainWindow.height);
+
+	if(settings.viewerInMain) {
+		glfwSetWindowPos(_win, settings.viewerWindow.posX, settings.viewerWindow.posY);
+		glfwSetWindowSize(_win, settings.viewerWindow.width, settings.viewerWindow.height);
+	}
+	else {
+		ShowViewerOtherWindow();
+	}
+
 }
 
 GLFWwindow* initGlfw()

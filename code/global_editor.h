@@ -1,10 +1,5 @@
 #pragma once
 
-enum ViewerMode {
-	VIEW_OBJECT,
-	VIEW_SCENE,
-};
-
 struct ConsoleMessage
 {
 	String text;
@@ -33,9 +28,9 @@ struct Console
 struct GlobalEditorState {
 	bool promptActive;
 	bool editorFreeze;
-	ViewerMode viewerMode;
 	ObjectHandle inspectorObject;
 	ObjectHandle viewerNode;
+	bool fullscreenView;
 
 	////////////////
 	// CURRENT PAGE

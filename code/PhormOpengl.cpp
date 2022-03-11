@@ -16,41 +16,15 @@ void InitializeOpenglWrapper()
 	new(&_openglWrapperState->buffers) PArray<GFXBuffer>();
 	new(&_openglWrapperState->textures) PArray<GFXTexture>();
 
-	_openglWrapperState->viewerInMain = true;
-
 	_openglWrapperState->defaultTexture = GFXTextureAdd();
-
-	// create default texture
-	// glGenTextures(1, &defaultTexture);
 
 	Pixel white = Pixel(255, 255, 255, 255);
 	Bitmap whiteBitmap(1, 1, &white);
 
 	GFXTextureBind(_openglWrapperState->defaultTexture);
-	// glBindTexture(GL_TEXTURE_2D, defaultTexture);
 	GFXTextureUploadBitmap(_openglWrapperState->defaultTexture, &whiteBitmap);
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &white);
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	// glBindTexture(GL_TEXTURE_2D, 0);
-
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-}
-
-void ToggleViewer()
-{
-	SetViewerInMain(!_openglWrapperState->viewerInMain);
-}
-
-void SetViewerInMain(bool value)
-{
-	_openglWrapperState->viewerInMain = value;
-	if(value) {
-		HideViewerOtherWindow();
-	}
-	else {
-		ShowViewerOtherWindow();
-	}
 }
 
 int AddVAOMainWindow()
@@ -83,16 +57,6 @@ int AddVAO()
 	return mainResult;
 }
 
-bool ViewerInMain()
-{
-	return _openglWrapperState->viewerInMain;
-}
-
-GLuint GetMainContextVAO(int handle)
-{
-	return _openglWrapperState->mainContextVAO[handle];
-}
-
 void BindMainContextVAO(int handle)
 {
 	glBindVertexArray(_openglWrapperState->mainContextVAO[handle]);
@@ -121,28 +85,32 @@ GLuint GetViewerContextVAO(int handle)
 
 GLuint GetCurrentContextVAO(int handle)
 {
-	if(ViewerInMain()) {
-		return GetMainContextVAO(handle);
+	if(_openglWrapperState->contextMain) {
+		return _openglWrapperState->mainContextVAO[handle];
 	}
 	else {
-		return GetViewerContextVAO(handle);
+		return _openglWrapperState->viewerContextVAO[handle];
 	}
 }
 
 void SetContextMain()
 {
+	_openglWrapperState->contextMain = true;
 	glfwMakeContextCurrent(_win);
 }
 
 void SetContextViewer()
 {
+	// TODO (rhoe) check if context already set?
+	_openglWrapperState->contextMain = false;
 	glfwMakeContextCurrent(_viewerWindow);
 }
 
 void BindBuffersToVAO(int VAOHandle, GLuint VBO, GLuint EBO)
 {
     glfwMakeContextCurrent(_win);
-	glBindVertexArray(GetMainContextVAO(VAOHandle));
+	GLuint vao = _openglWrapperState->mainContextVAO[VAOHandle];
+	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -154,7 +122,8 @@ void BindBuffersToVAO(int VAOHandle, GLuint VBO, GLuint EBO)
 	glBindVertexArray(0);
 
     glfwMakeContextCurrent(_viewerWindow);
-	glBindVertexArray(GetViewerContextVAO(VAOHandle));
+	vao = _openglWrapperState->viewerContextVAO[VAOHandle];
+	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);

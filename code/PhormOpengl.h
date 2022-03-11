@@ -55,7 +55,10 @@ struct OpenglWrapperState
 	PArray<GFXTexture> textures;
 
 	i32 defaultTexture;
-	bool viewerInMain;
+
+	// TODO (rhoe) rename and clean up this
+	/* bool viewerInMain; */
+	bool contextMain;
 };
 
 // TODO (rhoe) could change this one into a table lookup,
@@ -110,22 +113,15 @@ int AddVAOMainWindow();
 int AddVAOViewerWindow();
 int AddVAO();
 
-void ToggleViewer();
-void SetViewerInMain(bool value);
-bool ViewerInMain();
 void SetContextMain();
 void SetContextViewer();
 void BindMainContextVAO(int handle);
 void BindViewerContextVAO(int handle);
 void GFXBindVAO(i32 handle);
-GLuint GetMainContextVAO(int handle);
-GLuint GetViewerContextVAO(int handle);
 GLuint GetCurrentContextVAO(int handle);
 
 
 void BindBuffersToVAO(int VAOHandle, GLuint VBO, GLuint EBO);
-/* void BindBufferToVAO(int handle, int type, GLuint bufferID); */
-/* void SetVAOAttribPointers(int handle); */
 int CreateSpriteVAO();
 void CleanupOpenglWrapper();
 

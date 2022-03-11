@@ -21,4 +21,4 @@ struct ViewerRenderState
 global ViewerRenderState *_viewerRenderState;
 
 void UpdateViewerRender();
-void RenderView(i32 x, i32 y, i32 width, i32 height);
+void RenderView();
