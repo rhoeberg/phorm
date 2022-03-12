@@ -134,7 +134,7 @@ void UpdateLoop()
 	///////////////
 	// OSC
 	///////////////
-	UpdateOSC();
+	// UpdateOSC();
 
 	///////////////
 	// VIEWER RENDERING

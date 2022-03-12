@@ -8,7 +8,14 @@ void BlazeOutputOp(Node *self)
 	}
 
 	i32 partindex = self->params[0].Int();
-	*output = _blazeReaderState.pData.data[partindex];
+
+	vec3 newPos = _blazeReaderState.pData.data[partindex];
+	newPos.y = 1.0f - newPos.y;
+	vec3 dir = newPos - *output;
+	vec3 result = *output + (dir * 0.05f);
+
+	/* *output = vec3(tmp.x, 1.0f - tmp.y, tmp.z); */
+	*output = vec3(result.x, result.y, result.z);
 }
 
 ObjectHandle CreateBlazeOutputNode()
