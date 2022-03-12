@@ -204,6 +204,7 @@ int main(int argc, char *argv[])
     //     	exit(1);
     //     }
 
+
 	// Initialize Application
 	InitializeData();
 	InitializeGlobalEditor();
@@ -229,14 +230,10 @@ int main(int argc, char *argv[])
 	// LOAD SETTINGS
 	///////////
 
-	// load default scene
+	// Try to load arg1 as scene path
 	if(argc > 1) {
 		String arg1 = argv[1];
-		if(arg1.Equals("load")) {
-			printf("loading scene on start\n");
-			String path("testsave.octo");
-			ProjectLoad(path);
-		}
+		ProjectLoad(arg1);
 	}
 
 	// load last settings

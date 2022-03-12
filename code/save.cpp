@@ -187,7 +187,7 @@ void ProjectSave(String path)
 	fclose(saveFile.file);
 }
 
-void ProjectLoad(String path)
+bool ProjectLoad(String path)
 {
 	SaveFile saveFile = {};
 	saveFile.file = fopen(path.buffer, "rb");
@@ -197,8 +197,8 @@ void ProjectLoad(String path)
 	//////////////////
 	String phormID = LoadString(&saveFile);
 	if(!phormID.Equals("PHORM")) {
-		DebugLog("failed to load: %s", path.buffer);
-		return;
+		WarningLog("failed to load project: %s", path.buffer);
+		return false;
 	}
 
 
@@ -212,7 +212,7 @@ void ProjectLoad(String path)
 
 	if(!saveFile.file) {
 		NOT_IMPLEMENTED
-		return;
+		return false;
 	}
 
 	// _nodeState->nodes = LoadNextPArray<Node>(&saveFile);
@@ -345,6 +345,8 @@ void ProjectLoad(String path)
 	/////////////
 	// LOAD PAGES
 	LoadNextPArray<ObjectHandle>(&_globalEditorState->pages, &saveFile);
+
+	return true;
 }
 
 void SaveSettings()
