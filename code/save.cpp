@@ -138,10 +138,20 @@ void ProjectSave(String path)
 	SaveFile saveFile = {};
 	saveFile.file = fopen(path.buffer, "wb");
 
+	if(saveFile.file == NULL) {
+		ErrorLog("failed to save file: %s", path.buffer);
+		return;
+	}
+
 	//////////////////
 	// SAVE PHORM ID
 	//////////////////
 	SaveString(String("PHORM"), &saveFile);
+
+	//////////////////
+	// SAVE PROJECT
+	//////////////////
+	// fwrite(&_projectState->currentProject, sizeof(Project), 1, saveFile.file);
 
 	//////////////
 	// SAVE NODES
@@ -205,6 +215,7 @@ bool ProjectLoad(String path)
 	//////////////////
 	// LOAD PROJECT
 	//////////////////
+	// fread(&_projectState->currentProject, sizeof(Project), 1, saveFile.file);
 
 	// TODO (rhoe) we need to clear data when loading
 	// CLEAR DATA BEFORE LOADING NEW PROJECT

@@ -15,9 +15,12 @@ struct String
 	void ReCalc();
 	void FindBufferSize(int min);
 	void ResizeBuffer(int min);
+
+	// TODO (rhoe) make concat immutable?
 	void Concat(const char *str);
 	void Concat(String& other);
 	void Concat(int i);
+
 	String& operator=(const char *str);
 	String& operator=(const String other);
 	// String& operator=(String other);

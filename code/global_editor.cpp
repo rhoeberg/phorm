@@ -322,11 +322,20 @@ void UpdateDebug()
 	ImGui::SetNextWindowSize(ImVec2(width, height));
 
 	ImGui::Begin("debug");
-	if(ImGui::Button("save")) {
+	if(ImGui::Button("save as")) {
 		String path = tinyfd_saveFileDialog(NULL, NULL, 0, NULL, NULL);
 		// String path("testsave.octo");
+
+		GetCurrentProject()->projectPath = path;
+		// String assetPath(path);
+		// assetPath.Concat("/assets");
+		GetCurrentProject()->assetPath = String("assets");
+
 		ProjectSave(path);
 	}
+	// if(ImGui::Button("save")) {
+		// ProjectSave(GetCurrentProject()->projectPath);
+	// }
 	if(ImGui::Button("load")) {
 		String path = tinyfd_openFileDialog(NULL, NULL, 0, NULL, NULL, 0);
 		// String path("testsave.octo");
@@ -365,6 +374,12 @@ void UpdateDebug()
 	// if(lastMessage.length > 0) {
 	// 	ImGui::Text("%s", lastMessage.buffer);
 	// }
+
+	ImGui::Spacing();
+	ImGui::Text("PROJECT");
+	if(ImGui::InputText("assetpath", GetCurrentProject()->assetPath.buffer, GetCurrentProject()->assetPath.bufferSize)) {
+		GetCurrentProject()->assetPath.ReCalc();
+	}
 	
 
     ImGui::End();

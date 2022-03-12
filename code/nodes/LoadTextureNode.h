@@ -10,12 +10,11 @@ void LoadTextureOp(Node *self)
 	if(data) {
 		Bitmap *output = GetBitmaps()->Get(self->GetDataLast());
 		output->Create(width, height);
-
-		DebugLog("width:%d\n", width);
-		DebugLog("height:%d\n", height);
-		DebugLog("nrChannels:%d\n", nrChannels);
 		memcpy(output->pixels, data, sizeof(Pixel) * output->width * output->height);
 		free(data);
+	}
+	else {
+		WarningLog("problem loading texture: %s", path->buffer);
 	}
 }
 
