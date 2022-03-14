@@ -5,9 +5,17 @@ out vec4 color;
 
 uniform sampler2D outTexture;
 
+uniform float WaveAmount;
+uniform float WaveFreq;
+
 void main()
 {
-	/* vec3 col = vec3(1, 1, 0); */
-    color = texture(outTexture, TexCoords);
-    /* color = vec4(col, 1.0f); */
+	/* float amount = 0.1; */
+
+	float freq = 30;
+	vec2 waveCoords = TexCoords;
+	waveCoords.x = waveCoords.x + (WaveAmount * sin(waveCoords.y * WaveFreq));
+    color = texture(outTexture, waveCoords);
+
+    /* color = texture(outTexture, TexCoords); */
 }

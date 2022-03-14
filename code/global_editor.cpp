@@ -162,6 +162,12 @@ void UpdateInspector()
 					}
 					break;
 				}
+				case DATA_VEC4: {
+					if(ImGui::InputFloat4(buffer, glm::value_ptr(param->v4))) {
+						node->changed = true;
+					}
+					break;
+				}
 				case DATA_STRING: {
 					String *str = GetStrings()->Get(param->dataHandle);
 					if(ImGui::InputText(buffer, str->buffer, str->bufferSize)) {
@@ -363,17 +369,6 @@ void UpdateDebug()
 
 	ImGui::Spacing();
 	ImGui::Text("midi (channel 0, cc 1):%d", _midiState->channels[0].cc[1]);
-
-	ImGui::Spacing();
-	ImGui::Text("UDP MESSAGE");
-	// static NetworkMessage lastMessage = {};
-	if(GetLastMessage().length > 0) {
-		// lastMessage = GetLastMessage();
-		ImGui::Text("%s", GetLastMessage().buffer);
-	}
-	// if(lastMessage.length > 0) {
-	// 	ImGui::Text("%s", lastMessage.buffer);
-	// }
 
 	ImGui::Spacing();
 	ImGui::Text("PROJECT");

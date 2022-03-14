@@ -21,6 +21,7 @@ struct NodeParameter {
 	NodeParameter(const char *_name, i32 _i);
 	NodeParameter(const char *_name, double _d);
 	NodeParameter(const char *_name, vec3 _v3);
+	NodeParameter(const char *_name, vec4 _v4);
 	NodeParameter(const char *_name, const char *str);
 	NodeParameter(const char *_name, ObjectHandle handle);
 	int Int();

@@ -1,5 +1,7 @@
 #version 430 
-layout(local_size_x = 1, local_size_y = 1) in;
+
+#define WORKGROUP_SIZE 1
+layout(local_size_x = WORKGROUP_SIZE, local_size_y = 1) in;
 layout(rgba32f, binding = 0) uniform image2D image;
 
 uniform int offset;
@@ -13,7 +15,7 @@ void main()
 	float y = float(coords.y) + float(offset);
 	float freq2 = sin(y * freq);
 	int curve = int(freq2 * amount);
-	getCoords.x = (int(getCoords.x) + curve) % int(gl_NumWorkGroups.x);
+	getCoords.x = (int(getCoords.x) + curve) % int(gl_NumWorkGroups.x * WORKGROUP_SIZE);
 	vec4 pixel = imageLoad(image, getCoords);
 	imageStore(image, coords, pixel);
 }

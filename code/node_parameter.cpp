@@ -27,6 +27,15 @@ NodeParameter::NodeParameter(const char *_name, vec3 _v3)
 	exposed = false;
 }
 
+NodeParameter::NodeParameter(const char *_name, vec4 _v4)
+{
+	type = DATA_VEC4;
+	sprintf(name, "%s", _name);
+	v4 = _v4;
+	nodeHandle.isset = false;
+	exposed = false;
+}
+
 NodeParameter::NodeParameter(const char *_name, const char *str)
 {
 	dataHandle = AddString(str);

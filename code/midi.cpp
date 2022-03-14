@@ -36,10 +36,10 @@ void InitializeMidi()
 
 	u32 nPorts = _midiState->midiin->getPortCount();
 	if(nPorts == 0) {
-		ErrorLog("MIDI: could not find any midi ports\n");
+		ErrorLog("MIDI: could not find any midi ports");
 	}
 	else {
-		DebugLog("MIDI: connecting to midi port: %s\n", _midiState->midiin->getPortName(0).c_str());
+		DebugLog("MIDI: connecting to midi port: %s", _midiState->midiin->getPortName(0).c_str());
 		try {
 			_midiState->midiin->openPort(0);
 		}

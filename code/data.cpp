@@ -135,6 +135,7 @@ RenderObject CreateRenderObject()
 	result.VAOHandle = AddVAO();
 	glGenBuffers(1, &result.EBO);
 	glGenBuffers(1, &result.VBO);
+	result.color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	result.textureHandle = GFXTextureAdd();
 	result.primitiveMode = GFX_TRIANGLES;
 	result.useIndices = true;

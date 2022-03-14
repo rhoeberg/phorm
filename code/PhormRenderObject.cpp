@@ -38,10 +38,10 @@ void RenderObjectInstance::Render(Shader *shader)
 	glm::mat3 model3x3 = glm::mat3(model);
 	glm::mat3 normalMatrix = glm::inverseTranspose(model3x3);
 	shader->SetUniform("normalMatrix", normalMatrix);
+	shader->SetUniform("model", model);
 
 	// set color
-	shader->SetUniform("objectColor", vec3(1, 0, 0));
-	shader->SetUniform("model", model);
+	shader->SetUniform("objectColor", renderObject->color);
 
 	/////////////////
 	// DRAW

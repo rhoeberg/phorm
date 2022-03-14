@@ -43,56 +43,74 @@ struct Shader
 
 	GLuint GetUniformLoc(const char *name)
 	{
+		/* Begin(); */
 		GLuint loc = glGetUniformLocation(id, name);
 		return loc;
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, i32 value)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniform1i(loc, value);
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, float value)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniform1f(loc, value);
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, mat3 value)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(value));
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, mat4 value)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, vec2 value)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniform2fv(loc, 1, glm::value_ptr(value));
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, vec3 value)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniform3fv(loc, 1, glm::value_ptr(value));
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, vec4 value)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniform4fv(loc, 1, glm::value_ptr(value));
+		/* End(); */
 	}
 
 	void SetUniform(const char *name, i32 a, i32 b)
 	{
+		/* Begin(); */
 		GLuint loc = GetUniformLoc(name);
 		glUniform2i(loc, a, b);
+		/* End(); */
 	}
 
 };

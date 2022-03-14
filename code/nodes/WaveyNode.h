@@ -1,5 +1,7 @@
 #pragma once
 
+/* #define WORKGROUP_SIZE 128 */
+
 void WaveyOp(Node *self)
 {
 	// INPUTS
