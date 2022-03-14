@@ -5,6 +5,11 @@ double Sin(double d)
 	return sin(d);
 }
 
+double Cos(double d)
+{
+	return cos(d);
+}
+
 double Fmod(double numer, double denom)
 {
 	return fmod(numer, denom);

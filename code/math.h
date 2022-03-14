@@ -28,6 +28,7 @@ struct Rect {
 };
 
 double Sin(double d);
+double Cos(double d);
 double Fmod(double numer, double denom);
 float Min(float a, float b);
 float Max(float a, float b);
