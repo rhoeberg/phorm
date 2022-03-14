@@ -41,6 +41,8 @@ void CustomInit()
 	// Example:
 	// AddNodeConstructor(String("Test User Node"), TestUserOperation, CreateTestUserNode);
 
+	_blazeReaderState = new BlazeReaderState();
+	_blazeReaderState->udp = UDPConnection(5000);
 	AddNodeConstructor(String("BlazeReader"), BlazeReaderOp, CreateBlazeReaderNode);
 	AddNodeConstructor(String("BlazeOutput"), BlazeOutputOp, CreateBlazeOutputNode);
 

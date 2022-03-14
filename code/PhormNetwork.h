@@ -3,11 +3,6 @@
 #include <thread>
 #include <mutex>
 
-/* #include <sys/socket.h> */
-/* #include <arpa/inet.h> */
-
-
-
 #define NETWORK_BUFFER_SIZE 512
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 5000
@@ -21,38 +16,18 @@ struct NetworkMessage
 	i32 length;
 };
 
-struct NetworkUDPListener
+struct UDPConnection
 {
-	std::thread thread;
-	bool shouldStop;
+	SOCKET socketHandle;
+	sockaddr_in server;
+	sockaddr_in other;
+	i32 port;
+
+	UDPConnection(){}
+	UDPConnection(i32 _port);
+	void Close();
+	i32 Recieve(char *buffer, u32 size);
 };
 
-
-struct NetworkState
-{
-	WSADATA wsaData;
-	SOCKET socket;
-	sockaddr_in server, other;
-	NetworkMessage lastMessage;
-	NetworkUDPListener udpListener;
-	std::mutex msgLock;
-	bool messageConsumed;
-
-
-	/* UDPAdress address; */
-	/* socket_desc socket; */
-};
-
-/* struct UDPAddress */
-/* { */
-/* 	String ip; */
-/* 	i32 port; */
-/* } */
-
-
-void InitializeUDP();
-void ListenUDP();
-bool UPDSend(u8 *buffer, u64 size);
-bool UPDRecieve(u8 *buffer, u64 size);
-
-global NetworkState *_networkState;
+void InitializeNetwork();
+void CleanupNetwork();

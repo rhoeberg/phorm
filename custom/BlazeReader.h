@@ -8,10 +8,11 @@ struct PythonData {
 struct BlazeReaderState
 {
 	PythonData pData;
+	UDPConnection udp;
 };
 
 // TODO (rhoe) allocate this somewhere
-global BlazeReaderState _blazeReaderState;
+global BlazeReaderState *_blazeReaderState;
 
 enum BodyPartIndex {
 	NOSE = 0,
@@ -59,7 +60,9 @@ void BlazeReaderOp(Node *self)
 	/* } */
 
 	i32 test = 0;
-	i32 len = UDPRecieve((char*)&_blazeReaderState.pData, sizeof(PythonData));
+	i32 len = _blazeReaderState->udp.Recieve((char*)&_blazeReaderState->pData, sizeof(PythonData));
+	/* i32 len = _networkState->udp.Recieve((char*)&_blazeReaderState->pData, sizeof(PythonData)); */
+	/* i32 len = UDPRecieve((char*)&_blazeReaderState.pData, sizeof(PythonData)); */
 	if(len > 0) {
 		test = 1;
 	}

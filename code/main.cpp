@@ -87,7 +87,6 @@
 #include "PhormOpengl.cpp"
 #include "ViewerRender.cpp"
 #include "scene.cpp"
-#include "RenderObject.cpp"
 #include "PhormRenderObject.cpp"
 #include "Bitmap.cpp"
 #include "mesh.cpp"
@@ -199,6 +198,7 @@ int main(int argc, char *argv[])
     ImDrawInitialize();
 	ImDraw3DInitialize();
 
+
 	// Initialize Audio
     // if(!audioInitialize()) {
     //     	cleanup();
@@ -209,13 +209,13 @@ int main(int argc, char *argv[])
 	// Initialize Application
 	InitializeData();
 	InitializeGlobalEditor();
+	InitializeNetwork();
 	InitializeNodeConstructors();
 	InitializeMidi();
 
 	// add user nodes to system
 	CustomInit();
 
-	InitializeUDP();
 	InitializeOSC();
 	InitializeNodeEditor();
 	InitializeViewerRender();

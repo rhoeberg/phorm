@@ -64,9 +64,9 @@ global Settings settings;
 #include "SceneRender.h"
 #include "scene.h"
 #include "global_editor.h"
+#include "ViewerRender.h"
 #include "NodeConstructor.h"
 #include "scene_editor.h"
-#include "ViewerRender.h"
 #include "save.h"
 
 GLuint createRectVAO(float w, float h);
