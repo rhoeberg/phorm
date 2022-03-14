@@ -3,7 +3,7 @@
 #include "light.h"
 #include "Bitmap.h"
 #include "mesh.h"
-#include "renderobject.h"
+#include "PhormRenderObject.h"
 #include "RenderObjectGroup.h"
 
 struct VideoNodeState {

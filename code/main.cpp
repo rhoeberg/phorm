@@ -88,6 +88,7 @@
 #include "ViewerRender.cpp"
 #include "scene.cpp"
 #include "RenderObject.cpp"
+#include "PhormRenderObject.cpp"
 #include "Bitmap.cpp"
 #include "mesh.cpp"
 #include "data.cpp"
