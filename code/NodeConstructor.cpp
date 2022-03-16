@@ -198,6 +198,7 @@ void SetupNodeConstructors()
 	// VEC3 NODES
 	/////////////////
 	AddNodeConstructor(String("vec3"), Vec3NodeOperation, CreateVec3Node);
+	AddNodeConstructor(String("vec3 mul"), Vec3MulOp, CreateVec3Mul);
 	AddNodeConstructor(String("orbit"), OrbitOp, CreateOrbitNode);
 	AddNodeConstructor(String("osc"), OSCNodeOp, CreateOSCNode, SetupOSCNode);
 

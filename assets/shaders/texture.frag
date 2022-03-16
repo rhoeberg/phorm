@@ -41,7 +41,7 @@ void main()
 	////////////
 	// AMBIENT
 	vec3 ambientColor = vec3(1, 1, 1);
-	float ambientStrength = 0.2;
+	float ambientStrength = 0.6;
 	vec3 ambient = ambientStrength * ambientColor;
 
 	vec3 result = vec3(0);

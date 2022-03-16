@@ -61,7 +61,7 @@ global Settings settings;
 #include "node.h"
 #include "data.h"
 #include "node_editor.h"
-#include "SceneRender.h"
+#include "PhormSceneRender.h"
 #include "scene.h"
 #include "global_editor.h"
 #include "ViewerRender.h"

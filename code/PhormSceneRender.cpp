@@ -53,6 +53,7 @@ void RenderSceneCommand(SceneRenderCommand command)
 	// GetViewerWindowSize(&width, &height);
 	// texture->Create(width, height);
 	// renderData->SetSize(width, height);
+
 	GFXSetViewport(0, 0, renderData->width, renderData->height);
 
 	// render scene to framebuffer

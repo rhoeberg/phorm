@@ -22,8 +22,8 @@ make list of nearest particles (maximum of MAX_NEAREST) = GROUP
 /* #define LOCAL_SIZE_X 32 // workgroup size */
 /* #define MAX_RANGE 10 */
 /* #define MIN_DIST 2 */
-#define MAX_GROUP_SIZE 32
-#define H 1 // radius from which particle can affect each other
+#define MAX_GROUP_SIZE 128
+#define H 2 // radius from which particle can affect each other
 
 /* #define TOTAL_GRID_CELL_COUNT 1024 // THIS NEEDS TO BE SIMILAR TO TOTAL GRID CELL COUNT IN C++ */
 
@@ -81,7 +81,8 @@ uint local_group[MAX_GROUP_SIZE];
 /* uint localAvoid[MAX_GROUP_SIZE]; */
 
 uniform int n;
-uniform vec4 goalPos;
+/* uniform vec4 goalPos; */
+uniform vec3 goalPos;
 uniform BoidConfig config;
 
 uint GetFlatCellIndex(in ivec3 cellIndex)
@@ -229,7 +230,8 @@ void main() {
 	}
 
 	/* goalPos = vec4(0, 0, 0, 0); */
-	vec4 goalVel = goalPos - particleA.pos;
+	vec4 goalVel = vec4(goalPos.xyz, 1) - particleA.pos;
+	/* vec4 goalVel = goalPos - particleA.pos; */
 	particleA.vel += (goalVel / 8) * config.goal;
 
 	/* if(length(particleA.vel) > 0) */

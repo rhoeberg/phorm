@@ -82,7 +82,7 @@
 #include "node.cpp"
 #include "node_editor.cpp"
 #include "scene_editor.cpp"
-#include "SceneRender.cpp"
+#include "PhormSceneRender.cpp"
 #include "global_editor.cpp"
 #include "PhormOpengl.cpp"
 #include "ViewerRender.cpp"

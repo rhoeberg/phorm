@@ -53,6 +53,7 @@ void AddNodeConstructor(String name, NodeConstructor constructor);
 #include "nodes/HistogramNode.h"
 #include "nodes/PointLightNode.h"
 #include "nodes/Vec3Node.h"
+#include "nodes/Vec3Mul.h"
 #include "nodes/OrbitNode.h"
 #include "nodes/OSCNode.h"
 #include "nodes/MulNode.h"

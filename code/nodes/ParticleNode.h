@@ -32,8 +32,8 @@
 #pragma once
 
 // needs to be hardcoded in shaders:
-#define WORKGROUP_SIZE 32
-#define TOTAL_GRID_CELL_COUNT 1024
+#define WORKGROUP_SIZE 128
+#define TOTAL_GRID_CELL_COUNT 128
 /* #define PARTICLE_AMOUNT 1024 */
 /* #define SORT_WORKGROUP_COUNT (PARTICLE_AMOUNT / (WORKGROUP_SIZE * 2)) */
 
@@ -121,6 +121,7 @@ void ParticleOp(Node *self)
 	double minDist = self->params[6].Double();
 	double speed = self->params[7].Double();
 	double limit = self->params[8].Double();
+	vec3 goalPos = self->params[9].Vec3();
 
 
 	if(!self->initialized || amount != state->amount) {
@@ -228,7 +229,7 @@ void ParticleOp(Node *self)
 	// BOID SIM
 	_particleNodeState->boidSimShader.Begin();
 	/* boidShader.setUniform1i("n", PARTICLE_AMOUNT); */
-	vec4 goalPos = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	/* vec4 goalPos = vec4(0.0f, 0.0f, 0.0f, 0.0f); */
 	/* boidShader.setUniform1i("n", PARTICLE_AMOUNT); */
 	_particleNodeState->boidSimShader.SetUniform("n", amount);
 	_particleNodeState->boidSimShader.SetUniform("goalPos", goalPos);
@@ -296,6 +297,7 @@ ObjectHandle ParticleCreate()
 		NodeParameter("minDist", 20.0),
 		NodeParameter("speed", 0.01),
 		NodeParameter("limit", 0.1),
+		NodeParameter("goalpos", vec3(0)),
 	};
 
 	FixedArray<NodeInput> inputs = {

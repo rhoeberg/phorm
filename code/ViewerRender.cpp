@@ -209,42 +209,54 @@ void UpdateViewerRender()
 	// glfwMakeContextCurrent(_win);
 }
 
-void RenderView()
+void GetViewerSize(i32 *width, i32 *height)
 {
-	i32 width, height;
-	i32 x = 0, y = 0;
-
 	if(settings.viewerInMain) {
-		SetContextMain();
-
 		i32 wWidth, wHeight;
 		GetWindowSize(&wWidth, &wHeight);
 
 		if(FullscreenViewer()) {
-			width = wWidth;
-			height = wHeight;
+			*width = wWidth;
+			*height = wHeight;
 		}
 		else {
-			width = 500;
-			height = 350;
-			x = wWidth - width;
-			y = wHeight - height;
+			*width = 500;
+			*height = 350;
 		}
 
 	}
 	else {
+		GetViewerWindowSize(width, height);
+	}
+}
+
+void RenderView()
+{
+	///////////////////////
+	// SETUP VIEWER
+	i32 width, height;
+	GetViewerSize(&width, &height);
+	i32 x = 0, y = 0;
+	if(settings.viewerInMain) {
+		SetContextMain();
+		if(!FullscreenViewer()) {
+			i32 wWidth, wHeight;
+			GetWindowSize(&wWidth, &wHeight);
+			x = wWidth - width;
+			y = wHeight - height;
+		}
+	}
+	else {
 		SetContextViewer();
 		GetViewerWindowSize(&width, &height);
-		x = 0;
-		y = 0;
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 	}
 
-
 	glViewport(x, y, width, height);
 
-
+	///////////////////////
+	// RENDERING
 	_viewerRenderState->shader.Begin();
 
 	///////////////////

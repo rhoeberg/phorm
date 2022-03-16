@@ -25,6 +25,12 @@ void SceneRenderNodeOp(Node *self)
 	vec3 bgColor = self->params[2].Vec3();
 
 	scene->bgColor = bgColor;
+
+	/* i32 width, height; */
+	/* if(settings.viewerInMain) { */
+	/* } */
+	GetViewerSize(&width, &height);
+
 	sceneData->SetSize(width, height);
 	output->Create(width, height);
 
