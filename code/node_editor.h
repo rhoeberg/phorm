@@ -38,6 +38,8 @@ struct NodeHoverState {
 struct NodeEditorState {
 	NodeHoverState hoverState;
 	/* ObjectHandle viewerNode; */
+	vec2 editorOffset;
+	vec2 lastEditorDragPos;
 
 	////////////////
 	// DRAG STATE
@@ -72,6 +74,9 @@ global NodeEditorState *_nodeEditorState;
 
 void ViewSelectedNode();
 
+void DrawNodeEditorRect(Rect rect, i32 layer, vec3 color);
+void DrawNodeEditorLine(vec2 start, vec2 end, i32 layer, vec3 color, f32 thickness);
+void DrawNodeEditorText(vec2 pos, char *buffer, vec3 color);
 u32 GetCurrentPage();
 ObjectHandle GetOutputHandle();
 Node *GetOutputNode();

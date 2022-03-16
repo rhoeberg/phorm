@@ -10,7 +10,7 @@ bool MouseInsideViewerRect()
 	// viewerRect.height = VIEWER_SIZE;
 	// viewerRect.pos = vec2(width - VIEWER_SIZE, 0);
 
-	// if((ViewerInMain() && PointInsideRect(mouse, viewerRect)) ||
+	// if((ViewerInMain() && NodeEditorPointInsideRect(mouse, viewerRect)) ||
 	//    (!ViewerInMain() && mouseInViewerWin))
 	// 	return true;
 
@@ -25,14 +25,10 @@ void InitializeNodeEditor()
 	_nodeEditorState = (NodeEditorState*)malloc(sizeof(NodeEditorState));
 
 	NodeEditorState *editor = _nodeEditorState;
-	// editor->draggedNode = {};
-	editor->isDragging = false;
-	// editor->hoverState.hoveringElement = false;
 
-	// _nodeEditorState->viewerWidth = VIEWER_SIZE;
-	// _nodeEditorState->viewerHeight = VIEWER_SIZE;
+	editor->editorOffset = vec2(0, 0);
+	editor->isDragging = false;
 	editor->nodeMultiSelect = false;
-	// editor->selectDragging = false;
 	new (&editor->selectedNodes) PArray<ObjectHandle>();
 
 	editor->promptOpen = false;
@@ -40,10 +36,6 @@ void InitializeNodeEditor()
 	new (&editor->promptCandidates) PArray<String>();
 
 	int promptCandidateFocus;
-
-	// editor->currentPage = 0;
-	// new(&editor->pages) PArray<String>();
-	// editor->pages.Insert(AddString("main"));
 
 	// CREATE OUTPUT NODE
 	// TODO (rhoe) move this to another place
@@ -56,7 +48,6 @@ void InitializeNodeEditor()
 
 	NodeConstructor *constructor = GetNodeConstructors()->Get(name);
 	editor->output = ConstructNode(name, constructor);
-
 }
 
 Node *GetOutputNode()
@@ -194,7 +185,6 @@ Rect GetNodeOutputRect(ObjectHandle handle)
 
 	// DRAW OUTPUT
 	Rect result = {};
-	// float outputOffsetX = (nodeRect.width / 2.0f) - PARAM_WIDTH / 2.0f;
 	result.pos = nodeRect.pos + vec2(0.0f, nodeRect.height - (PARAM_HEIGHT / 2.0f));
 	result.width = PARAM_WIDTH;
 	result.height = PARAM_HEIGHT;
@@ -224,7 +214,6 @@ Rect GetNodeParamRect(ObjectHandle handle, int paramIndex)
 
 	Rect paramRect = {};
 	float offsetX = (paramIndex + node->inputs.Count()) * (PARAM_WIDTH + 10);
-	// float offsetY = -PARAM_HEIGHT;
 	paramRect.pos = nodeRect.pos + vec2(offsetX, 0.0f - (PARAM_HEIGHT / 2.0f));
 	paramRect.width = PARAM_WIDTH;
 	paramRect.height = PARAM_HEIGHT;
@@ -232,9 +221,44 @@ Rect GetNodeParamRect(ObjectHandle handle, int paramIndex)
 	return paramRect;
 }
 
+void DrawNodeEditorRect(Rect rect, i32 layer, vec3 color)
+{
+	ImDrawSetColor(color);
+	ImDrawSetNextLayer(layer);
+	Rect offsetRect = rect;
+	offsetRect.pos += _nodeEditorState->editorOffset;
+	ImDrawRect(offsetRect);
+}
+
+void DrawNodeEditorLine(vec2 start, vec2 end, i32 layer, vec3 color, f32 thickness)
+{
+	ImDrawSetColor(color);
+	ImDrawSetNextLayer(layer);
+	ImDrawLine(start + _nodeEditorState->editorOffset, end + _nodeEditorState->editorOffset, thickness);
+}
+
+void DrawNodeEditorText(vec2 pos, char *buffer, vec3 color)
+{
+	ImDrawText(pos + _nodeEditorState->editorOffset, buffer, color);
+}
+
+vec2 GetNodeEditorRectCenter(Rect rect)
+{
+	Rect offsetRect = rect;
+	offsetRect.pos += _nodeEditorState->editorOffset;
+	return GetRectCenter(offsetRect);
+}
+
+bool NodeEditorPointInsideRect(vec2 point, Rect rect)
+{
+	Rect offsetRect = rect;
+	offsetRect.pos += _nodeEditorState->editorOffset;
+	return PointInsideRect(point, offsetRect);
+}
+
 void DrawNode(ObjectHandle handle)
 {
-	ImDrawSetNextLayer(1);
+	// ImDrawSetNextLayer(1);
 
 	Node *node = GetNode(handle);
 	node->CallDraw();
@@ -243,27 +267,19 @@ void DrawNode(ObjectHandle handle)
 
 	if(node->type != DATA_NONE) {
 		Rect outputRect = GetNodeOutputRect(handle);
-		ImDrawSetColor(COLOR_NODE_OUTPUT);
-		ImDrawRect(outputRect);
+		DrawNodeEditorRect(outputRect, 1, COLOR_NODE_OUTPUT);
 	}
 
 
 	// DRAW INPUTS
 	for(int i = 0; i < node->inputs.Count(); i++) {
 		Rect inputRect = GetNodeInputRect(handle, i);
-		ImDrawSetColor(COLOR_NODE_INPUT);
-		ImDrawSetNextLayer(1);
-		ImDrawRect(inputRect);
-
-		ImDrawSetNextLayer(0);
-		// TODO (rhoe) make it more clean / safe to see if a node input is set
+		DrawNodeEditorRect(inputRect, 1, COLOR_NODE_INPUT);
 		if(node->inputs[i].handle.isset && NodeExists(node->inputs[i].handle)) {
 			Rect outputRect = GetNodeOutputRect(node->inputs[i].handle);
 			vec2 outputPos = GetRectCenter(outputRect);
 			vec2 inputPos = GetRectCenter(inputRect);
-			// ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-			ImDrawLine(outputPos, inputPos, 2.0f);
+			DrawNodeEditorLine(outputPos, inputPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
 		}
 	}
 
@@ -272,19 +288,14 @@ void DrawNode(ObjectHandle handle)
 	for(int i = 0; i < node->params.Count(); i++) {
 		if(node->params[i].exposed) {
 			Rect paramRect = GetNodeParamRect(handle, visibleParamsCount); 
-			// ImDrawSetColor(vec3(0.0f, 0.2f, 0.5f));
-			ImDrawSetColor(COLOR_NODE_INPUT);
-			ImDrawSetNextLayer(1);
-			ImDrawRect(paramRect);
+			DrawNodeEditorRect(paramRect, 1, COLOR_NODE_INPUT);
 			visibleParamsCount++;
 
-			ImDrawSetNextLayer(0);
 			if(node->params[i].nodeHandle.isset && NodeExists(node->params[i].nodeHandle)) {
 				Rect outputRect = GetNodeOutputRect(node->params[i].nodeHandle);
 				vec2 outputPos = GetRectCenter(outputRect);
 				vec2 paramPos = GetRectCenter(paramRect);
-				ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-				ImDrawLine(outputPos, paramPos, 2.0f);
+				DrawNodeEditorLine(outputPos, paramPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
 			}
 		}
 	}
@@ -299,10 +310,9 @@ void DrawNodeOutline(ObjectHandle handle)
 	if(node && node->page == GetCurrentPage()) {
 		Rect outline= {};
 		outline.pos = node->rect.pos - vec2(outlineMargin, outlineMargin);
+		outline.pos += editor->editorOffset;
 		outline.width = node->rect.width + outlineMargin;
 		outline.height = node->rect.height + outlineMargin;
-
-		// ImDrawSetColor(vec4(COLOR_NODE_HIGHLIGHT, 0.7f));
 		ImDrawSetColor(COLOR_NODE_HIGHLIGHT);
 		ImDrawRectOutline(outline, 1.5f);
 	}
@@ -322,7 +332,7 @@ void UpdateHoverState()
 			// CHECK INPUTS
 			for(int j = 0; j < node->inputs.Count(); j++) {
 				Rect inputRect = GetNodeInputRect(handle, j);
-				if(PointInsideRect(mouse, inputRect)) {
+				if(NodeEditorPointInsideRect(mouse, inputRect)) {
 					foundElement = true;
 					editor->hoverState.nodeHandle = handle;
 					editor->hoverState.elementType = EDITOR_ELEMENT_INPUT;
@@ -337,7 +347,7 @@ void UpdateHoverState()
 				for(int j = 0; j < node->params.Count(); j++) {
 					if(node->params[j].exposed) {
 						Rect paramRect = GetNodeParamRect(handle, ctxIndex);
-						if(PointInsideRect(mouse, paramRect)) {
+						if(NodeEditorPointInsideRect(mouse, paramRect)) {
 							foundElement = true;
 							editor->hoverState.nodeHandle = handle;
 							editor->hoverState.elementType = EDITOR_ELEMENT_PARAM;
@@ -351,7 +361,7 @@ void UpdateHoverState()
 			// CHECK OUTPUTS
 			if(!foundElement) {
 				Rect outputRect = GetNodeOutputRect(handle);
-				if(PointInsideRect(mouse, outputRect)) {
+				if(NodeEditorPointInsideRect(mouse, outputRect)) {
 					foundElement = true;
 					editor->hoverState.nodeHandle = handle;
 					editor->hoverState.elementType = EDITOR_ELEMENT_OUTPUT;
@@ -361,7 +371,7 @@ void UpdateHoverState()
 			// CHECK NODE
 			if(!foundElement) {
 				Rect nodeRect = node->rect;
-				if(PointInsideRect(mouse, nodeRect)) {
+				if(NodeEditorPointInsideRect(mouse, nodeRect)) {
 					foundElement = true;
 					editor->hoverState.nodeHandle = handle;
 					editor->hoverState.elementType = EDITOR_ELEMENT_NODE;
@@ -392,7 +402,6 @@ void UpdateNodeStartDragging()
 	if(!EditorIsFrozen()) {
 		editor->isDragging = true;
 		editor->draggedType = editor->hoverState.elementType;
-		// editor->nodeMultiSelect = false;
 
 		// hovering element
 		if(editor->hoverState.elementType != EDITOR_ELEMENT_NONE) {
@@ -405,7 +414,6 @@ void UpdateNodeStartDragging()
 			// start box selecting
 			editor->selectDragStart = mouse;
 			editor->selectedNodes.Clear();
-			// editor->nodeMultiSelect = true;
 		}
 	}
 }
@@ -435,7 +443,7 @@ void UpdateNodeContinueDragging()
 		case EDITOR_ELEMENT_INPUT: {
 			Rect inputRect = GetNodeInputRect(editor->draggedNode,
 											  editor->draggedCtxHandle);
-			vec2 inputPos = GetRectCenter(inputRect);
+			vec2 inputPos = GetNodeEditorRectCenter(inputRect);
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 			ImDrawLine(mouse, inputPos);
 			break;
@@ -443,14 +451,14 @@ void UpdateNodeContinueDragging()
 		case EDITOR_ELEMENT_PARAM: {
 			Rect paramRect = GetNodeParamRect(editor->draggedNode,
 											  editor->draggedCtxHandle);
-			vec2 paramPos = GetRectCenter(paramRect);
+			vec2 paramPos = GetNodeEditorRectCenter(paramRect);
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 			ImDrawLine(mouse, paramPos);
 			break;
 		}
 		case EDITOR_ELEMENT_OUTPUT: {
 			Rect outputRect = GetNodeOutputRect(editor->draggedNode);
-			vec2 outputPos = GetRectCenter(outputRect);
+			vec2 outputPos = GetNodeEditorRectCenter(outputRect);
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 			ImDrawLine(mouse, outputPos);
 			break;
@@ -549,7 +557,7 @@ void UpdateNodeStopDragging()
 				ObjectHandle handle = _nodeState->nodes.GetHandle(i);
 				Node *node = _nodeState->nodes.Get(handle);
 				if(node && node->page == GetCurrentPage()) {
-					vec2 center = GetRectCenter(node->rect);
+					vec2 center = GetNodeEditorRectCenter(node->rect);
 					if(center.x > a.x && center.x < b.x &&
 					   center.y > a.y && center.y < b.y) {
 						editor->selectedNodes.Insert(handle);
@@ -560,9 +568,6 @@ void UpdateNodeStopDragging()
 			if(editor->selectedNodes.Count() > 1) {
 				editor->nodeMultiSelect = true;
 			}
-			// else if(editor->selectedNodes.Count() == 1) {
-				// editor->viewerNode = editor->selectedNodes[0];
-			// }
 		}
 	}
 }
@@ -622,6 +627,27 @@ void UpdateNodeEditor()
 	else if(singleKeyPress(GLFW_KEY_V) && keys_mode == GLFW_MOD_CONTROL) {
 		PasteNodes();
 		DebugLog("pasting");
+	}
+
+	float editorMoveSpeed = 200;
+	if(keys[GLFW_KEY_UP]) {
+		editor->editorOffset -= ((float)deltaTime * vec2(0, 1)) * editorMoveSpeed;
+	}
+	else if(keys[GLFW_KEY_DOWN]) {
+		editor->editorOffset += ((float)deltaTime * vec2(0, 1)) * editorMoveSpeed;
+	}
+	if(keys[GLFW_KEY_RIGHT]) {
+		editor->editorOffset += ((float)deltaTime * vec2(1, 0)) * editorMoveSpeed;
+	}
+	else if(keys[GLFW_KEY_LEFT]) {
+		editor->editorOffset -= ((float)deltaTime * vec2(1, 0)) * editorMoveSpeed;
+	}
+
+	if(mouse_buttons[GLFW_MOUSE_BUTTON_3]) {
+		vec2 dragOffset = mouse - _viewerRenderState->lastDragPos;
+		editor->lastEditorDragPos = mouse;
+
+		editor->editorOffset += dragOffset;
 	}
 
 	//////////////////

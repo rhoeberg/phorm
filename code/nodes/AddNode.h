@@ -18,17 +18,15 @@ void DrawAddNode(Node *self)
 	self->rect.width = 150;
 	self->rect.height = 30;
 
-	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-	ImDrawRect(self->rect);
+	DrawNodeEditorRect(self->rect, 1, COLOR_NODE_FILL);
 
 	vec2 namePos = self->rect.pos + vec2(10.0f, self->rect.height - 10.0f);
-	ImDrawText(namePos, self->name);
+	DrawNodeEditorText(namePos, self->name, COLOR_NODE_TEXT);
 
 	vec2 valuePos = namePos + vec2(70, 0);
 	char valueBuf[32];
 	sprintf(valueBuf, "%.2f", self->params[0].Double());
-
-	ImDrawText(valuePos, valueBuf, vec3(0.3, 0, 0));
+	DrawNodeEditorText(valuePos, valueBuf, COLOR_NODE_TEXT);
 }
 
 void SetupAddNode(Node *self)

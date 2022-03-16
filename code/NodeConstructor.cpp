@@ -241,13 +241,9 @@ void BaseNodeDrawFunc(Node *node)
 	node->rect.width += node->params.Count() * PARAM_WIDTH;
 	node->rect.width += node->inputs.Count() * PARAM_WIDTH;
 	node->rect.height = NODE_HEIGHT;
-	ImDrawSetColor(COLOR_NODE_FILL);
-	ImDrawRect(node->rect);
-
-	// ImDrawSetColor(COLOR_NODE_OUTLINE);
-	// ImDrawRectOutline(node->rect);
+	DrawNodeEditorRect(node->rect, 1, COLOR_NODE_FILL);
 
 	vec2 namePos = node->rect.pos + vec2(8.0f, node->rect.height - 8.0f);
-	ImDrawText(namePos, node->name, COLOR_NODE_TEXT);
+	DrawNodeEditorText(namePos, node->name, COLOR_NODE_TEXT);
 }
 

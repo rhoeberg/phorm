@@ -16,11 +16,10 @@ void DrawOSCNode(Node *self)
 	self->rect.width = 200;
 	self->rect.height = 30;
 
-	ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
-	ImDrawRect(self->rect);
+	DrawNodeEditorRect(self->rect, 1, COLOR_NODE_FILL);
 
 	vec2 namePos = self->rect.pos + vec2(10.0f, self->rect.height - 10.0f);
-	ImDrawText(namePos, self->name);
+	DrawNodeEditorText(namePos, self->name, COLOR_NODE_TEXT);
 
 	vec3 *output = GetVec3s()->Get(self->GetDataLast());
 
@@ -28,7 +27,7 @@ void DrawOSCNode(Node *self)
 	char valueBuf[32];
 	sprintf(valueBuf, "%.2f, %.2f, %.2f", output->x, output->y, output->z);
 
-	ImDrawText(valuePos, valueBuf, vec3(0.3, 0, 0));
+	DrawNodeEditorText(valuePos, valueBuf, COLOR_NODE_TEXT);
 }
 
 void SetupOSCNode(Node *self)
