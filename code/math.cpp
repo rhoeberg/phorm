@@ -25,6 +25,16 @@ float Max(float a, float b)
 	return (a > b) ? a : b;
 }
 
+int Min(int a, int b)
+{
+	return (a < b) ? a : b;
+}
+
+int Max(int a, int b)
+{
+	return (a > b) ? a : b;
+}
+
 int RandInt(int from, int to)
 {
     int r = rand();

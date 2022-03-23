@@ -32,6 +32,8 @@ double Cos(double d);
 double Fmod(double numer, double denom);
 float Min(float a, float b);
 float Max(float a, float b);
+int Min(int a, int b);
+int Max(int a, int b);
 
 // Random
 int RandInt(int from, int to);

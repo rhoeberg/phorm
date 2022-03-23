@@ -11,17 +11,18 @@ void VideoOperation(Node *self)
 		return;
 	}
 
-	/* VideoNodeState *state = &_nodeState->videoNodes[self->extraHandle]; */
+	String *path = GetStrings()->Get(self->params[0].dataHandle);
+	if(!path) {
+		WarningLog("VideoNode: problem loading video: %s", path->buffer);
+		return;
+	}
 
 	if(!self->initialized) {
-		const char *filename = "assets/output.mpg";
-		/* plm_t *plm = plm_create_with_filename(filename); */
-		state->plm = plm_create_with_filename(filename);
-		/* uint8_t *rgb_buffer = (uint8_t *)malloc(w * h * 3); */
+		state->plm = plm_create_with_filename(path->buffer);
 		if (!state->plm) {
-			printf("Couldn't open file %s\n", filename);
-			exit(1);
-			// TODO (rhoe) we need to handle this without quitting
+			printf("Couldn't open file %s\n", path->buffer);
+			WarningLog("VideoNode: problem loading video: %s", path->buffer);
+			return;
 		}
 		plm_set_audio_enabled(state->plm, FALSE);
 
@@ -50,6 +51,7 @@ void SetupVideoNode(Node *self)
 ObjectHandle CreateVideoNode()
 {
 	FixedArray<NodeParameter> params = {
+		NodeParameter("path", ""),
 		NodeParameter("time", 0.0),
 	};
 

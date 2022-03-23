@@ -430,6 +430,12 @@ void UpdateGlobalEditor()
 		editor->fullscreenView = !editor->fullscreenView;
 	}
 
+	if(!editor->promptActive && singleKeyPress(GLFW_KEY_F)) {
+		SetFullscreen(_viewerWindow);
+		// editor->fullscreenView = !editor->fullscreenView;
+	}
+	
+
 	if(!editor->fullscreenView) {
 		UpdateNodeEditor();
 		UpdateInspector();

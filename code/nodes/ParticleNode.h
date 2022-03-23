@@ -167,6 +167,15 @@ void ParticleOp(Node *self)
 
 			state->indices[i] = i;
 
+			/* float y = (int)(i / 32); */
+			/* float x = (int)(i - y); */
+			/* float step = 1.0f / 32; */
+
+			/* y *= step; */
+			/* x *= step; */
+			/* float z = 0.0f; */
+
+			/* output->SetNormalAt(i, vec3(x, y, z)); */
 			/* state->particles[i].vel.x = RandFloat(); */
 			/* state->particles[i].vel.y = RandFloat(); */
 			/* state->particles[i].vel.z = RandFloat(); */
@@ -251,18 +260,20 @@ void ParticleOp(Node *self)
 		v.vx = state->particles[i].pos.x;
 		v.vy = state->particles[i].pos.y;
 		v.vz = state->particles[i].pos.z;
-		output->SetVertex(i, v);
 
-		/* if(i == 100) { */
-		/* 	DebugLog("pos: x%f, y%f, z%f", */
-		/* 			 state->particles[i].pos.x, */
-		/* 			 state->particles[i].pos.y, */
-		/* 			 state->particles[i].pos.z); */
-		/* 	DebugLog("vel x%f, y%f, z%f", */
-		/* 			 state->particles[i].vel.x, */
-		/* 			 state->particles[i].vel.y, */
-		/* 			 state->particles[i].vel.z); */
-		/* } */
+		// TODO (rhoe) HACKING NORMAL AND UV
+		float y = (int)(i / 32);
+		float x = (int)(i - (y * 32));
+		float step = 1.0f / 32;
+		v.ux = x * step;
+		v.uy = y * step;
+
+		v.nx = 0.5f;
+		v.ny = 0.0f;
+		v.nz = 0.5f;
+		///////////////////////////////////////
+
+		output->SetVertex(i, v);
 	}
 	GFXBufferUnmap(state->bufferParticles);
 

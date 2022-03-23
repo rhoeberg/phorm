@@ -13,7 +13,7 @@ void BlazeOutputOp(Node *self)
 	newPos -= 0.5f;
 	newPos.y = 1.0f - newPos.y;
 	vec3 dir = newPos - *output;
-	vec3 result = *output + (dir * 0.05f);
+	vec3 result = *output + (dir * 0.5f);
 
 	/* *output = vec3(tmp.x, 1.0f - tmp.y, tmp.z); */
 	*output = vec3(result.x, result.y, result.z);

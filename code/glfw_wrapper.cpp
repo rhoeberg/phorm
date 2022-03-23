@@ -95,6 +95,49 @@ bool SingleMousePress(int MOUSE_BUTTON)
     }
 }
 
+GLFWmonitor* GetCurrentMonitor(GLFWwindow *window)
+{
+    int nmonitors, i;
+    int wx, wy, ww, wh;
+    int mx, my, mw, mh;
+    int overlap, bestoverlap;
+    GLFWmonitor *bestmonitor;
+    GLFWmonitor **monitors;
+    const GLFWvidmode *mode;
+
+    bestoverlap = 0;
+    bestmonitor = NULL;
+
+    glfwGetWindowPos(window, &wx, &wy);
+    glfwGetWindowSize(window, &ww, &wh);
+    monitors = glfwGetMonitors(&nmonitors);
+
+    for (i = 0; i < nmonitors; i++) {
+        mode = glfwGetVideoMode(monitors[i]);
+        glfwGetMonitorPos(monitors[i], &mx, &my);
+        mw = mode->width;
+        mh = mode->height;
+
+        overlap =
+            Max(0, Min(wx + ww, mx + mw) - Max(wx, mx)) *
+            Max(0, Min(wy + wh, my + mh) - Max(wy, my));
+
+        if (bestoverlap < overlap) {
+            bestoverlap = overlap;
+            bestmonitor = monitors[i];
+        }
+    }
+
+    return bestmonitor;
+}
+
+void SetFullscreen(GLFWwindow *window)
+{
+	GLFWmonitor *monitor = GetCurrentMonitor(window);
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+}
+
 void dropCallback(GLFWwindow *window, int count, const char **paths)
 {
 	int i;
@@ -220,7 +263,10 @@ GLFWwindow* initGlfw()
 	/////////////////////
 	// CREATE VIEWER WINDOW
 	// if(VIEWER_START_MAIN)
+	// i32 nmonitors = 0;
+    // GLFWmonitor **monitors = glfwGetMonitors(&nmonitors);
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		// glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
     _viewerWindow = glfwCreateWindow(VIEWER_WIDTH, VIEWER_HEIGHT, "test", NULL, _win);
     if(!_viewerWindow) {
