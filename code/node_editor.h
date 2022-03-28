@@ -2,6 +2,8 @@
 
 #define PARAM_WIDTH 15
 #define PARAM_HEIGHT 15
+#define PARAM_SPACING 10
+#define NODE_HEADER_HEIGHT 15
 #define NODE_HEIGHT 100
 #define NODE_BASE_WIDTH 20
 
@@ -9,7 +11,8 @@
 #define COLOR_NODE_FILL vec3(0.92f, 0.86f, 0.70f)
 #define COLOR_NODE_OUTLINE vec3(0.27f, 0.52f, 0.53f)
 #define COLOR_NODE_TEXT vec3(0.16f, 0.16f, 0.16f)
-#define COLOR_NODE_HIGHLIGHT vec3(0.84f, 0.6f, 0.13f)
+/* #define COLOR_NODE_HIGHLIGHT vec3(0.84f, 0.6f, 0.13f) */
+#define COLOR_NODE_HIGHLIGHT vec3(0.0f, 1.0f, 0.0f)
 #define COLOR_NODE_INPUT vec3(0.27f, 0.52f, 0.53f)
 #define COLOR_NODE_OUTPUT vec3(0.8f, 0.14f, 0.11f)
 #define COLOR_BOX_SELECT vec3(0.98f, 0.74f, 0.18f)

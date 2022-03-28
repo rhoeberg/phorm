@@ -154,10 +154,6 @@ void UpdateLoop()
 	///////////////
 	// RENDERING
 	///////////////
-	SetContextViewer();
-	UpdateSceneRender();
-	UpdateViewerRender();
-
 	if(!FullscreenViewer()) {
 		///////////////
 		// IMDRAW
@@ -169,6 +165,10 @@ void UpdateLoop()
 		glViewport(0, 0, screenWidth, screenHeight);
 		ImDrawRender();
 	}
+
+	SetContextViewer();
+	UpdateSceneRender();
+	UpdateViewerRender();
 
 	///////////////
 	// BUFFER SWAP / IMGUI RENDER
