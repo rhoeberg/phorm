@@ -1,9 +1,9 @@
 #pragma once
 
-#define PARAM_WIDTH 30
-#define PARAM_HEIGHT 10
-#define NODE_HEIGHT 30
-#define NODE_BASE_WIDTH 100
+#define PARAM_WIDTH 15
+#define PARAM_HEIGHT 15
+#define NODE_HEIGHT 100
+#define NODE_BASE_WIDTH 20
 
 #define COLOR_BG vec3(0.16f, 0.16f, 0.16f)
 #define COLOR_NODE_FILL vec3(0.92f, 0.86f, 0.70f)
@@ -40,6 +40,7 @@ struct NodeEditorState {
 	/* ObjectHandle viewerNode; */
 	vec2 editorOffset;
 	vec2 lastEditorDragPos;
+	f32 zoom;
 
 	////////////////
 	// DRAG STATE

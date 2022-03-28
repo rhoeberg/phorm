@@ -375,6 +375,19 @@ void UpdateDebug()
 	if(ImGui::InputText("assetpath", GetCurrentProject()->assetPath.buffer, GetCurrentProject()->assetPath.bufferSize)) {
 		GetCurrentProject()->assetPath.ReCalc();
 	}
+
+	ImGui::Spacing();
+	ImGui::Text("ZOOM");
+	// if(ImGui::InputFloat("zoom", &_nodeEditorState->zoom)) {
+	if(ImGui::SliderFloat("zoom", &_nodeEditorState->zoom, 0.2f, 3.0f)) {
+		ImDrawSetFontSize(FONT_SIZE * _nodeEditorState->zoom);
+
+		for(i32 i = 0; i < GetNodes()->Count(); i++) {
+			ObjectHandle handle = _nodeState->nodes.GetHandle(i);
+			Node *node = GetNodes()->Get(handle);
+			// node->rect.pos *= _nodeEditorState->zoom;
+		}
+	}
 	
 
     ImGui::End();

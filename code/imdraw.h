@@ -72,7 +72,7 @@ global GLuint textShader;
 
 #include "PhormArray.h"
 
-#define FONT_SIZE 18.0
+#define FONT_SIZE 16.0
 #define MAX_TEXT_SIZE 512
 #define IMDRAW_VBO_BUFFER_SIZE 1024
 

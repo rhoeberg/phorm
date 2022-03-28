@@ -58,7 +58,6 @@ void ImDrawInitialize()
 
 	/////////////////////////
 	// INITIALIZE FONT DRAWING
-	// FILE *file = fopen("c:/windows/fonts/consola.ttf", "rb");
 	// FILE *file = fopen("assets/Consolas.ttf", "rb");
 	FILE *file = fopen("assets/liberation-mono/LiberationMono-Regular.ttf", "rb");
 	if(!file) {
@@ -83,6 +82,27 @@ void ImDrawInitialize()
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
+}
+
+void ImDrawSetFontSize(double size)
+{
+	stbtt_BakeFontBitmap(ttf_buffer,0, size, temp_bitmap,512,512, 32,96, cdata); // no guarantee this fits!
+	
+	// glGenTextures(1, &ftex);
+	glBindTexture(GL_TEXTURE_2D, ftex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512,512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
+	// can free temp_bitmap at this point
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	// glGenVertexArrays(1, &imdrawTextVAO);
+	// glGenBuffers(1, &imdrawTextVBO);
+	// glGenBuffers(1, &imdrawTextEBO);
+
+	// glBindVertexArray(imdrawTextVAO);
+	// glBindBuffer(GL_ARRAY_BUFFER, imdrawTextVBO);
+	// glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+	// glEnableVertexAttribArray(0);
+	// glBindVertexArray(0);
 }
 
 void ImDrawSetNextLayer(int layer)

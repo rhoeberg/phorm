@@ -235,15 +235,3 @@ void NamesBeginningWith(PArray<String> *array, String typed)
 	}
 }
 
-void BaseNodeDrawFunc(Node *node)
-{
-	node->rect.width = NODE_BASE_WIDTH;
-	node->rect.width += node->params.Count() * PARAM_WIDTH;
-	node->rect.width += node->inputs.Count() * PARAM_WIDTH;
-	node->rect.height = NODE_HEIGHT;
-	DrawNodeEditorRect(node->rect, 1, COLOR_NODE_FILL);
-
-	vec2 namePos = node->rect.pos + vec2(8.0f, node->rect.height - 8.0f);
-	DrawNodeEditorText(namePos, node->name, COLOR_NODE_TEXT);
-}
-

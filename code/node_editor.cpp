@@ -27,6 +27,8 @@ void InitializeNodeEditor()
 	NodeEditorState *editor = _nodeEditorState;
 
 	editor->editorOffset = vec2(0, 0);
+	editor->zoom = 1.0f;
+
 	editor->isDragging = false;
 	editor->nodeMultiSelect = false;
 	new (&editor->selectedNodes) PArray<ObjectHandle>();
@@ -185,7 +187,8 @@ Rect GetNodeOutputRect(ObjectHandle handle)
 
 	// DRAW OUTPUT
 	Rect result = {};
-	result.pos = nodeRect.pos + vec2(0.0f, nodeRect.height - (PARAM_HEIGHT / 2.0f));
+	// result.pos = nodeRect.pos + vec2(0.0f, nodeRect.height - (PARAM_HEIGHT / 2.0f));
+	result.pos = nodeRect.pos + vec2(nodeRect.width - (PARAM_WIDTH / 2.0f), 15.0f);
 	result.width = PARAM_WIDTH;
 	result.height = PARAM_HEIGHT;
 
@@ -198,11 +201,13 @@ Rect GetNodeInputRect(ObjectHandle handle, int inputIndex)
 	Rect nodeRect = node->rect;
 
 	Rect inputRect = {};
-	float offsetX = inputIndex * (PARAM_WIDTH + 10);
+	float offsetX = (inputIndex * (PARAM_WIDTH + 10)) + 15;
 	// float offsetY = -PARAM_HEIGHT;
-	inputRect.pos = nodeRect.pos + vec2(offsetX, -5.0f);
+	inputRect.pos = nodeRect.pos + vec2(-(PARAM_WIDTH / 2.0f), offsetX);
 	inputRect.width = PARAM_WIDTH;
 	inputRect.height = PARAM_HEIGHT;
+
+	
 
 	return inputRect;
 }
@@ -254,6 +259,22 @@ bool NodeEditorPointInsideRect(vec2 point, Rect rect)
 	Rect offsetRect = rect;
 	offsetRect.pos += _nodeEditorState->editorOffset;
 	return PointInsideRect(point, offsetRect);
+}
+
+void BaseNodeDrawFunc(Node *node)
+{
+	node->rect.height = NODE_BASE_WIDTH;
+	node->rect.height += node->params.Count() * PARAM_WIDTH;
+	node->rect.height += node->inputs.Count() * PARAM_WIDTH;
+	node->rect.width = NODE_HEIGHT;
+
+	node->rect.height *= _nodeEditorState->zoom;
+	node->rect.width *= _nodeEditorState->zoom;
+	DrawNodeEditorRect(node->rect, 1, COLOR_NODE_FILL);
+
+	// vec2 namePos = node->rect.pos + vec2(8.0f, node->rect.height - 8.0f);
+	vec2 namePos = node->rect.pos + vec2(2.0f, 10.0f * _nodeEditorState->zoom);
+	DrawNodeEditorText(namePos, node->name, COLOR_NODE_TEXT);
 }
 
 void DrawNode(ObjectHandle handle)
