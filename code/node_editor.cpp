@@ -633,7 +633,7 @@ void UpdateNodeDragging()
 
 	if(!MouseInsideViewerRect()) {
 		// start dragging something
-		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && !editor->isDragging) {
+		if(mouse_buttons[GLFW_MOUSE_BUTTON_LEFT] && keys_mode == 0 && !editor->isDragging) {
 			UpdateNodeStartDragging();
 		}
 		else if(editor->isDragging) {
@@ -698,7 +698,8 @@ void UpdateNodeEditor()
 		editor->editorOffset -= ((float)deltaTime * vec2(1, 0)) * editorMoveSpeed;
 	}
 
-	if(mouse_buttons[GLFW_MOUSE_BUTTON_3]) {
+	if(mouse_buttons[GLFW_MOUSE_BUTTON_3] ||
+	   (mouse_buttons[GLFW_MOUSE_BUTTON_1] && keys_mode == GLFW_MOD_ALT)) {
 		float zoomOffset = 1.0f / editor->zoom;
 		vec2 dragOffset = mouse - _viewerRenderState->lastDragPos;
 		editor->lastEditorDragPos = mouse;
@@ -712,8 +713,26 @@ void UpdateNodeEditor()
 			
 	}
 
+
+	//////////////////
+	// EDITOR ZOOM
 	if(scrollReady) {
 		editor->zoom += scrollOffset * 0.1;
+		if(editor->zoom < 0.2f)
+			editor->zoom = 0.2f;
+
+		ImDrawSetFontSize(FONT_SIZE * editor->zoom);
+	}
+
+	if(singleKeyPress(GLFW_KEY_EQUAL)) {
+		editor->zoom += 0.1;
+		if(editor->zoom < 0.2f)
+			editor->zoom = 0.2f;
+
+		ImDrawSetFontSize(FONT_SIZE * editor->zoom);
+	}
+	else if(singleKeyPress(GLFW_KEY_MINUS)) {
+		editor->zoom -= 0.1;
 		if(editor->zoom < 0.2f)
 			editor->zoom = 0.2f;
 
