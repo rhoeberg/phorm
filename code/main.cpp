@@ -74,6 +74,7 @@
 #include "PhormHashmap.cpp"
 #include "ObjectContainer.cpp"
 #include "NodeConstructor.cpp"
+#include "PhormCommand.cpp"
 #include "midi.cpp"
 #include "PhormNetwork.cpp"
 #include "PhormOSC.cpp"
@@ -209,6 +210,7 @@ int main(int argc, char *argv[])
 	InitializeGlobalEditor();
 	InitializeNetwork();
 	InitializeNodeConstructors();
+	InitializeCommands();
 	InitializeMidi();
 
 	// add user nodes to system

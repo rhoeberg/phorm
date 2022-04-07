@@ -453,6 +453,7 @@ void UpdateNodeStartDragging()
 			Node *node = GetNode(editor->hoverState.nodeHandle);
 			float zoomOffset = 1.0f / editor->zoom;
 			editor->dragOffset = node->rect.pos - (mouse * zoomOffset);
+			editor->dragStart = node->rect.pos;
 		}
 		else {
 			// start box selecting
@@ -540,6 +541,10 @@ void UpdateNodeStopDragging()
 	editor->isDragging = false;
 	switch(editor->draggedType) {
 		case EDITOR_ELEMENT_NODE: {
+			Node *node = GetNode(editor->draggedNode);
+			vec2 offset = node->rect.pos - editor->dragStart;
+			MoveNodeCommand cmd(offset, editor->draggedNode);
+			_commandState->commands.Insert(cmd);
 			break;
 		}
 		case EDITOR_ELEMENT_INPUT: {
@@ -556,7 +561,6 @@ void UpdateNodeStopDragging()
 					node->changed = true;
 					node->inputs[ctxHandle].handle.isset = false;
 				}
-
 			}
 			break;
 		}

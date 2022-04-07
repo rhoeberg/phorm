@@ -389,6 +389,13 @@ void UpdateDebug()
 		}
 	}
 	
+	ImGui::Spacing();
+	ImGui::Text("UNDO");
+	if(ImGui::Button("undo")) {
+		MoveNodeCommand cmd = _commandState->commands[0];
+		cmd.Undo();
+		// _commandState->commands[0]->Undo();
+	}
 
     ImGui::End();
 

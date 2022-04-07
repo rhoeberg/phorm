@@ -51,6 +51,7 @@ struct NodeEditorState {
 	ObjectHandle draggedNode;
 	int draggedCtxHandle;
 	vec2 dragOffset;
+	vec2 dragStart;
 	NodeEditorElementType draggedType;
 
 	////////////////
