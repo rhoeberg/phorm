@@ -103,7 +103,6 @@ void PasteNodes()
 	}
 }
 
-// TODO (rhoe) move this to global editor
 void NodeGUI()
 {
 	NodeEditorState *editor = _nodeEditorState;
@@ -168,8 +167,7 @@ void NodeGUI()
 
 			if(clickedOption) {
 				f32 zoomOffset = 1.0f / editor->zoom;
-				SetNextConstructPos((mouse + editor->editorOffset) * zoomOffset);
-				// SetNextConstructPos(mouse);
+				SetNextConstructPos((mouse * zoomOffset) - editor->editorOffset);
 				NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(editor->promptCandidates[i]);
 				ConstructNode(editor->promptCandidates[i].buffer, nodeConstructor);
 				editor->promptOpen = false;
@@ -238,6 +236,7 @@ void DrawNodeEditorRect(Rect rect, i32 layer, vec3 color)
 	ImDrawRect(offsetRect);
 }
 
+// TODO (rhoe) how do we deal with mouse which has no offset?
 void DrawNodeEditorLine(vec2 start, vec2 end, i32 layer, vec3 color, f32 thickness)
 {
 	ImDrawSetColor(color);
@@ -390,7 +389,7 @@ void UpdateHoverState()
 					if(node->params[j].exposed) {
 						i32 index = ctxIndex  + node->inputs.Count();
 						// Rect paramRect = GetNodeParamRect(handle, ctxIndex);
-						Rect paramRect = GetNodeInputRect(handle, ctxIndex);
+						Rect paramRect = GetNodeInputRect(handle, index);
 						if(NodeEditorPointInsideRect(mouse, paramRect)) {
 							foundElement = true;
 							editor->hoverState.nodeHandle = handle;
@@ -489,28 +488,31 @@ void UpdateNodeContinueDragging()
 		case EDITOR_ELEMENT_INPUT: {
 			Rect inputRect = GetNodeInputRect(editor->draggedNode,
 											  editor->draggedCtxHandle);
-			vec2 inputPos = GetNodeEditorRectCenter(inputRect);
+			vec2 inputPos = GetRectCenter(inputRect);
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 			f32 zoomOffset = 1.0f / editor->zoom;
-			DrawNodeEditorLine(mouse * zoomOffset, inputPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
+			vec2 mouseMinusOffset = (mouse * zoomOffset) - editor->editorOffset;
+			DrawNodeEditorLine(mouseMinusOffset, inputPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
 			break;
 		}
 		case EDITOR_ELEMENT_PARAM: {
 			Node *node = GetNode(editor->draggedNode);
 			i32 index = editor->draggedCtxHandle + node->inputs.Count();
 			Rect paramRect = GetNodeInputRect(editor->draggedNode, index);
-			vec2 paramPos = GetNodeEditorRectCenter(paramRect);
+			vec2 paramPos = GetRectCenter(paramRect);
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 			f32 zoomOffset = 1.0f / editor->zoom;
-			DrawNodeEditorLine(mouse * zoomOffset, paramPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
+			vec2 mouseMinusOffset = (mouse * zoomOffset) - editor->editorOffset;
+			DrawNodeEditorLine(mouseMinusOffset, paramPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
 			break;
 		}
 		case EDITOR_ELEMENT_OUTPUT: {
 			Rect outputRect = GetNodeOutputRect(editor->draggedNode);
-			vec2 outputPos = GetNodeEditorRectCenter(outputRect);
+			vec2 outputPos = GetRectCenter(outputRect);
 			ImDrawSetColor(vec3(1.0f, 1.0f, 1.0f));
 			f32 zoomOffset = 1.0f / editor->zoom;
-			DrawNodeEditorLine(mouse * zoomOffset, outputPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
+			vec2 mouseMinusOffset = (mouse * zoomOffset) - editor->editorOffset;
+			DrawNodeEditorLine(mouseMinusOffset, outputPos, 0, vec3(1.0f, 1.0f, 1.0f), 2.0f);
 			break;
 		}
 		case EDITOR_ELEMENT_NONE: {

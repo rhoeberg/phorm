@@ -137,11 +137,6 @@ void UpdateLoop()
 	// UpdateOSC();
 
 	///////////////
-	// VIEWER RENDERING
-	///////////////
-	// UpdateViewerRenderGUI();
-
-	///////////////
 	// GLOBAL EDITOR
 	///////////////
 	UpdateGlobalEditor();
@@ -154,16 +149,22 @@ void UpdateLoop()
 	///////////////
 	// RENDERING
 	///////////////
+
 	if(!FullscreenViewer()) {
 		///////////////
 		// IMDRAW
 		///////////////
 		SetContextMain();
 		int screenWidth, screenHeight;
-		// GetWindowSize(&screenWidth, &screenHeight);
 		GetFramebufferSize(&screenWidth, &screenHeight);
 		glViewport(0, 0, screenWidth, screenHeight);
 		ImDrawRender();
+
+		///////////////
+		// IMGUI
+		///////////////
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	SetContextViewer();
@@ -171,11 +172,8 @@ void UpdateLoop()
 	UpdateViewerRender();
 
 	///////////////
-	// BUFFER SWAP / IMGUI RENDER
+	// BUFFER SWAP
 	///////////////
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	
 	glfwSwapBuffers(_win);
 }
 
