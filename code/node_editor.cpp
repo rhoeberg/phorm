@@ -547,9 +547,7 @@ void UpdateNodeStopDragging()
 			//             unless we can find something more fitting
 			Node *node = GetNode(editor->draggedNode);
 			vec2 offset = node->rect.pos - editor->dragStart;
-			CommandMoveNode moveNodeCmd(offset, editor->draggedNode);
-			i32 typeHandle = _commandState->moveNodeCmds.Insert(moveNodeCmd);
-			Command cmd(CMD_MOVE_NODE, typeHandle);
+			Command cmd(CMDMoveNode(offset, editor->draggedNode));
 			CommandAdd(cmd);
 
 			break;
@@ -567,17 +565,13 @@ void UpdateNodeStopDragging()
 					i32 ctxHandle = editor->draggedCtxHandle;
 					Node *inputNode = GetNode(node->inputs[ctxHandle].handle);
 					if(inputNode) {
-
 						// disconnecting input
-
-						CommandDisconnectInput cmdType = {};
+						CMDDisconnectInput cmdType = {};
 						cmdType.ctx = ctxHandle;
-						cmdType.inputNodeHandle = editor->draggedNode;
-						cmdType.outputNodeHandle = node->inputs[ctxHandle].handle;
-						i32 typeHandle = _commandState->disconnectInputCmds.Insert(cmdType);
-						Command cmd(CMD_DISCONNECT_INPUT, typeHandle);
+						cmdType.inputHandle = editor->draggedNode;
+						cmdType.outputHandle = node->inputs[ctxHandle].handle;
+						Command cmd(cmdType);
 						CommandAdd(cmd);
-
 
 						node->inputs[ctxHandle].handle.isset = false;
 						node->changed = true;

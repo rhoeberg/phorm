@@ -391,7 +391,6 @@ void UpdateDebug()
 	
 	ImGui::Spacing();
 	ImGui::Text("UNDO");
-	ImGui::Text("lastcmd:%d, count:%d", _commandState->lastCmd, _commandState->commands.Count());
 	if(ImGui::Button("undo")) {
 		CommandUndoLast();
 	}

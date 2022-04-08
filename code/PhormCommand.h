@@ -36,10 +36,19 @@
   
 
 
+  BETTER STACK CONTAINER / UNDO LIMIT
+  PArray for our command stack gives us the problem that we dont have a 
+  good way to limit the stack size. 
+  When reaching the maximim undo limit of our stack we would want to keep adding
+  new commands to the top and removing the last command. With a PArray the
+  only way to do that would be to remove the first element and shift ALL the 
+  elements one up which would potentially be very slow. 
+  We could use memcpy for the shift but once the stack is full we would have to
+  do it after every single command, which seems very wastefull.
+  *LinkedList*
+  Instead we could use a linked list and just remove first element and set
+  root to the second element and add one new command to the end.
 
-
-  UNIONS
-  TODO (rhoe) invistigate using unions instead of seperate arrays with type data
 
 
 
@@ -52,42 +61,61 @@ enum CommandType {
 	CMD_DISCONNECT_PARAM,
 };
 
-struct CommandMoveNode
+struct Command;
+
+struct CMDMoveNode
 {
 	vec2 offset;
 	ObjectHandle handle;
-	CommandMoveNode(vec2 _offset, ObjectHandle _handle) {
+	CMDMoveNode(vec2 _offset, ObjectHandle _handle) {
 		offset = _offset;
 		handle = _handle;
 	}
+
+	static void Undo(Command *self);
 };
 
-struct CommandDisconnectInput
+struct CMDDisconnectInput
 {
 	i32 ctx;
-	ObjectHandle inputNodeHandle;
-	ObjectHandle outputNodeHandle;
+	ObjectHandle inputHandle;
+	ObjectHandle outputHandle;
+
+	CMDDisconnectInput() {}
+
+	static void Undo(Command *self);
 };
+
+typedef void(*CommandUndo)(Command *self);
 
 struct Command
 {
 	CommandType type;
-	i32 typeHandle;
-
-	Command(CommandType _type, i32 _typeHandle = -1)
+	CommandUndo undo;
+	union
 	{
-		type  = _type;
-		typeHandle  = _typeHandle;
+		CMDMoveNode moveNode;
+		CMDDisconnectInput disconnectInput;
+	};
+
+	Command(CMDMoveNode _moveNode)
+	{
+		type = CMD_MOVE_NODE;
+		moveNode = _moveNode;
+		undo = CMDMoveNode::Undo;
+	}
+
+	Command(CMDDisconnectInput _disconnectInput)
+	{
+		type = CMD_DISCONNECT_INPUT;
+		disconnectInput = _disconnectInput;
+		undo = CMDDisconnectInput::Undo;
 	}
 };
 
 struct CommandState
 {
-	i32 lastCmd;
 	PArray<Command> commands;
-
-	PArray<CommandMoveNode> moveNodeCmds;
-	PArray<CommandDisconnectInput> disconnectInputCmds;
 };
 
 void InitializeCommands();
