@@ -391,10 +391,9 @@ void UpdateDebug()
 	
 	ImGui::Spacing();
 	ImGui::Text("UNDO");
+	ImGui::Text("lastcmd:%d, count:%d", _commandState->lastCmd, _commandState->commands.Count());
 	if(ImGui::Button("undo")) {
-		MoveNodeCommand cmd = _commandState->commands[0];
-		cmd.Undo();
-		// _commandState->commands[0]->Undo();
+		CommandUndoLast();
 	}
 
     ImGui::End();
@@ -453,6 +452,10 @@ void UpdateGlobalEditor()
 	if(!editor->promptActive && singleKeyPress(GLFW_KEY_F)) {
 		SetFullscreen(_viewerWindow);
 		// editor->fullscreenView = !editor->fullscreenView;
+	}
+
+	if(!editor->promptActive && singleKeyPress(GLFW_KEY_Z) && keys_mode == GLFW_MOD_CONTROL) {
+		CommandUndoLast();
 	}
 	
 

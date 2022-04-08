@@ -21,6 +21,8 @@ class PArray {
 	int Insert(const T &e);
 	int InsertNew();
 	int Count();
+	void RemoveLast();
+	T* PopLast();
 	int Max();
 	bool Contains(const T &e);
 	T* Data();

@@ -541,10 +541,17 @@ void UpdateNodeStopDragging()
 	editor->isDragging = false;
 	switch(editor->draggedType) {
 		case EDITOR_ELEMENT_NODE: {
+
+			// TODO (rhoe) find cleaner way to add specific commands
+			//             maybe something similar to the node system
+			//             unless we can find something more fitting
 			Node *node = GetNode(editor->draggedNode);
 			vec2 offset = node->rect.pos - editor->dragStart;
-			MoveNodeCommand cmd(offset, editor->draggedNode);
-			_commandState->commands.Insert(cmd);
+			CommandMoveNode moveNodeCmd(offset, editor->draggedNode);
+			i32 typeHandle = _commandState->moveNodeCmds.Insert(moveNodeCmd);
+			Command cmd(CMD_MOVE_NODE, typeHandle);
+			CommandAdd(cmd);
+
 			break;
 		}
 		case EDITOR_ELEMENT_INPUT: {
@@ -557,9 +564,24 @@ void UpdateNodeStopDragging()
 			else {
 				Node *node = GetNode(editor->draggedNode);
 				if(node) {
-					int ctxHandle = editor->draggedCtxHandle;
-					node->changed = true;
-					node->inputs[ctxHandle].handle.isset = false;
+					i32 ctxHandle = editor->draggedCtxHandle;
+					Node *inputNode = GetNode(node->inputs[ctxHandle].handle);
+					if(inputNode) {
+
+						// disconnecting input
+
+						CommandDisconnectInput cmdType = {};
+						cmdType.ctx = ctxHandle;
+						cmdType.inputNodeHandle = editor->draggedNode;
+						cmdType.outputNodeHandle = node->inputs[ctxHandle].handle;
+						i32 typeHandle = _commandState->disconnectInputCmds.Insert(cmdType);
+						Command cmd(CMD_DISCONNECT_INPUT, typeHandle);
+						CommandAdd(cmd);
+
+
+						node->inputs[ctxHandle].handle.isset = false;
+						node->changed = true;
+					}
 				}
 			}
 			break;

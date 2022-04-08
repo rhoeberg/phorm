@@ -121,6 +121,29 @@ int PArray<T>::Count()
 }
 
 template <typename T>
+void PArray<T>::RemoveLast()
+{
+	if(count > 0) {
+		count--;
+	}
+}
+
+// TODO (rhoe) maybe pop should return a copy instead of pointer
+//             since freeing between the pop and using the T*
+//             would invalidate the T*
+template <typename T>
+T* PArray<T>::PopLast()
+{
+	if(count > 0) {
+		T* result = &data[count-1];
+		RemoveLast();
+		return result;
+	}
+
+	return NULL;
+}
+
+template <typename T>
 int PArray<T>::Max()
 {
 	return max;
