@@ -49,17 +49,7 @@
   Instead we could use a linked list and just remove first element and set
   root to the second element and add one new command to the end.
 
-
-
-
-
  */
-
-enum CommandType {
-	CMD_MOVE_NODE,
-	CMD_DISCONNECT_INPUT,
-	CMD_DISCONNECT_PARAM,
-};
 
 struct Command;
 
@@ -86,28 +76,54 @@ struct CMDDisconnectInput
 	static void Undo(Command *self);
 };
 
+struct CMDAddNode
+{
+	ObjectHandle handle;
+
+	static void Undo(Command *self);
+};
+
+struct CMDDeleteNode
+{
+	ObjectHandle handle;
+	Node node;
+
+	static void Undo(Command *self);
+};
+
 typedef void(*CommandUndo)(Command *self);
 
 struct Command
 {
-	CommandType type;
 	CommandUndo undo;
 	union
 	{
 		CMDMoveNode moveNode;
 		CMDDisconnectInput disconnectInput;
+		CMDAddNode addNode;
+		CMDDeleteNode deleteNode;
 	};
 
 	Command(CMDMoveNode _moveNode)
 	{
-		type = CMD_MOVE_NODE;
 		moveNode = _moveNode;
 		undo = CMDMoveNode::Undo;
 	}
 
+	Command(CMDAddNode _addNode)
+	{
+		addNode = _addNode;
+		undo = CMDAddNode::Undo;
+	}
+
+	Command(CMDDeleteNode _deleteNode)
+	{
+		deleteNode = _deleteNode;
+		undo = CMDDeleteNode::Undo;
+	}
+
 	Command(CMDDisconnectInput _disconnectInput)
 	{
-		type = CMD_DISCONNECT_INPUT;
 		disconnectInput = _disconnectInput;
 		undo = CMDDisconnectInput::Undo;
 	}

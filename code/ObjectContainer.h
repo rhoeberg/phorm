@@ -20,6 +20,7 @@ struct ObjectContainer {
 	ObjectHandle InsertRaw(T e, bool _free, u32 _slotID);
 	ObjectHandle Insert(T e);
 	ObjectHandle InsertNew();
+	bool Insert(ObjectHandle handle, T e);
 
 	// we simply set the array slot to free when removing
 	// insert takes care of checking for empty slots to use instead of inserting new

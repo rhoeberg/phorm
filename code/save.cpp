@@ -364,6 +364,10 @@ void SaveSettings()
 {
 	SaveFile saveFile = {};
 	saveFile.file = fopen("settings.vmsettings", "wb");
+	if(saveFile.file == NULL) {
+		ErrorLog("Settings: could not open settings file for saving");
+		return;
+	}
 
 	{
 		int width, height;
@@ -390,7 +394,12 @@ void SaveSettings()
 		settings.viewerWindow.posX = x;
 		settings.viewerWindow.posY = y;
 	}
-	fwrite(&settings, sizeof(settings), 1, saveFile.file);
+
+	if(fwrite(&settings, sizeof(settings), 1, saveFile.file) <= 0) {
+		ErrorLog("Settings: failed saving");
+	}
+
+	fclose(saveFile.file);
 }
 
 bool LoadSettings()

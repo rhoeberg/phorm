@@ -88,7 +88,8 @@ ObjectHandle AddNode(DataType type, FixedArray<NodeParameter> params, FixedArray
 	node.params = params;
 	node.inputs = inputs;
 	node.page = GetCurrentPage();
-	return _nodeState->nodes.Insert(node);
+	ObjectHandle result = _nodeState->nodes.Insert(node);
+	return result;
 }
 
 // TODO (rhoe) perhaps we should allow auto casting of int and doubles

@@ -306,6 +306,7 @@ void UpdateConsole()
 
 ///////////////////
 // DEBUG VIEW
+// TODO (rhoe) only compile debug gui on debuild build
 ///////////////////
 void UpdateDebug()
 {
@@ -391,6 +392,7 @@ void UpdateDebug()
 	
 	ImGui::Spacing();
 	ImGui::Text("UNDO");
+	ImGui::Text("undo count:%d", _commandState->commands.Count());
 	if(ImGui::Button("undo")) {
 		CommandUndoLast();
 	}

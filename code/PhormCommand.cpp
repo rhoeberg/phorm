@@ -40,3 +40,20 @@ void CMDDisconnectInput::Undo(Command *self)
 		}
 	}
 }
+
+void CMDAddNode::Undo(Command *self)
+{
+	DeleteNode(self->addNode.handle);
+}
+
+// TODO (rhoe) NEXT, hook back inputs / params
+void CMDDeleteNode::Undo(Command *self)
+{
+	String name = String(self->deleteNode.node.name);
+	NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(name);
+	if(nodeConstructor) {
+		SetupNode(&self->deleteNode.node, nodeConstructor);
+	}
+
+	GetNodes()->Insert(self->deleteNode.handle, self->deleteNode.node);
+}

@@ -169,7 +169,14 @@ void NodeGUI()
 				f32 zoomOffset = 1.0f / editor->zoom;
 				SetNextConstructPos((mouse * zoomOffset) - editor->editorOffset);
 				NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(editor->promptCandidates[i]);
-				ConstructNode(editor->promptCandidates[i].buffer, nodeConstructor);
+				ObjectHandle newNodeHandle = ConstructNode(editor->promptCandidates[i].buffer, nodeConstructor);
+
+				// addnode command
+				CMDAddNode addNodeCmd = {};
+				addNodeCmd.handle = newNodeHandle;
+				Command cmd(addNodeCmd);
+				CommandAdd(cmd);
+
 				editor->promptOpen = false;
 				SetPromptActive(false);
 			}
@@ -688,8 +695,18 @@ void UpdateNodeEditor()
 			SetViewerNode(editor->draggedNode);
 		}
 	}
-	if(keys[GLFW_KEY_DELETE]) {
-		DeleteNode(editor->draggedNode);
+	if(singleKeyPress(GLFW_KEY_DELETE)) {
+		ObjectHandle handle = editor->draggedNode;
+
+		// add delete command
+		Node *node = GetNode(handle);
+		CMDDeleteNode cmdType = {};
+		cmdType.handle = handle;
+		cmdType.node = *node;
+		Command cmd(cmdType);
+		CommandAdd(cmd);
+
+		DeleteNode(handle);
 	}
 	if(singleKeyPress(GLFW_KEY_C) && keys_mode == GLFW_MOD_CONTROL) {
 		DebugLog("copying");

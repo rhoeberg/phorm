@@ -82,6 +82,20 @@ ObjectHandle ObjectContainer<T>::InsertNew()
 	return result;
 }
 
+template <typename T>
+bool ObjectContainer<T>::Insert(ObjectHandle handle, T e)
+{
+	if(handle.id < 0 || handle.id > (elements.Count() - 1)) {
+		return false;
+	}
+
+	elements[handle.id] = e;
+	isFree[handle.id] = false;
+	slotID[handle.id] = handle.slotID;
+
+	return true;
+}
+
 // we simply set the array slot to free when removing
 // insert takes care of checking for empty slots to use instead of inserting new
 template <typename T>
