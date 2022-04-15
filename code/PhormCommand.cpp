@@ -8,6 +8,22 @@ void CommandAdd(Command cmd)
 	_commandState->commands.Insert(cmd);
 }
 
+void CommandAddDeleteNode(ObjectHandle handle, Node node)
+{
+	i32 i = _commandState->commands.InsertNew();
+	_commandState->commands[i].type = CMD_DeleteNode;
+	_commandState->commands[i].undo = CMDDeleteNode::Undo;
+	new(&_commandState->commands[i].deleteNode) CMDDeleteNode(handle, node);
+}
+
+void CommandAddDeleteNode(PArray<ObjectHandle> handles, PArray<Node> nodes)
+{
+	i32 i = _commandState->commands.InsertNew();
+	_commandState->commands[i].type = CMD_DeleteNode;
+	_commandState->commands[i].undo = CMDDeleteNode::Undo;
+	new(&_commandState->commands[i].deleteNode) CMDDeleteNode(handles, nodes);
+}
+
 void CommandUndoLast()
 {
 	Command *cmd = _commandState->commands.PopLast();
@@ -49,11 +65,18 @@ void CMDAddNode::Undo(Command *self)
 // TODO (rhoe) NEXT, hook back inputs / params
 void CMDDeleteNode::Undo(Command *self)
 {
-	String name = String(self->deleteNode.node.name);
-	NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(name);
-	if(nodeConstructor) {
-		SetupNode(&self->deleteNode.node, nodeConstructor);
-	}
+	CMDDeleteNode *cmd = &self->deleteNode;
 
-	GetNodes()->Insert(self->deleteNode.handle, self->deleteNode.node);
+	for(i32 i = 0; i < cmd->handles.Count(); i++) {
+		String name = String(cmd->nodes[i].name);
+		// TODO (rhoe) why is node constructor returning something when
+		//             empty string is used as key???
+		///            must be a problem with hashmap
+		NodeConstructor *nodeConstructor = GetNodeConstructors()->Get(name);
+		if(nodeConstructor) {
+			SetupNode(&cmd->nodes[i], nodeConstructor);
+		}
+
+		GetNodes()->Insert(cmd->handles[i], cmd->nodes[i]);
+	}
 }

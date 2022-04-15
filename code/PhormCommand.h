@@ -48,8 +48,32 @@
   *LinkedList*
   Instead we could use a linked list and just remove first element and set
   root to the second element and add one new command to the end.
+  
+  
+
+
+  CHANGE TO CUSTOM DISCRIMINATED UNION
+  instead of using standard c union we could make our own custom union type
+  this would help us with non-trivial constructors etc..
+  
+  
 
  */
+
+enum CommandType {
+	CMD_MoveNode,
+	CMD_DeleteNode,
+	CMD_AddNode,
+	CMD_DisconnectInput,
+};
+/* struct CommandHeader */
+/* { */
+/* 	CommandType type; */
+/* }; */
+/* struct CommandMoveNode */
+/* { */
+/* 	CommandHeader header; */
+/* }; */
 
 struct Command;
 
@@ -85,8 +109,54 @@ struct CMDAddNode
 
 struct CMDDeleteNode
 {
-	ObjectHandle handle;
-	Node node;
+	/* ObjectHandle handle; */
+	/* Node node; */
+	PArray<ObjectHandle> handles;
+	PArray<Node> nodes;
+
+	CMDDeleteNode(const CMDDeleteNode &other)
+	{
+		DebugLog("creating delete node, copy constructor");
+
+		/* PArray<ObjectHandle> handles; */
+		/* PArray<Node> nodes; */
+
+		handles = PArray<ObjectHandle>(other.handles);
+		nodes = PArray<Node>(other.nodes);
+	}
+
+	CMDDeleteNode()
+	{
+		DebugLog("creating delete node, no arg constructor");
+
+		handles = PArray<ObjectHandle>();
+		nodes = PArray<Node>();
+	}
+
+	CMDDeleteNode(ObjectHandle handle, Node node)
+	{
+		DebugLog("creating delete node, single node destructor");
+
+		handles = PArray<ObjectHandle>();
+		nodes = PArray<Node>();
+		handles.Insert(handle);
+		nodes.Insert(node);
+	}
+
+	CMDDeleteNode(PArray<ObjectHandle> _handles, PArray<Node> _nodes)
+	{
+		DebugLog("creating delete node, multi node destructor");
+
+		ASSERT(_handles.Count() == _nodes.Count());
+		handles = PArray<ObjectHandle>(_handles);
+		nodes = PArray<Node>(_nodes);
+	}
+
+	~CMDDeleteNode()
+	{
+		handles.Free();
+		nodes.Free();
+	}
 
 	static void Undo(Command *self);
 };
@@ -95,6 +165,7 @@ typedef void(*CommandUndo)(Command *self);
 
 struct Command
 {
+	CommandType type;
 	CommandUndo undo;
 	union
 	{
@@ -106,26 +177,68 @@ struct Command
 
 	Command(CMDMoveNode _moveNode)
 	{
+		type = CMD_MoveNode;
 		moveNode = _moveNode;
 		undo = CMDMoveNode::Undo;
 	}
 
 	Command(CMDAddNode _addNode)
 	{
+		type = CMD_AddNode;
 		addNode = _addNode;
 		undo = CMDAddNode::Undo;
 	}
 
 	Command(CMDDeleteNode _deleteNode)
 	{
-		deleteNode = _deleteNode;
+		type = CMD_DeleteNode;
+		deleteNode = CMDDeleteNode(_deleteNode);
 		undo = CMDDeleteNode::Undo;
 	}
 
 	Command(CMDDisconnectInput _disconnectInput)
 	{
+		type = CMD_DisconnectInput;
 		disconnectInput = _disconnectInput;
 		undo = CMDDisconnectInput::Undo;
+	}
+
+	Command(const Command &other)
+	{
+		*this = other;
+		switch(other.type) {
+			case CMD_DeleteNode: {
+				new(&deleteNode) CMDDeleteNode(other.deleteNode);
+				/* deleteNode(other.deleteNode); */
+				break;
+			}
+		}
+		/* undo = other.undo; */
+		/* type = other.type; */
+	}
+
+	/* Command& operator=(const Command &other) { */
+	/* 	switch(other.type) { */
+	/* 		case CMD_DeleteNode: { */
+	/* 			new(&deleteNode) CMDDeleteNode(other.deleteNode); */
+	/* 			/\* deleteNode(other.deleteNode); *\/ */
+	/* 			break; */
+	/* 		} */
+	/* 	} */
+	/* 	undo = other.undo; */
+	/* 	type = other.type; */
+
+	/* 	return *this; */
+	/* } */
+
+	~Command()
+	{
+		switch(type) {
+			case CMD_DeleteNode: {
+				deleteNode.~CMDDeleteNode();
+				break;
+			}
+		}
 	}
 };
 

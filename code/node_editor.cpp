@@ -696,17 +696,50 @@ void UpdateNodeEditor()
 		}
 	}
 	if(singleKeyPress(GLFW_KEY_DELETE)) {
-		ObjectHandle handle = editor->draggedNode;
 
-		// add delete command
-		Node *node = GetNode(handle);
-		CMDDeleteNode cmdType = {};
-		cmdType.handle = handle;
-		cmdType.node = *node;
-		Command cmd(cmdType);
-		CommandAdd(cmd);
+		if(editor->nodeMultiSelect) {
+			PArray<Node> deleteNodes;
+			for(i32 i = 0; i < editor->selectedNodes.Count(); i++) {
+				ObjectHandle handle = editor->selectedNodes[i];
+				Node *node = GetNode(handle);
+				deleteNodes.Insert(*node);
 
-		DeleteNode(handle);
+
+				// add delete command
+				// Node *node = GetNode(handle);
+				// CMDDeleteNode cmdType = {};
+				// cmdType.handle = handle;
+				// cmdType.node = *node;
+				// CMDDeleteNode cmdType(handle, *node);
+				// Command cmd(CMDDeleteNode(handle, *node));
+				// CommandAdd(cmd);
+
+				DeleteNode(handle);
+			}
+
+			// Command cmd(CMDDeleteNode(editor->selectedNodes, deleteNodes));
+			// CommandAdd(cmd);
+			CommandAddDeleteNode(editor->selectedNodes, deleteNodes);
+		}
+		else {
+			ObjectHandle handle = editor->draggedNode;
+
+			// add delete command
+			Node *node = GetNode(handle);
+			// CMDDeleteNode cmdType = {};
+			// cmdType.handle = handle;
+			// cmdType.node = *node;
+			// Command cmd(CMDDeleteNode(handle, *node));
+			// CommandAdd(cmd);
+			CommandAddDeleteNode(handle, *node);
+			// i32 i = _commandState->commands.InsertNew();
+			// _commandState->commands[i].type = CMD_DeleteNode;
+			// _commandState->commands[i].undo = CMDDeleteNode::Undo;
+			// new(&_commandState->commands[i].deleteNode) CMDDeleteNode(handle, *node);
+
+			DeleteNode(handle);
+		}
+
 	}
 	if(singleKeyPress(GLFW_KEY_C) && keys_mode == GLFW_MOD_CONTROL) {
 		DebugLog("copying");

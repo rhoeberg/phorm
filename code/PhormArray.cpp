@@ -191,6 +191,18 @@ T& PArray<T>::operator[](int index)
 // template <typename T>
 // PArray<T>& PArray<T>::operator=(std::initializer_list<T> init)
 // {
+// 	max = ARRAY_START_SIZE;
+// 	data = (T*)calloc(max, sizeof(T));
+// 	count = 0;
+
+// 	for(const T &t : init) {
+// 		Insert(t);
+// 	}
+
+// 	initialized = true;
+
+// 	return *this;
+// }
 // 	this->max = ARRAY_START_SIZE;
 // 	this->data = (T*)calloc(max, sizeof(T));
 // 	this->count = 0;
