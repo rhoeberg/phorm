@@ -1,7 +1,7 @@
 # phorm
-Nodebased tool for generative and reactive visuals with a focus on live performances and VJ setups.
+Prototype of a nodebased tool for generative and reactive visuals with a focus on live performances and VJ setups.
 
-(currently under active development and not yet suitable for actual use)
+(under development and not yet suitable for actual use)
 
 ---
 ### Dependencies
